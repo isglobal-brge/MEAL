@@ -1,0 +1,259 @@
+---
+title: "Introduction to MEAL"
+subtitle: "Carlos Ruiz, Juan R. González"
+author: |
+  | Center for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+  | Bioinformatics Research Group in Epidemiolgy             
+  | (<http://www.creal.cat/brge.htm>)
+date: "`r Sys.Date()`"
+package: "`r pkg_ver('MEAL')`"
+output: 
+  BiocStyle::html_document:
+    number_sections: true
+    toc: yes
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 4
+bibliography: ./vignette.bib
+vignette: >
+  %\VignetteIndexEntry{Introduction to MEAL}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+```{r, echo = FALSE}
+fn = local({
+  i = 0
+  function(x) {
+    i <<- i + 1
+    paste('Figure ', i, ': ', x, sep = '')
+  }
+})
+```
+# Introduction
+Illumina Infinium HumanMethylation 450K BeadChip assay has become a standard tool to analyse methylation in human samples. Developed in 2011, it has already been used in projects such as The Cancer Genome Atlas (TCGA). Their 450.000 probes provide a good overall image of the methylation state of the genome, being one of the reasons of its success.
+
+Given its complex design^[More information can be found at this [minfi tutorial](http://www.bioconductor.org/help/course-materials/2014/BioC2014/minfi_BioC2014.pdf)], many Bioconductor packages have been developed to assess normalization and pre-processing issues (e.g. `r Biocpkg("minfi")` [@Aryee2014] or `r Biocpkg("lumi")` [@Du2008]). In addition, these packages can perform detect differentially methylated probes (DMPs) and differentially methylated regions (DMRs). However, the interfaces are not very intuitive and several scripting steps are usually required.
+
+`r Rpackage("MEAL")` aims to facilitate the analysis of Illumina Methylation 450K chips. DMPs and DMRs detection algorithms are included, along with new plotting facilities. Besides, two wrapper functions allow performing whole methylome analysis or range analysis. Two additional features are adjustment of models for SNPs and tools to manage genomic-like variables.  
+
+## Data types
+
+`r Rpackage("MEAL")` implements three new classes: `MethylationSet`, `AnalysisResults` and `AnalysisRegionResults`. `MethylationSet` is a class derived from Bioconductor `eSet`. All the information of the experiment is contained in this class: a beta values matrix, phenotypic information and annotation.
+
+`AnalysisResults` and `AnalysisRegionResults` contain the results of whole methylome analysis and region analysis respectively. Plotting functions are applied on these classes. 
+
+## Example data
+
+`r Biocpkg("minfiData")` and `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` packages are required in order to run the examples of this vignette. `r Biocpkg("minfiData")` contains `MsetEx`, a `MethylSet` from the `r Biocpkg("minfi")` package.
+
+```{r, message = FALSE}
+library(MEAL)
+library(minfiData)
+library(GenomicRanges)
+```
+
+# Read data
+
+`r Rpackage("MEAL")` doesn't contain preprocessing capabilities so these steps should be done previously. As a result, before analysing `MsetEx`, probes that does not measure CpGs should be previously filtered. The next code uses a `r Biocpkg("minfi")` function to remove not CpGs probes.
+
+```{r}
+MsetExFilt <- dropMethylationLoci(MsetEx)
+```
+
+`MethylationSet` construction requires a beta values matrix and a data.frame with the phenotypes. The following code extract both objects from a `minfi` object. To speed up the example, only 30.000 probes will be used. In order to obtain reproducible results, the seed used for random number will be set to 0. 
+
+```{r}
+set.seed(0)
+betas <- getBeta(MsetExFilt)
+betas <- betas[sample(1:nrow(betas), 30000), ]
+phenotypes <- pData(MsetExFilt)
+```
+
+With `prepareMethylationSet`, a `MethylationSet` is obtained. It contains only the samples having beta values and phenotypes and the probes containing annotation. 
+
+```{r Raw_Set}
+set <- prepareMethylationSet(matrix = betas, phenotypes = phenotypes, 
+                                    annotation = "IlluminaHumanMethylation450kanno.ilmn12.hg19")
+set
+```
+
+`prepareMethylationSet` is the main entry point to use the package and it is worth describing its arguments and functionalities. The first two arguments (matrix and phenotypes) are the matrix of beta values and the data.frame of phenotypes. It should be noticed that an `AnnotatedDataFrame` can be used as phenotypes (during the construction of the object, phenotypes data.frame is coerced to an `AnnotatedDataFrame`). In any case, beta values matrix contains **cpgs at rows and samples at columns** and both must be named. The same applies to phenotypes data.frame but rows must contain samples and columns variables.
+
+annotation can be a character or a data.frame (or an `AnnotatedDataFrame`). If character, it loads an annotation package and uses it in the object. At the moment, only `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` is supported. The following parameters (chromosome, position, genes and group) allow the specification of a custom annotation. If annotation is a data.frame, these parameters should match column names of the annotation data.frame. Chromosome equals to chromosome name (e.g. chr1) and position to position coordinates. Genes and group are optional and equal to the genes near the probe and to the position of the probe in relation to the gene. Default argument values match names in `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` annotation package. Finally, if annotation is not specified, `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` package is used. 
+
+## Compatibility with minfi
+
+`minfi` objects can be directly used in `prepareMethylationSet`. If the object contains phenotypes, there is no need to supply it. Otherwise, it will be compulsory.
+
+# Probe analysis
+
+The initial approach when studying methylation was to find differentially methylated probes. The analysis chosen was to fit a linear model for each of the probes, taking into account the variable of interest as well as some covariates. Probes were usually sorted by statistical parameters such as coefficients p-value. 
+
+This approach has been implemented in `r Rpackage("MEAL")` but with some changes. As was proposed in [@Du2010], M-values (logit2 transformation of beta values) are used to fit the model. In addition, a robust linear regression is used instead of a normal linear regression. This kind of regression is more robust to outliers and can obtain more accurate coefficients. 
+
+Before analysing the data, a quick look at the phenotypes will be done:
+
+```{r}
+pData(set)
+summary(pData(set))
+```
+
+The most interesting variables are person, age, sex and status. Age is numeric but the other ones, that should be factors, are indeed characters. The following analysis will be performed using the variable status, which defines samples of normal or cancer tissues. 
+
+Probe analysis can be done with `DAProbe`, which needs a `MethylationSet` and a matrix model.
+
+```{r Probe_Analysis}
+mod <- model.matrix(~as.factor(status), data = pData(set))
+proberes <- DAProbe(set = set, model = mod, method = "ls", coefficient = 2)
+head(proberes)
+```
+
+`DAProbe` returns a data.frame with the results of the linear analysis. In the example, method is set to "ls" (normal linear regression) in order to speed the tutorial, but default is robust regression. Coefficient indicates the coefficients of the model matrix whose results will be returned. If coefficient is a vector, a list of data.frames is returned. 
+
+# Region analysis
+
+`r Rpackage("MEAL")` includes three region analysis algorithms: bumphunter [@Jaffe2012], DMRcate [@Peters2015] and blockFinder. More information about these methods can be found at the corresponding packages.
+
+`DARegion` needs a `MethylationSet` and a matrix model (the same that `DAProbe`):
+
+```{r Region_Analysis, message=FALSE, warning=FALSE}
+regionres <- DARegion(set = set, model = mod, coefficient = 2)
+names(regionres)
+head(regionres$bumphunter)
+head(regionres$blockFinder)
+head(regionres$DMRcate)
+```
+
+`DARegion` returns a list of data.frames with the results of the different methods. methods parameter can be used to select the methods desired. If a method is not chosen, a NA value is returned in this position. Because DMRcate uses results from a linear model regression, these results can be computed using `DAProbe` and passed in the argument proberes.
+
+Bumphunter and blockFinder can calculate p-values for the regions differentially detected using bootstraping. num_permutations arguments sets the number of permutations that will be done to estimate these p-values. By default it is set to 0, because its computation requires a lot of memory and it is time consuming. 
+
+Finally, it should be said that blockFinder method has been adapted from `r Biocpkg("minfi")` package and it needs its annotation package (`r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")`). If another annotation is used, blockFinder use is discouraged.  
+
+# Whole methylome analysis
+
+The first approach when studying methylation changes is to get an overall picture of the methylation state throughout the genome. This kind of analysis is performed by the function `DAPipeline`. The first analysis will be to evaluate the effect of cancer in methylation. Given that this variable is a character, it should be converted to factor using variable_types:
+
+```{r Pipeline,  warning=FALSE, message=FALSE}
+res <- DAPipeline(set = set, variable_names = "status", variable_types = "categorical", 
+                      probe_method = "ls", verbose = TRUE)
+res
+```
+
+`DAPipeline` generates a `AnalysisResults` objects containing probe and  region analysis results. Most of the parameters of this function are arguments of `DAProbe` and `DARegion`. 
+
+On the other hand, there are four important parameters in this function: variable\_names, variable\_types, covariable\_names and covariable\_types. These parameters define the variables that will be used as active variable (for which the results will be presented) and the variables used as covariates (variables that will enter in the model but not in the results). Class of the variables in set can be changed using variable\_types and covariable\_types. Available types are categorical (factor), continuous (numeric) and the three genetic models (dominant, recessive and additive).
+
+When variables are defined in this way, the linear model created is additive: all the variables are summed. It is also possible to use a linear model containing interaction and other more complex features using the equation parameter:
+
+```{r Pipeline_Equation, warning = FALSE, message=FALSE}
+complexres <- DAPipeline(set = set, variable_names = c("status", "sex"),
+                             variable_types = c("categorical", "categorical"), 
+                             probe_method = "ls", num_var = 3, verbose = TRUE,
+                             equation = "~ status:sex + status + sex")
+complexres
+```
+
+When using equation, number of active variables must be explicit. They will be selected from the left of the equation to the right. Model matrices are created using `model.matrix` function, so if we introduce interactions, they will be after the alone variables. In our example, status and sex both had two levels. Therefore, a dummy variable is created for each of the samples and the interaction is the third column. Consequently, num\_var must be 3.
+
+In addition, it should be noticed that variables used in interactions must be included alone in the equation and must be present in the variable\_names arguments. Covariables can still be used by setting them in covariable\_names, being added to the linear model. 
+
+
+## Results access
+
+There are several functions that allow to access analysis results:
+
+```{r}
+#Bumphunter
+head(bumps(res)[[1]])
+#BlockFinder
+head(blocks(res)[[1]])
+#DMRcate
+head(dmrCate(res)[[1]])
+#Probe
+head(probeResults(res)[[1]])
+#Region
+names(regionResults(res))
+```
+
+All these functions return a list, even if it contains only one data.frame. `regionResults` contains a list with the results of the three per region methods. Export of the results is simplified with the function `exportResults`.
+
+```{r, eval = FALSE}
+exportResults(res, dir = "./results")
+```
+
+This function creates csv files with all the results. If more than one variable is present, a subfolder for each variable is created. 
+
+## Plotting
+
+`AnalysisResults` incorporates many plotting facilities. `plotFeature` plots the beta values distribution of a cpg. `plotFeature` accepts a number with the cpg index or character with the name of a cpg. 
+
+```{r Plot_Features, fig.cap = fn("Beta values of cg25937714 splitted by cancer status")}
+plotFeature(res, 1)
+```
+
+Probe results can be used to plot a QQ-plot and a Manhattan plot. In the second one, cpgs inside a range can be highlighted by passing a GenomicRanges object with the range of interest.
+
+```{r QQplot, fig.cap = fn("QQplot of the analysis")}
+plotQQ(res)
+```
+```{r EWAS_plot, fig.cap = fn("Manhattan plot with the cpgs of the range highlighted")}
+range <- GRanges(seqnames = Rle("chr1"), 
+                                ranges = IRanges(1000000, end = 10000000))
+plotEWAS(res, range = range)
+```
+
+In figure 3, the red line of the Manhattan plot is the significance threshold using Bonferroni.
+
+# Range analysis
+
+A study of a region can be performed with `DARegionAnalysis`. Options are very similar to that of `DAPipeline`. In this situation, status will be the active variable and age will be a covariable. A GenomicRange must be supplied in order to delimit the region. 
+
+```{r Range_Analysis, warning=FALSE, message=FALSE}
+range <- GRanges(seqnames = Rle("chr12"), 
+                                ranges = IRanges(70000000, end = 80000000))
+region <- DARegionAnalysis(set = set, variable_names = "status", 
+                               variable_types = "categorical", 
+                               covariable_names = "age", range = range, 
+                               verbose = TRUE)
+region
+```
+
+`DARegionAnalysis` generates a `AnalysisRegionResults`, an heir of `AnalysisResults`, so they share getter functions.
+
+```{r}
+#Bumphunter
+head(bumps(region)[[1]])
+#BlockFinder
+head(blocks(region)[[1]])
+#DMRcate
+head(dmrCate(region)[[1]])
+#Probe
+head(probeResults(region)[[1]])
+#Region
+names(regionResults(region))
+```
+
+## Plotting 
+
+Distribution of coefficients of the region can be plotted using the `plotRegion` function. .
+
+```{r Region_plot, fig.cap = fn("Plot of the differential methylation for each cpg of the region.")}
+plotRegion(region)
+```
+
+In figure 4, green points are probes with a p-value smaller than 0.05 while red points are probes with a p-value greater than 0.05. Green lines are set at 0.05, a minimal difference to be considered significant.
+
+Besides probe and region analysis using only range's probes, a redundancy analysis (RDA) is performed. RDA analysis measures the relation of the variables with the ensemble of cpgs. RDA results are printed whit the object, but a plot with the results can also be done with `plotRDA`.
+
+```{r plot_RDA, fig.cap = fn("RDA plot of the region."), fig.height = 5, fig.width=8}
+plotRDA(region)
+```
+
+In figure 5, points represent samples grouped by the active variables. Red crosses are the cpgs and cpg names are the cpgs most correlated to the RDA axes.
+
+# SNPs Data
+
+In our example, SNPs data was not available. An example with SNPs can be found in caseExample vignette.
+
+# References

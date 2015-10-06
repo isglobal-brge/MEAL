@@ -1,0 +1,323 @@
+---
+title: "MEAL case example"
+subtitle: "Carlos Ruiz, Carles Hernández, Juan R. González"
+author: |
+  | Center for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+  | Bioinformatics Research Group in Epidemiolgy (BRGE)
+  | (<http://www.creal.cat/brge.htm>)
+date: "`r Sys.Date()`"
+package: "`r pkg_ver('MEAL')`"
+output:    
+  BiocStyle::html_document:
+    number_sections: true
+    toc: yes
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 4
+vignette: >
+  %\VignetteIndexEntry{MEAL case example}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+```{r, echo = FALSE}
+fn = local({
+  i = 0
+  function(x) {
+    i <<- i + 1
+    paste('Figure ', i, ': ', x, sep = '')
+  }
+})
+```
+
+# Introduction
+
+In this vignette, the workflow to analyse methylation and expression data will be presented. The package also allows considering SNP data since it has been demonstrated the existence of meQTL and eQTL that could confound the results.
+The example data will be taken from `MEALData` package (available at BRGE web), a data package that contains a subset from GEO [GSE53261](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53261). This dataset contains data from untransformed human fibroblasts. The script with the processing steps from the GEO to the final datasets can be found in the folder scripts of `r Rpackage("MEALData")` package. 
+
+Let's start by loading the required packages.
+```{r Load_Packages, message = FALSE}
+library(MEAL)
+library(MEALData)
+library(GenomicRanges)
+```
+
+There are four objects in `r Rpackage("MEALData")`: betavals, pheno, eset and snps. Let's take a look to each of these objects.
+
+betavals and pheno belongs to the methylation experiment. betavals is a matrix of beta values corresponding to an Infinium HumanMethylation 450K BeadChip and pheno a data.frame with the phenotypes. 
+
+```{r Methylation_Data}
+betavals[1:5, 1:5]
+dim(betavals)
+summary(pheno)
+```
+
+betavals contains data from 451448 probes and 62 samples. Pheno contains the same number of samples and two variables: gender and source. There is the same number of cells coming from male and female donnors. Source is composed of Coriell cell lines and cells with unknown source.
+
+eset is an `ExpressionSet` with the expression data corresponding to an Illumina HumanRef-8 v3.0 expression beadchip.
+
+```{r Expression_Data}
+eset
+summary(pData(eset))
+```
+
+In this case, there are 21916 expression probes and 64 samples. As it can be seen, there are two more samples in the expression set. This is very common in datasets downloaded from GEO and it is not a problem if the analysis is going to be performed separately. On the other hand, the phenotype data only contains the variable gender and the number of female and male donnors is balanced.
+
+Finally, let's take a look at snps data. snps is a list containing two objects, the genotypes and the mapping.
+
+```{r Snps_Data}
+str(snps)
+```
+
+Genotypes are enclosed in a matrix and can be retrieved by:
+
+```{r}
+snps$genotypes[1:5, 1:5]
+```
+
+Mapping of the SNP probes is can be retrieved by typing `snps$map`. Here, the original object has been modified to fit the requirements of MEAL objects. Snps annotation data.frame must contain a column called `position` and a column called `chromosome` with the name of the chromosome.
+
+```{r}
+head(snps$map)
+```
+
+All in all, this list can be reused for other analyses, just changing the SNP data but maintaining the structure.
+
+Let's illustrate the use of this package taking the gender of the donnor as the outcome of interest. Methylation and expression analyses will be described including hypothesis testing and visualitzation. 
+
+# Methylation Analysis
+
+The first analysis will be the methylation analysis. This demonstration will be focused on the analysis workflow while a more extended description of the functions and their arguments can be found at `r Rpackage("MEAL")` vignette. 
+
+Let's start the analysis. The first step is to create the `MethylationSet` with the betas, the phenotype and the snps.
+
+```{r Meth_Object, message = FALSE}
+methSet <- prepareMethylationSet(matrix = betavals, phenotypes = pheno)
+table(fData(methSet)$chr)
+```
+
+As it can be seen, more than 10000 probes are placed in sexual chromosomes and they will be very affected by the gender of the sample. These probes, that we know that will be differentiated and that don't provide any interesting information, can confound the multitesting analysis by adding a huge ammount of really small p-values that complicate the adjustement. For these reasons, it is very recommended to remove them, specially in this situation that we want to evaluate the effect of gender on methylation.
+
+Rigth now, `r Rpackage("MEAL")` doesn't include a function to automatically perform this filtering. However, it can be easily done with the following steps:
+
+```{r Filtering_Meth}
+annot <- fData(methSet)
+autosomiccpgs <- rownames(annot)[!annot$chr %in% c("chrX", "chrY")]
+methSet <- methSet[autosomiccpgs, ]
+methSet
+```
+
+Once the object is filtered, we are now ready to run the analysis. `DAPipeline` are the function in `r Rpackage("MEAL")` that performs the analysis. It can work with an `ExpressionSet` and a `MethylationSet`. In both cases, for each feature, it computes the effect of the variables set using the parameter variable\_names, and it allows the inclusion of adjustment variables with the parameter covariable\_names. In addition, if a `MethylationSet` is used, regional analysis will be performed (such as Bumphunter or DMRcate).
+
+In our case, we will set variable\_names to gender, but we could use a vector with all the variables to analyse. Finally, probe\_method is set to "ls" (lineal regression) to speed up the demonstration. In order to use robust linear regression, the option is "robust". 
+
+```{r Meth_Analysis}
+methRes <- DAPipeline(set = methSet, variable_names = "gender", probe_method = "ls")
+methRes
+```
+
+The analysis generates an `AnalysisResults` objects with all the results. 239 probes has been detected as differentially methylated. To get an overview of the distribution of these probes, a Manhattan plot can be done:
+
+```{r Meth_Manhattan, fig.cap = fn("Manhattan plot of methylation results."), dev="png"}
+plotEWAS(methRes)
+```
+
+In figure 1, we can see that the differentially methylated probes are distributed all around the genome. A quick look to the QQplot can show us if there are problems in the model of the analysis. 
+
+```{r Meth_QQplot, fig.cap = fn("QQplot of methylation analysis")}
+plotQQ(methRes)
+``` 
+
+In figure 2, most of the points are on the theoretical line. The last points are quite separated but this can be due to the high number of differentially methylated probes. Consequently, no further adjustement seems to be required.
+
+
+# Integration of data
+
+`r Rpackage("MEAL")` incorporates a new class `MultiDataSet`, designed to handle data from the same samples but from different omic experiments. This class works with `eSet` derived classes. In this tutorial, we will show how to create a `MultiDataSet` containing our methylation and SNPs data.
+
+The first step is to create an empty `MultiDataSet`.
+
+```{r New Multi}
+multi <- new("MultiDataSet")
+``` 
+
+`MultiDataSet` contains a generic function `add.set` which allows to add any kind of object to a labeled slot. In addition, there are three predifined functions (add.genexp, add.methy, add.snps) which adds a given object to a given slot. Rigth now, we will add methylation to this new `MultiDataSet`.
+
+```{r Add Methy}
+multi <- add.methy(multi, methSet)
+``` 
+
+`add.methy` has the same parameters as `add.genexp` or `add.snps`: the first parameter is the `MultiDataSet` where the new object will be added and the second is the object to be added. The difference between these funcions is that `add.methy` requires a `MethylationSet`, `add.genexp` an `ExpressionSet` and `add.snps` a `SnpSet`. Rigth now, snps data is in the form of a list with a `SnpMatrix` and a annotation, so we should convert it to a `SnpSet` prior to including in the `MultiDataSet`.
+
+```{r Add Snps}
+SnpSet <- new("SnpSet", call = snps$genotypes)
+fData(SnpSet) <- snps$map
+multi <- add.snps(multi, SnpSet)
+``` 
+
+## Region Analysis and use of SNPs
+
+One of the most interesting features of `r Rpackage("MEAL")` is the deep analysis of a region of the genome with `DARegionAnalysis`. This function evaluates the effect of a variable on the pattern of methylation of the whole region (using a redundancy analysis). In addition, if SNPs are included, meQTLs are detected and used to adjust the model. 
+
+To show these features, we will look for a region enriched in differentially methylated probes. Thus, we will take a glance to the most significant probes:
+
+```{r}
+head(probeResults(methRes)[[1]], 10)
+```
+
+From the top 10 probes, 2 are placed in chromosome 3 around position 16500000. Therefore, we will analyse a region of 1Mb enclosing these probes.
+
+Before starting the analysis, we will repeat the Manhattan plot but now highlighting the probes of the range. It should be noticed that `r Rpackage("MEAL")` uses `GRanges` objects to define the genomic ranges:
+
+```{r Plot_Region, fig.cap = fn("Manhattan plot with the cpgs of the range highlighted.")}
+range <- GRanges(seqnames = Rle("chr3"),
+                 ranges = IRanges(16000000, end = 17000000))
+plotEWAS(methRes, range = range)
+```
+
+In figure 3, the most significant cpgs of chromosome 9 are highlighted. There are more highlighted points in chromosome 9 but there are covered by the others. 
+
+Now we are ready to perform the analysis. `DARegionAnalysis` works very simmilar to `DAPipeline` with the difference that a range is needed. `DARegionAnalysis` can work with a `MethylationSet` / `ExpressionSet` or with a `MultiDataSet`. If a `MultiDataSet`is used, SNPs are required and they are included in the analysis. This will be our case: 
+
+```{r Region Analysis, warning = FALSE}
+methRegion <- DARegionAnalysis(set = multi, range = range, variable_names = "gender", probe_method = "ls")
+methRegion
+```
+
+When SNPs are used, first SNPs that are significantly associated to a cpg are selected. On one hand, these SNPs will be used to compute the correlation with the cpgs. On the other, a PCA with the significant SNPs will be calculated and the six first components used as covariables. 
+
+The R^2^ between the cpgs and the SNPs can be retrieved using regionLM and plotted using plotRegionR2. In this example, we will use cpg number 18 in order to show the plot. 
+
+```{r, fig.cap = fn("R2 of gender and the significant SNP for cpg cg14154784")}
+regionLM(methRegion)[["cg11610140"]]
+plotRegionR2(methRegion, "cg11610140")
+```
+
+In figure 4, the plot of the R^2^ shows that gender explains more than 50% of the variability of the cpg while the SNP doesn't explain almost anything of the variability. 
+
+```{r, fig.cap = fn("RDA plot for the range analysis"), fig.width=8, fig.height=5}
+plotRDA(methRegion)
+```
+
+In figure 5, in the RDA plot, male and female samples are clearly separated so  gender changes the methylation pattern of the region. The R^2^ and the p-value quantitave shows this fact. 
+
+\newpage
+
+# Expression Analysis
+
+The analysis of expression can be performed in the same way than methylation. The main difference is that an `ExpressionSet` will be used intead of a `MethylationSet`. The hypothesis to be tested will be the same, so the variable used will be source again. 
+
+In order to assure consistent results, `ExpressionSet` passed to `DAPipeline` needs to pass some constraints: its fData should contain columns chromosome, start and end. Let's check out our object:
+
+```{r Exp show}
+eset
+fvarLabels(eset)
+```
+
+As it can be seen, we have this data in our object. However, the column containing the chromosomes is called **chr** insted of **chromosome**. In the following lines, we will fix this and we will run the analysis.
+
+```{r Exp Analysis}
+fData(eset)$chromosome <- fData(eset)$chr
+expRes <- DAPipeline(eset, variable_names = "gender", probe_method = "ls")
+expRes
+``` 
+
+```{r Expr_Manhattan, fig.cap = fn("Manhattan plot of expression results.")}
+plotEWAS(expRes)
+```
+
+In figure 6, there are no significant probes after multiple testing. Let's take a look at the QQplot.
+
+```{r ExprQQplot, fig.cap = fn("QQplot of expression results.")}
+plotQQ(expRes)
+```
+
+In figure 7, the QQplot shows a great deflation. This situation ussualy happens when there are hidden variables (such as batch) that we are not taking into account. Given that we don't have any other variables, we could try surrogate variables analysis (SVA). SVA tries to infer these hidden variables, which we can include in our model. `DAPipeline` performs this process automatically only by setting `sva = TRUE`. 
+
+```{r Exp Analysis SVA}
+expResSVA <- DAPipeline(eset, variable_names = "gender", probe_method = "ls", sva = TRUE)
+expResSVA
+```
+
+```{r ExprManhattanSVA, fig.cap = fn("Manhattan plot of expression results using SVA.")}
+plotEWAS(expResSVA)
+```
+
+In figure 8, we can see that an expression probe is signicant (after bonferroni correction).
+
+```{r ExprQQSVA, fig.cap = fn("QQ plot of expression results using SVA.")}
+plotQQ(expResSVA)
+```
+
+In figure 9, the QQ-plot show a bit of inflation but the points are close to the theoretical values. Consequently, SVA has improved the analysis and has allowed to detect a differentially expressed probe.
+
+```{r ExprVolcanoSVA, fig.cap = fn("Volcano of expression results using SVA.")}
+plotVolcano(expResSVA)
+```
+```{r}
+head(probeResults(expResSVA)[[1]])
+```
+
+In figure 10, a Volcano plot of the results is shown. Given that none of the points has a log fold change bigger than 1, none of the points is labeled. 
+
+It should be noticed that although an `ExpressionSet` can be the input for `DAPipeline` and a `AnalysisResults` object is generated, not all functions will be available. The two functions that might not work properly are `plotRegionR2` and `plotRegion`.
+
+# Methylation and expression integration
+
+In this last step, the correlation between expression and methylation will be studied. There are two functions in `MEAL` that can compute the relationship between this two omics data. `correlationMethExprs` makes pairs of cpg-expression probe and test if they are correlated. On the other hand, `multiCorrMethExprs` test if, in a chromosomic region, the methylation pattern can explain the expression pattern.
+
+Both functions requires a `MultiDataSet`, so let's create a new `MultiDataSet` with expression and methylation data.
+
+```{r New Multi Meth Exp}
+multi2 <- new("MultiDataSet")
+multi2 <- add.genexp(multi2, eset)
+multi2 <- add.methy(multi2, methSet)
+```
+
+It should be noticed that `add.genexp` share the same constraints for `ExpressionSet`, so only objects with fData containing chromosomes, start and end columns will be accepted. Another interesting feature is that `MultiDataSet` adding functions ensure that sample names are the same for all sets. To do so, when a new set is added, samples of the new set and samples of the multiset are filtered to only contain the common samples.  
+
+## Methylation expression correlation
+
+The function `correlationMethExprs` performs a linear regression between the methylation and the expression values. First, cpgs are paired to expression probes if the expression probe is in a range of $\pm$ 250kb from the cpg (this parameter is called flank). After that, for each pair, the following regression is performed: $$ e_{ij} = \beta_i m_{ij} + \epsilon $$ where $e_{ij}$ is the expression value of individual j on pair i expression probe, $m_{ij}$ the methylation value of individual j on pair i methylation probe and $\beta_i$ the change of expression produced by the methylation on pair i.
+
+In addition, the effect of other variables can be substracted for the methylation or the expression data. To do this, a linear regression of the data versus the variables is performed: $$ x_{ij} = \sum_{k = 1}^p{\beta_{ik} z_{jk}} + r_{ij} $$ where $x_{ij}$ is the methylation value at cpg i for individual j, $\beta_{ik}$ is the effect of variable z at cpg, $z_{jk}$ is the value of variable z for individual j and $r_{ij}$ is the residual value at cpg i for individual j. Then, the residuals are computed: $$ r_{ij} = x_{ij} - \sum_{k = 1}^p{\beta_{ik} z_{jk}} $$ These residuals will be used as the methylation values in the first equation. The same equations can be applied with expression data. 
+
+This process is a bit computionally expensive. For this reason, we will use a `MultiDataSet` with a smaller methylation set with only the differentially methylated probes. Given that cpgs are ordered in the `AnalysisResults`, we will take the top 20 differentially methylated probes. Using `add.methy` in a `MultiDataSet` containing methylation, the methylation data is substituted.
+
+```{r Corr Meth Exp}
+topcpgs <- feats(methRes)[1:20]
+minimeth <- methSet[topcpgs, ]
+multi3 <- add.methy(multi2, minimeth)
+methExprs <- correlationMethExprs(multi3)
+head(methExprs)
+```
+
+The results shows the cpg name, the expression probe, the change of the relationship and se, and the p-value and adjusted p-value (using B&H). However, in our data there are no correlated cpgs-expression probes.
+
+## Methylation expression multivariate correlation
+
+The function `multiCorrMethExprs` performs a redundancy analysis (RDA) between the methylation and the expression values. This analysis gives us an estimate of the proportion of variance of expression that methylation is able to explain. In our example, we will use the same range used in methylation region analysis.
+
+```{r Corr Meth Exp RDA}
+methExprsRDA <- multiCorrMethExprs(multiset = multi2, range = range)
+methExprsRDA
+```
+
+`multiCorrMethExprs` returns a RDA object from `vegan` package. In the next following lines, some useful functions related to this object will be explained while a more deep explanation can be found in the documentation of `vegan` package.
+
+rda objects can directly generate a plot:
+
+```{r RDAmetExpr, fig.cap = fn("RDA plot of relationship between expression and methylation"), fig.width=8, fig.height=5}
+library(vegan)
+plot(methExprsRDA)
+```
+
+In figure 11, blue arrows are methylation probes, black labels expression probes and red points the samples. The closer the points the more simmilar they are. So, expression probe WG1977 and cg14199629 are very simmilar.
+
+The following code gives us quantitative information about the global relathionship. The first code, performs an anove and returns a p.value. In this case, the relathionship is not significant. The other code gives us an estimate of the R square. Again, after taking into account the high number of variables used, the value is very small (0.0903).
+
+```{r RDA pval}
+anova.cca(methExprsRDA)
+RsquareAdj(methExprsRDA)
+```
+
+All in all, this analysis shows us that in our region, the expression and methylation levels are not correlated.

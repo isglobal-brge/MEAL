@@ -1,0 +1,26 @@
+Package: MEAL
+Title: Perform methylation analysis
+Version: 0.99.7
+Authors@R: c(person("Ruiz", "Carlos", , "cruiz@creal.cat", role =
+        c("aut", "cre")), person("Hern<c3><a1>ndez", "Carles", ,
+        "chernandez@creal.cat", role = "aut"), person("Gonzalez", "JR",
+        , "jrgonzalez@creal.cat", role = "aut"))
+Description: Package to integrate methylation and expression data. It
+        can also perform methylation or expression analysis alone.
+        Several plotting functionalities are included as well as a new
+        region analysis based on redundancy analysis. Effect of SNPs on
+        a region can also be estimated.
+Depends: R (>= 3.2.0), Biobase
+License: Artistic-2.0
+biocViews: DNAMethylation, Microarray, Software, WholeGenome
+LazyData: true
+Imports: GenomicRanges, SNPassoc, limma, DMRcate, snpStats, vegan,
+        BiocGenerics, minfi, IRanges, S4Vectors, methods, doParallel,
+        parallel, ggplot2, sva, scales
+Suggests: testthat, IlluminaHumanMethylation450kanno.ilmn12.hg19,
+        knitr, minfiData, MEALData, BiocStyle
+VignetteBuilder: knitr
+NeedsCompilation: no
+Author: Ruiz Carlos [aut, cre], Hern<c3><a1>ndez Carles [aut], Gonzalez
+        JR [aut]
+Maintainer: Ruiz Carlos <cruiz@creal.cat>

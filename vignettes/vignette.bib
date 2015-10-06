@@ -1,0 +1,113 @@
+@article{Aryee2014,
+abstract = {MOTIVATION: The recently released Infinium HumanMethylation450 array (the '450k' array) provides a high-throughput assay to quantify DNA methylation (DNAm) at ∼450 000 loci across a range of genomic features. Although less comprehensive than high-throughput sequencing-based techniques, this product is more cost-effective and promises to be the most widely used DNAm high-throughput measurement technology over the next several years.
+
+RESULTS: Here we describe a suite of computational tools that incorporate state-of-the-art statistical techniques for the analysis of DNAm data. The software is structured to easily adapt to future versions of the technology. We include methods for preprocessing, quality assessment and detection of differentially methylated regions from the kilobase to the megabase scale. We show how our software provides a powerful and flexible development platform for future methods. We also illustrate how our methods empower the technology to make discoveries previously thought to be possible only with sequencing-based methods.
+
+AVAILABILITY AND IMPLEMENTATION: http://bioconductor.org/packages/release/bioc/html/minfi.html.
+
+CONTACT: khansen@jhsph.edu; rafa@jimmy.harvard.edu
+
+SUPPLEMENTARY INFORMATION: Supplementary data are available at Bioinformatics online.},
+author = {Aryee, Martin J and Jaffe, Andrew E and Corrada-Bravo, Hector and Ladd-Acosta, Christine and Feinberg, Andrew P and Hansen, Kasper D and Irizarry, Rafael A},
+doi = {10.1093/bioinformatics/btu049},
+issn = {1367-4811},
+journal = {Bioinformatics (Oxford, England)},
+keywords = {Aged,Algorithms,Colonic Neoplasms,Colonic Neoplasms: genetics,DNA Methylation,Genome,High-Throughput Nucleotide Sequencing,High-Throughput Nucleotide Sequencing: methods,Humans,Oligonucleotide Array Sequence Analysis,Oligonucleotide Array Sequence Analysis: methods,Polymorphism, Single Nucleotide,Software},
+month = may,
+number = {10},
+pages = {1363--9},
+pmid = {24478339},
+title = {{Minfi: a flexible and comprehensive Bioconductor package for the analysis of Infinium DNA methylation microarrays.}},
+url = {http://bioinformatics.oxfordjournals.org/content/30/10/1363},
+volume = {30},
+year = {2014}
+}
+@article{Du2008,
+abstract = {UNLABELLED: Illumina microarray is becoming a popular microarray platform. The BeadArray technology from Illumina makes its preprocessing and quality control different from other microarray technologies. Unfortunately, most other analyses have not taken advantage of the unique properties of the BeadArray system, and have just incorporated preprocessing methods originally designed for Affymetrix microarrays. lumi is a Bioconductor package especially designed to process the Illumina microarray data. It includes data input, quality control, variance stabilization, normalization and gene annotation portions. In specific, the lumi package includes a variance-stabilizing transformation (VST) algorithm that takes advantage of the technical replicates available on every Illumina microarray. Different normalization method options and multiple quality control plots are provided in the package. To better annotate the Illumina data, a vendor independent nucleotide universal identifier (nuID) was devised to identify the probes of Illumina microarray. The nuID annotation packages and output of lumi processed results can be easily integrated with other Bioconductor packages to construct a statistical data analysis pipeline for Illumina data.
+
+AVAILABILITY: The lumi Bioconductor package, www.bioconductor.org},
+author = {Du, Pan and Kibbe, Warren A and Lin, Simon M},
+doi = {10.1093/bioinformatics/btn224},
+issn = {1367-4811},
+journal = {Bioinformatics (Oxford, England)},
+keywords = {Algorithms,Database Management Systems,Databases, Genetic,Gene Expression Profiling,Gene Expression Profiling: instrumentation,Gene Expression Profiling: methods,Information Storage and Retrieval,Information Storage and Retrieval: methods,Oligonucleotide Array Sequence Analysis,Oligonucleotide Array Sequence Analysis: instrumen,Oligonucleotide Array Sequence Analysis: methods,Software,Systems Integration},
+month = jul,
+number = {13},
+pages = {1547--8},
+pmid = {18467348},
+title = {{lumi: a pipeline for processing Illumina microarray.}},
+url = {http://www.ncbi.nlm.nih.gov/pubmed/18467348},
+volume = {24},
+year = {2008}
+}
+@article{Du2010,
+abstract = {BACKGROUND: High-throughput profiling of DNA methylation status of CpG islands is crucial to understand the epigenetic regulation of genes. The microarray-based Infinium methylation assay by Illumina is one platform for low-cost high-throughput methylation profiling. Both Beta-value and M-value statistics have been used as metrics to measure methylation levels. However, there are no detailed studies of their relations and their strengths and limitations.
+
+RESULTS: We demonstrate that the relationship between the Beta-value and M-value methods is a Logit transformation, and show that the Beta-value method has severe heteroscedasticity for highly methylated or unmethylated CpG sites. In order to evaluate the performance of the Beta-value and M-value methods for identifying differentially methylated CpG sites, we designed a methylation titration experiment. The evaluation results show that the M-value method provides much better performance in terms of Detection Rate (DR) and True Positive Rate (TPR) for both highly methylated and unmethylated CpG sites. Imposing a minimum threshold of difference can improve the performance of the M-value method but not the Beta-value method. We also provide guidance for how to select the threshold of methylation differences.
+
+CONCLUSIONS: The Beta-value has a more intuitive biological interpretation, but the M-value is more statistically valid for the differential analysis of methylation levels. Therefore, we recommend using the M-value method for conducting differential methylation analysis and including the Beta-value statistics when reporting the results to investigators.},
+author = {Du, Pan and Zhang, Xiao and Huang, Chiang-Ching and Jafari, Nadereh and Kibbe, Warren A and Hou, Lifang and Lin, Simon M},
+doi = {10.1186/1471-2105-11-587},
+file = {:C$\backslash$:/Users/Carlo/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Du et al. - 2010 - Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis.pdf:pdf},
+issn = {1471-2105},
+journal = {BMC bioinformatics},
+keywords = {CpG Islands,DNA Methylation,Data Interpretation, Statistical,Microarray Analysis,Microarray Analysis: methods},
+month = jan,
+pages = {587},
+pmid = {21118553},
+title = {{Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis.}},
+url = {http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3012676\&tool=pmcentrez\&rendertype=abstract},
+volume = {11},
+year = {2010}
+}
+@article{Fortin2014,
+abstract = {We propose an extension to quantile normalization that removes unwanted technical variation using control probes. We adapt our algorithm, functional normalization, to the Illumina 450k methylation array and address the open problem of normalizing methylation data with global epigenetic changes, such as human cancers. Using data sets from The Cancer Genome Atlas and a large case-control study, we show that our algorithm outperforms all existing normalization methods with respect to replication of results between experiments, and yields robust results even in the presence of batch effects. Functional normalization can be applied to any microarray platform, provided suitable control probes are available.},
+author = {Fortin, Jean-Philippe and Labbe, Aur\'{e}lie and Lemire, Mathieu and Zanke, Brent W and Hudson, Thomas J and Fertig, Elana J and Greenwood, Celia and Hansen, Kasper D},
+doi = {10.1186/s13059-014-0503-2},
+file = {:C$\backslash$:/Users/Carlo/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Fortin et al. - 2014 - Functional normalization of 450k methylation array data improves replication in large cancer studies.pdf:pdf},
+issn = {1465-6906},
+journal = {Genome Biology},
+number = {11},
+pages = {503},
+title = {{Functional normalization of 450k methylation array data improves replication in large cancer studies}},
+url = {http://genomebiology.com/2014/15/11/503},
+volume = {15},
+year = {2014}
+}
+@article{Jaffe2012,
+abstract = {BACKGROUND: During the past 5 years, high-throughput technologies have been successfully used by epidemiology studies, but almost all have focused on sequence variation through genome-wide association studies (GWAS). Today, the study of other genomic events is becoming more common in large-scale epidemiological studies. Many of these, unlike the single-nucleotide polymorphism studied in GWAS, are continuous measures. In this context, the exercise of searching for regions of interest for disease is akin to the problems described in the statistical 'bump hunting' literature.
+
+METHODS: New statistical challenges arise when the measurements are continuous rather than categorical, when they are measured with uncertainty, and when both biological signal, and measurement errors are characterized by spatial correlation along the genome. Perhaps the most challenging complication is that continuous genomic data from large studies are measured throughout long periods, making them susceptible to 'batch effects'. An example that combines all three characteristics is genome-wide DNA methylation measurements. Here, we present a data analysis pipeline that effectively models measurement error, removes batch effects, detects regions of interest and attaches statistical uncertainty to identified regions.
+
+RESULTS: We illustrate the usefulness of our approach by detecting genomic regions of DNA methylation associated with a continuous trait in a well-characterized population of newborns. Additionally, we show that addressing unexplained heterogeneity like batch effects reduces the number of false-positive regions.
+
+CONCLUSIONS: Our framework offers a comprehensive yet flexible approach for identifying genomic regions of biological interest in large epidemiological studies using quantitative high-throughput methods.},
+author = {Jaffe, Andrew E and Murakami, Peter and Lee, Hwajin and Leek, Jeffrey T and Fallin, M Daniele and Feinberg, Andrew P and Irizarry, Rafael A},
+doi = {10.1093/ije/dyr238},
+file = {:C$\backslash$:/Users/Carlo/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Jaffe et al. - 2012 - Bump hunting to identify differentially methylated regions in epigenetic epidemiology studies.pdf:pdf},
+issn = {1464-3685},
+journal = {International journal of epidemiology},
+keywords = {DNA Methylation,DNA Methylation: genetics,Epigenesis, Genetic,Genome-Wide Association Study,Genome-Wide Association Study: methods,Humans,Models, Statistical},
+month = feb,
+number = {1},
+pages = {200--9},
+pmid = {22422453},
+title = {{Bump hunting to identify differentially methylated regions in epigenetic epidemiology studies.}},
+url = {http://ije.oxfordjournals.org.sare.upf.edu/content/41/1/200.abstract?ijkey=4c57d302c5abddde4a9156a729dd9f514a7223c7\&keytype2=tf\_ipsecsha},
+volume = {41},
+year = {2012}
+}
+@article{Peters2015,
+abstract = {BACKGROUND:The identification and characterisation of differentially methylated regions (DMRs) between phenotypes in the human genome is of prime interest in epigenetics. We present a novel method, DMRcate, that fits replicated methylation measurements from the Illumina HM450K BeadChip (or 450K array) spatially across the genome using a Gaussian kernel. DMRcate identifies and ranks the most differentially methylated regions across the genome based on tunable kernel smoothing of the differential methylation (DM) signal. The method is agnostic to both genomic annotation and local change in the direction of the DM signal, removes the bias incurred from irregularly spaced methylation sites, and assigns significance to each DMR called via comparison to a null model.RESULTS:We show that, for both simulated and real data, the predictive performance of DMRcate is superior to those of Bumphunter and Probe Lasso, and commensurate with that of comb-p. For the real data, we validate all array-derived DMRs from the candidate methods on a suite of DMRs derived from whole-genome bisulfite sequencing called from the same DNA samples, using two separate phenotype comparisons.CONCLUSIONS:The agglomeration of genomically localised individual methylation sites into discrete DMRs is currently best served by a combination of DM-signal smoothing and subsequent threshold specification. The findings also suggest the design of the 450K array shows preference for CpG sites that are more likely to be differentially methylated, but its overall coverage does not adequately reflect the depth and complexity of methylation signatures afforded by sequencing. For the convenience of the research community we have created a user-friendly R software package called DMRcate, downloadable from Bioconductor and compatible with existing preprocessing packages, which allows others to apply the same DMR-finding method on 450K array data.},
+author = {Peters, Timothy and Buckley, Michael and Statham, Aaron and Pidsley, Ruth and Samaras, Katherine and Lord, Reginald and Clark, Susan and Molloy, Peter},
+doi = {10.1186/1756-8935-8-6},
+file = {:C$\backslash$:/Users/Carlo/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Peters et al. - 2015 - De novo identification of differentially methylated regions in the human genome.pdf:pdf},
+issn = {1756-8935},
+journal = {Epigenetics \& Chromatin},
+number = {1},
+pages = {6},
+title = {{De novo identification of differentially methylated regions in the human genome}},
+url = {http://www.epigeneticsandchromatin.com/content/8/1/6},
+volume = {8},
+year = {2015}
+}
