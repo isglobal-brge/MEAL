@@ -8,9 +8,9 @@ range <- GenomicRanges::GRanges(seqnames=Rle("chrY"),
 set <- prepareMethylationSet(MsetEx[1:100, ], pData(MsetEx))
 methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 
-eset <- ExpressionSet(matrix(runif(6, max = 15), 3))
-annot <- data.frame(chromosome = rep("chrY", 3), start = c(10000, 4500000, 5000000), 
-                    end = c(100090, 6000000, 90000000))
+eset <- ExpressionSet(matrix(runif(6, max = 15), 4))
+annot <- data.frame(chromosome = c(rep("chrY", 3), "chr1" ), start = c(10000, 4500000, 5000000, 10000), 
+                    end = c(100090, 6000000, 90000000, 100090))
 fData(eset) <- annot
 
 test_that("Set filtering", {

@@ -47,8 +47,8 @@ filterSet <- function(set, range){
     positions <- fData(set)[ , c("chromosome", "start", "end")]
     positions <- positions[apply(!is.na(positions), 1, all), ]
     mask <- as.vector(positions[ , 1] == as.character(S4Vectors::runValue(GenomicRanges::seqnames(range)))) & 
-      (positions[ , 2] <= start(range) & positions[ , 3] >= start(range)) | 
-      (positions[ , 2] >= start(range) & positions[ , 3] <= end(range))
+      ((positions[ , 2] <= start(range) & positions[ , 3] >= start(range)) | 
+      (positions[ , 2] >= start(range) & positions[ , 3] <= end(range)))
   }
 
   set <- set[mask, ]
