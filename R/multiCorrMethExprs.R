@@ -60,11 +60,19 @@ multiCorrMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
   if (!nrow(eset)){
     stop("There are no expression probes in the specified range")
   }  
-  
-  methres <- setResidues(mset, vars_names = vars_meth, vars_types = vars_meth_types)
-  methres <- t(data.matrix(methres))
-  
   exprsres <- setResidues(eset, vars_names = vars_exprs, vars_types = vars_exprs_types)
   exprsres <- t(data.matrix(exprsres))
-  return(vegan::rda(exprsres, methres))
+  
+  methres <- setResidues(mset, vars_names = vars_meth, vars_types = vars_meth_types)
+  methres <- t(data.matrix(minfi::logit2(methres)))
+  
+  ## Given that methylation data will have more probes than samples in expression set, we reduce its dimensionality
+  pca <- prcomp(methres)
+  methpc <- pca$x[, which(pca$sdev > mean(pca$sdev)), drop = FALSE]
+  
+  rd <- vegan::rda(exprsres, methpc)
+  
+  ## The biplot is computed using the correlation with the original variables
+  rd$CCA$biplot <- cor(methres, rd$CCA$u)
+  return(rd)
 }
