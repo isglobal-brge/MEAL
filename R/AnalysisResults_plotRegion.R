@@ -25,10 +25,11 @@ setMethod(
     }
     
     results <- data.frame(beta = results[ , 2], positions = results[ , 8], P.Value = results[ , 5])
-    p <- ggplot2::ggplot(results, ggplot2::aes_string(x = "positions", y = "beta", color = "P.Value" < 0.05)) +
-      ggplot2::geom_point(alpha = 1/2) + ggplot2::geom_line(ggplot2::aes(y = 0.05, color = "green")) +
-      ggplot2::geom_line(ggplot2::aes(y = -0.05, color = "green")) +
-      ggplot2::theme(legend.position = "none") +
+    results$color <- as.factor(ifelse(results$P.Value > 0.05, "non", "sig"))
+    p <- ggplot2::ggplot(results, ggplot2::aes_string(x = "positions", y = "beta", colour = "color")) +
+      ggplot2::geom_point() + ggplot2::geom_line(ggplot2::aes(y = 0.05), colour = "blue") +
+      ggplot2::geom_line(ggplot2::aes(y = -0.05), colour = "blue") +
+      ggplot2::theme(legend.position = "none") + ggplot2::scale_fill_manual(values=c("red", "green")) +
       ggplot2::scale_y_continuous(expression(paste("Change in methylation (", Delta, "beta)")))
     print(p)
   }

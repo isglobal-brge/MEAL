@@ -105,6 +105,7 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
   res <- data.frame(pairs, t(data.frame(regvals)))
   colnames(res) <- c("cpg", "exprs", "Beta", "se", "P.Value")
   res$adj.P.Val <- p.adjust(res$P.Value, "BH")
+  res <- res[order(res$adj.P.Val), ]
   rownames(res) <- NULL
   res
 }
@@ -149,8 +150,12 @@ setResidues <- function(set, vars_names, vars_types){
         vals <- exprs(set)
       } else{
         vals <- betas(set)
+        vals <- minfi::logit2(vals)
       }
       res <- residuals(limma::lmFit(vals, model), vals)
+      if (is(set, "MethylationSet")){
+        res <- minfi::ilogit2(res)
+      }
       return(res)
     }
   }

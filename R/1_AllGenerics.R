@@ -437,6 +437,31 @@ setGeneric("snpsVar", function(object){
   standardGeneric("snpsVar")
 })
 
+#' Get the top features associated with the RDA
+#' 
+#' Get a list of the features significantly associated to the first two RDA components
+#' 
+#' @name topRDAhits
+#' @rdname topRDAhits-methods
+#' @aliases topRDAhits
+#' @export
+#' 
+#' @param object \code{AnalysisRegionResults} 
+#' @param pval numeric with the p-value threshold. Only features with a p-values below this threshold will be shown. 
+#' @return data.frame with the features, the component, the correlation and the p-value
+#' @examples
+#' if (require(minfiData) & require(GenomicRanges)){
+#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = pData(MsetEx))
+#' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
+#' ranges = IRanges(3000000, end=12300000))
+#' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
+#' topRDAhits(rangeNoSNPs)
+#' }
+setGeneric("topRDAhits", function(object, pval = 0.05){
+  standardGeneric("topRDAhits")
+})
+
+
 #' @export
 setGeneric("variableNames", function(object){
   standardGeneric("variableNames")

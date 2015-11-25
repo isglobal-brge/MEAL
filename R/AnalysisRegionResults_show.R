@@ -5,7 +5,7 @@ setMethod(
     callNextMethod()
     scat <- function(fmt, vals = character(), exdent = 2, ...) {
       vals <- ifelse(nzchar(vals), vals, "''")
-      lbls <- paste(S4Vectors:::selectSome(vals), collapse = " ")
+      lbls <- paste(selectSome(vals), collapse = " ")
       txt <- sprintf(fmt, length(vals), lbls)
       cat(strwrap(txt, exdent = exdent, ...), sep = "\n")
     }

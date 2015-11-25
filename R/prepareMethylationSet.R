@@ -154,6 +154,7 @@ prepareMethylationSet <- function(matrix, phenotypes,
   set <- checkSamples(set)
   set <- checkProbes(set)
   validObject(set)
+  gc()
   set
 }
 

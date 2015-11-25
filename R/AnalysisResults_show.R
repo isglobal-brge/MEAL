@@ -2,7 +2,6 @@ setMethod(
   f = "show",
   signature = "AnalysisResults",
   definition = function(object) {
-    selectSome <- S4Vectors:::selectSome
     scat <- function(fmt, vals = character(), exdent = 2, ...) {
       vals <- ifelse(nzchar(vals), vals, "''")
       lbls <- paste(selectSome(vals), collapse = " ")

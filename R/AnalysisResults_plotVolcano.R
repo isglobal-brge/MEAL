@@ -16,9 +16,9 @@ setMethod(
                           adj.p = results[ , 6], names = rownames(results))
     bonflevel <- -log10(0.05/nrow(results))
     if (object@originalclass == "ExpressionSet"){
-      results$col <- ifelse(results$logP < bonflevel & abs(results$beta) > 1, 1, 2)
+      results$col <- ifelse(results$logP > bonflevel & abs(results$beta) > 1, 1, 2)
     }      else{
-      results$col <- ifelse(results$logP < bonflevel & abs(results$beta) > 0.1, 1, 2)
+      results$col <- ifelse(results$logP > bonflevel & abs(results$beta) > 0.1, 1, 2)
     }
     
     p <- ggplot2::ggplot(results, ggplot2::aes_string(x = "beta", y = "logP", color = "col", label = "names")) +
@@ -32,12 +32,12 @@ setMethod(
       p <- p + ggplot2::scale_x_continuous("Log Fold Change") +
         ggplot2::geom_vline(x = 1, linetype = "dashed", col = 'red') +
         ggplot2::geom_vline(x = -1, linetype = "dashed", col = 'red') +
-        ggplot2::geom_text(ggplot2::aes(label = ifelse(adj.p < 0.05 & abs(beta) > 1, as.character(names),'')))
+        ggplot2::geom_text(ggplot2::aes(label = ifelse(col == 1, as.character(names),'')))
     }else{
       p <- p + ggplot2::scale_x_continuous("Change in methylation") +
         ggplot2::geom_vline(x = 0.1, linetype = "dashed", col = 'red') +
         ggplot2::geom_vline(x = -0.1, linetype = "dashed", col = 'red') +
-        ggplot2::geom_text(ggplot2::aes(label = ifelse(adj.p < 0.05 & abs(beta) > 0.1, as.character(names),'')))
+        ggplot2::geom_text(ggplot2::aes(label = ifelse(col == 1, as.character(names),'')))
     }
     print(p) 
   }

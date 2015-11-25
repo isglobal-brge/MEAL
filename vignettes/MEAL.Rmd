@@ -32,15 +32,15 @@ fn = local({
 # Introduction
 Illumina Infinium HumanMethylation 450K BeadChip assay has become a standard tool to analyse methylation in human samples. Developed in 2011, it has already been used in projects such as The Cancer Genome Atlas (TCGA). Their 450.000 probes provide a good overall image of the methylation state of the genome, being one of the reasons of its success.
 
-Given its complex design^[More information can be found at this [minfi tutorial](http://www.bioconductor.org/help/course-materials/2014/BioC2014/minfi_BioC2014.pdf)], many Bioconductor packages have been developed to assess normalization and pre-processing issues (e.g. `r Biocpkg("minfi")` [@Aryee2014] or `r Biocpkg("lumi")` [@Du2008]). In addition, these packages can perform detect differentially methylated probes (DMPs) and differentially methylated regions (DMRs). However, the interfaces are not very intuitive and several scripting steps are usually required.
+Given its complex design^[More information can be found at this [minfi tutorial](http://www.bioconductor.org/help/course-materials/2014/BioC2014/minfi_BioC2014.pdf)], many Bioconductor packages have been developed to assess normalization and pre-processing issues (e.g. `r Biocpkg("minfi")` [@Aryee2014] or `r Biocpkg("lumi")` [@Du2008]). In addition, these packages can detect differentially methylated probes (DMPs) and differentially methylated regions (DMRs). However, the interfaces are not very intuitive and several scripting steps are usually required.
 
-`r Rpackage("MEAL")` aims to facilitate the analysis of Illumina Methylation 450K chips. DMPs and DMRs detection algorithms are included, along with new plotting facilities. Besides, two wrapper functions allow performing whole methylome analysis or range analysis. Two additional features are adjustment of models for SNPs and tools to manage genomic-like variables.  
+`r Rpackage("MEAL")` aims to facilitate the analysis of Illumina Methylation 450K chips. DMPs and DMRs detection algorithms are included, along with new plotting facilities. Besides, two wrapper functions allow performing whole methylome analysis or region analysis. Two additional features are adjustment of models for SNPs and tools to manage genomic-like variables.  
 
 ## Data types
 
 `r Rpackage("MEAL")` implements three new classes: `MethylationSet`, `AnalysisResults` and `AnalysisRegionResults`. `MethylationSet` is a class derived from Bioconductor `eSet`. All the information of the experiment is contained in this class: a beta values matrix, phenotypic information and annotation.
 
-`AnalysisResults` and `AnalysisRegionResults` contain the results of whole methylome analysis and region analysis respectively. Plotting functions are applied on these classes. 
+`AnalysisResults` and `AnalysisRegionResults` contain the results of whole methylome analysis and region analysis respectively as well as the raw data of the most significant features. With this design, the analyses and the reporting are split. Given that all the plots and the results can be obtained from these objects, we can do the analyses, store the objects and then do the report. 
 
 ## Example data
 
@@ -54,7 +54,7 @@ library(GenomicRanges)
 
 # Read data
 
-`r Rpackage("MEAL")` doesn't contain preprocessing capabilities so these steps should be done previously. As a result, before analysing `MsetEx`, probes that does not measure CpGs should be previously filtered. The next code uses a `r Biocpkg("minfi")` function to remove not CpGs probes.
+`r Rpackage("MEAL")` does not contain preprocessing capabilities so these steps should be done previously. As a result, before analysing `MsetEx`, probes that does not measure CpGs should be previously filtered. The next code uses a `r Biocpkg("minfi")` function to remove not CpGs probes.
 
 ```{r}
 MsetExFilt <- dropMethylationLoci(MsetEx)
@@ -77,7 +77,7 @@ set <- prepareMethylationSet(matrix = betas, phenotypes = phenotypes,
 set
 ```
 
-`prepareMethylationSet` is the main entry point to use the package and it is worth describing its arguments and functionalities. The first two arguments (matrix and phenotypes) are the matrix of beta values and the data.frame of phenotypes. It should be noticed that an `AnnotatedDataFrame` can be used as phenotypes (during the construction of the object, phenotypes data.frame is coerced to an `AnnotatedDataFrame`). In any case, beta values matrix contains **cpgs at rows and samples at columns** and both must be named. The same applies to phenotypes data.frame but rows must contain samples and columns variables.
+`prepareMethylationSet` is the main entry point to use the package and it is worth describing its arguments and functionalities. The first two arguments (matrix and phenotypes) are the matrix of beta values and the data.frame of phenotypes. It should be noticed that an `AnnotatedDataFrame` can be used as phenotypes (during the construction of the object, phenotypes data.frame is coerced to an `AnnotatedDataFrame`). In any case, beta values matrix contains **CpGs at rows and samples at columns** and both must be named. The same applies to phenotypes data.frame but **rows must contain samples and columns variables**.
 
 annotation can be a character or a data.frame (or an `AnnotatedDataFrame`). If character, it loads an annotation package and uses it in the object. At the moment, only `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` is supported. The following parameters (chromosome, position, genes and group) allow the specification of a custom annotation. If annotation is a data.frame, these parameters should match column names of the annotation data.frame. Chromosome equals to chromosome name (e.g. chr1) and position to position coordinates. Genes and group are optional and equal to the genes near the probe and to the position of the probe in relation to the gene. Default argument values match names in `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` annotation package. Finally, if annotation is not specified, `r Biocannopkg("IlluminaHumanMethylation450kanno.ilmn12.hg19")` package is used. 
 
@@ -86,6 +86,8 @@ annotation can be a character or a data.frame (or an `AnnotatedDataFrame`). If c
 `minfi` objects can be directly used in `prepareMethylationSet`. If the object contains phenotypes, there is no need to supply it. Otherwise, it will be compulsory.
 
 # Probe analysis
+
+This section (probe analysis) and the following (region analysis) describe the two main parts of the workflow. Despite they can be run as independent functions, it is recommended to use the general function `DAPipeline`, which is explained below. `DAPipeline` performs both analyses and it is designed in a more user-friendly way. 
 
 The initial approach when studying methylation was to find differentially methylated probes. The analysis chosen was to fit a linear model for each of the probes, taking into account the variable of interest as well as some covariates. Probes were usually sorted by statistical parameters such as coefficients p-value. 
 
@@ -134,9 +136,9 @@ Finally, it should be said that blockFinder method has been adapted from `r Bioc
 
 The first approach when studying methylation changes is to get an overall picture of the methylation state throughout the genome. This kind of analysis is performed by the function `DAPipeline`. The first analysis will be to evaluate the effect of cancer in methylation. Given that this variable is a character, it should be converted to factor using variable_types:
 
-```{r Pipeline,  warning=FALSE, message=FALSE}
+```{r Pipeline,  warning=FALSE}
 res <- DAPipeline(set = set, variable_names = "status", variable_types = "categorical", 
-                      probe_method = "ls", verbose = TRUE)
+                      probe_method = "ls", verbose = FALSE)
 res
 ```
 
@@ -146,15 +148,15 @@ On the other hand, there are four important parameters in this function: variabl
 
 When variables are defined in this way, the linear model created is additive: all the variables are summed. It is also possible to use a linear model containing interaction and other more complex features using the equation parameter:
 
-```{r Pipeline_Equation, warning = FALSE, message=FALSE}
+```{r Pipeline_Equation, warning = FALSE}
 complexres <- DAPipeline(set = set, variable_names = c("status", "sex"),
                              variable_types = c("categorical", "categorical"), 
-                             probe_method = "ls", num_var = 3, verbose = TRUE,
+                             probe_method = "ls", num_var = 3, verbose = FALSE,
                              equation = "~ status:sex + status + sex")
 complexres
 ```
 
-When using equation, number of active variables must be explicit. They will be selected from the left of the equation to the right. Model matrices are created using `model.matrix` function, so if we introduce interactions, they will be after the alone variables. In our example, status and sex both had two levels. Therefore, a dummy variable is created for each of the samples and the interaction is the third column. Consequently, num\_var must be 3.
+When using equation, number of active variables must be explicit. They will be selected from the left of the equation to the right. Model matrices are created using `model.matrix` function, so if we introduce interactions, they will be after the single variables. In our example, status and sex both had two levels. Therefore, a dummy variable is created for each of the samples and the interaction is the third column. Consequently, num\_var must be 3.
 
 In addition, it should be noticed that variables used in interactions must be included alone in the equation and must be present in the variable\_names arguments. Covariables can still be used by setting them in covariable\_names, being added to the linear model. 
 
@@ -186,18 +188,18 @@ This function creates csv files with all the results. If more than one variable 
 
 ## Plotting
 
-`AnalysisResults` incorporates many plotting facilities. `plotFeature` plots the beta values distribution of a cpg. `plotFeature` accepts a number with the cpg index or character with the name of a cpg. 
+`AnalysisResults` incorporates many plotting facilities. `plotFeature` plots the beta values distribution of a CpG. `plotFeature` accepts a number with the CpG index or character with the name of a CpG. 
 
-```{r Plot_Features, fig.cap = fn("Beta values of cg25937714 splitted by cancer status")}
+```{r Plot_Features, fig.cap = fn("Beta values of cg25937714 split by cancer status")}
 plotFeature(res, 1)
 ```
 
-Probe results can be used to plot a QQ-plot and a Manhattan plot. In the second one, cpgs inside a range can be highlighted by passing a GenomicRanges object with the range of interest.
+Probe results can be used to plot a QQ-plot and a Manhattan plot. In the second one, CpGs inside a range can be highlighted by passing a GenomicRanges object with the range of interest.
 
-```{r QQplot, fig.cap = fn("QQplot of the analysis")}
+```{r QQplot, fig.cap = fn("QQplot of the analysis.")}
 plotQQ(res)
 ```
-```{r EWAS_plot, fig.cap = fn("Manhattan plot with the cpgs of the range highlighted")}
+```{r EWAS_plot, fig.cap = fn("Manhattan plot with the CpGs of the range highlighted")}
 range <- GRanges(seqnames = Rle("chr1"), 
                                 ranges = IRanges(1000000, end = 10000000))
 plotEWAS(res, range = range)
@@ -209,13 +211,13 @@ In figure 3, the red line of the Manhattan plot is the significance threshold us
 
 A study of a region can be performed with `DARegionAnalysis`. Options are very similar to that of `DAPipeline`. In this situation, status will be the active variable and age will be a covariable. A GenomicRange must be supplied in order to delimit the region. 
 
-```{r Range_Analysis, warning=FALSE, message=FALSE}
+```{r Range_Analysis, warning=FALSE}
 range <- GRanges(seqnames = Rle("chr12"), 
                                 ranges = IRanges(70000000, end = 80000000))
 region <- DARegionAnalysis(set = set, variable_names = "status", 
                                variable_types = "categorical", 
                                covariable_names = "age", range = range, 
-                               verbose = TRUE)
+                               verbose = FALSE)
 region
 ```
 
@@ -238,19 +240,23 @@ names(regionResults(region))
 
 Distribution of coefficients of the region can be plotted using the `plotRegion` function. .
 
-```{r Region_plot, fig.cap = fn("Plot of the differential methylation for each cpg of the region.")}
+```{r Region_plot, fig.cap = fn("Plot of the differential methylation for each CpG of the region.")}
 plotRegion(region)
 ```
 
-In figure 4, green points are probes with a p-value smaller than 0.05 while red points are probes with a p-value greater than 0.05. Green lines are set at 0.05, a minimal difference to be considered significant.
+In figure 4, green points are significant probes (p-value smaller than 0.05) while red points are non significant probes (p-value greater than 0.05). Blue lines are set at 0.05, a minimal difference to be considered differentially methylated.
 
-Besides probe and region analysis using only range's probes, a redundancy analysis (RDA) is performed. RDA analysis measures the relation of the variables with the ensemble of cpgs. RDA results are printed whit the object, but a plot with the results can also be done with `plotRDA`.
+## Redundancy analysis
+
+To evaluate the correlation of the methylation probes with the phenotype of interest, a redundancy analysis (RDA) is run. RDA is a multivariate analogue of linear regression. In our case, we will fit our matrix of methylation probes to a matrix of variables: $$ Y = A*X + \epsilon $$ where Y are the methylation values of the probes of our region, A the matrix used to fit X to Y and X the matrix with the variables to fit. We can transform this equation to: $$ Y = \hat{Y} + Y_r $$ where $\hat{Y}$ is the fitted matrix Y, or the part of Y that can be explained by X and $Y_r$ is the residual Y, or the part of Y that cannot be explained by X. The variance of the matrix Y can be split between $\hat{Y}$ and $Y_r$, and an R^2^ can be computed, representing the amount of variance of Y that is explained by X.
+
+In the print of the results, the R^2^ and the p-value from the RDA analysis are returned. A plot can be done with `plotRDA`:
 
 ```{r plot_RDA, fig.cap = fn("RDA plot of the region."), fig.height = 5, fig.width=8}
 plotRDA(region)
 ```
 
-In figure 5, points represent samples grouped by the active variables. Red crosses are the cpgs and cpg names are the cpgs most correlated to the RDA axes.
+In figure 5, points represent samples grouped by the active variables. Red crosses are the CpGs and CpG names are the CpGs most correlated to the RDA axes.
 
 # SNPs Data
 
