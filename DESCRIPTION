@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(person("Carlos", "Ruiz", , "cruiz@creal.cat", role = c("aut", "cre")),
   person("Carles", "Hernandez-Ferrer", , "chernandez@creal.cat", role = "aut"),
   person("Juan R.", "González", ,"jrgonzalez@creal.cat", role = "aut"))
@@ -29,8 +29,7 @@ Imports:
     doParallel,
     parallel,
     ggplot2,
-    sva,
-    scales
+    sva
 Suggests:
     testthat,
     IlluminaHumanMethylation450kanno.ilmn12.hg19,

@@ -43,12 +43,12 @@ setMethod(
     cbPalette <- c("#999999", "#000000", "#33FF33")
     bonflevel <- -log10(0.05/nrow(dmp))
     p <- ggplot2::ggplot(dmp, ggplot2::aes_string(x = "idx", y = "logP", color = "col")) + 
-      ggplot2::geom_point(fill = col) + 
+      ggplot2::geom_point(aes(fill = col)) + 
       ggplot2::scale_x_continuous("Chromosome", labels = unique(dmp$chr), 
                                   breaks = breaks, limits = c(1, max(dmp$idx))) +
       ggplot2::scale_y_continuous(expression(~~-log[10](italic(p)))) +
       ggplot2::theme(legend.position = "none",  axis.text.x  = ggplot2::element_text(angle = 45, size = 8)) + 
-      ggplot2::geom_hline(y = bonflevel, linetype = 1, col = 'red') +
+      ggplot2::geom_hline(yintercept = bonflevel, linetype = 1, col = 'red') +
       ggplot2::scale_colour_manual(values = cbPalette)
     print(p)
   }

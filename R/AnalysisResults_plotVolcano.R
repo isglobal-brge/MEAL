@@ -25,18 +25,18 @@ setMethod(
       ggplot2::geom_point() + 
       ggplot2::scale_y_continuous(expression(~~-log[10](italic(p)))) + 
       ggplot2::ggtitle("Volcano plot") +
-      ggplot2::geom_hline(y = bonflevel, linetype = "dashed", col = 'red') + 
+      ggplot2::geom_hline(yintercept = bonflevel, linetype = "dashed", col = 'red') + 
       ggplot2::theme(legend.position = "none") 
     
     if (object@originalclass == "ExpressionSet"){
       p <- p + ggplot2::scale_x_continuous("Log Fold Change") +
-        ggplot2::geom_vline(x = 1, linetype = "dashed", col = 'red') +
-        ggplot2::geom_vline(x = -1, linetype = "dashed", col = 'red') +
+        ggplot2::geom_vline(xintercept = 1, linetype = "dashed", col = 'red') +
+        ggplot2::geom_vline(xintercept = -1, linetype = "dashed", col = 'red') +
         ggplot2::geom_text(ggplot2::aes(label = ifelse(col == 1, as.character(names),'')))
     }else{
       p <- p + ggplot2::scale_x_continuous("Change in methylation") +
-        ggplot2::geom_vline(x = 0.1, linetype = "dashed", col = 'red') +
-        ggplot2::geom_vline(x = -0.1, linetype = "dashed", col = 'red') +
+        ggplot2::geom_vline(xintercept = 0.1, linetype = "dashed", col = 'red') +
+        ggplot2::geom_vline(xintercept = -0.1, linetype = "dashed", col = 'red') +
         ggplot2::geom_text(ggplot2::aes(label = ifelse(col == 1, as.character(names),'')))
     }
     print(p) 

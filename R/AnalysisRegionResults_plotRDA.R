@@ -52,7 +52,7 @@ setMethod(
          pch=3, cex=0.4)
   text(ans, display = "species", select = filter, cex=0.6)
   
-  points(ans, display = "wa", col = scales::alpha(as.numeric(phenofactor), 0.5), pch=19)
+  points(ans, display = "wa", col = ggplot2::alpha(as.numeric(phenofactor), 0.5), pch=19)
   
   if (!is.null(factor)){
     text(ans, display = "cn", col = "blue", label = factor)

@@ -26,17 +26,16 @@
 #' 
 #' @import BiocGenerics
 #' @import Biobase
-#' @import ggplot2
 #' @import methods
 #' @importFrom doParallel registerDoParallel
 #' @importFrom DMRcate dmrcate
 #' @importFrom GenomicRanges seqnames start end makeGRangesFromDataFrame findOverlaps subjectHits queryHits GRanges
+#' @importFrom ggplot2 aes aes_string alpha facet_grid geom_bar geom_errorbar geom_hline geom_line geom_point geom_polygon geom_smooth geom_text geom_vline ggplot ggtitle position_jitter scale_colour_manual scale_fill_manual scale_x_continuous scale_y_continuous theme
 #' @importFrom IRanges IRanges
 #' @importFrom limma lmFit contrasts.fit eBayes topTable 
 #' @importFrom minfi logit2 ilogit2 bumphunter GenomicRatioSet cpgCollapse blockFinder getBeta
 #' @importFrom parallel mclapply
 #' @importFrom S4Vectors Rle runValue
-#' @importFrom scales alpha
 #' @importFrom SNPassoc dominant recessive additive
 #' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom sva num.sv sva
