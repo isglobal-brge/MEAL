@@ -1,6 +1,6 @@
 ---
 title: "Introduction to MEAL"
-subtitle: "Carlos Ruiz, Juan R. González"
+subtitle: "Carlos Ruiz, Carles Hernández, Juan R. González"
 author: |
   | Center for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
   | Bioinformatics Research Group in Epidemiolgy             
