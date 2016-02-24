@@ -8,6 +8,7 @@
 #' @return \code{GenomicRanges}
 #' 
 #' @export createRanges
+#' @import S4Vectors IRanges GenomicRanges
 #' @examples
 #' dfranges <- data.frame(chr = c("chr1", "chr2", "chr1"), start = c(1290, 1250, 4758),
 #' end = c(64389, 632409, 16430), stringsAsFactors = FALSE)

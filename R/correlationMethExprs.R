@@ -120,8 +120,8 @@ pairsExprsMeth <- function(meth, exprs, flank){
   exprsGR <- GenomicRanges::makeGRangesFromDataFrame(exprs, seqnames.field = "chromosome",
                                                      ignore.strand = TRUE)
   pairs <- GenomicRanges::findOverlaps(exprsGR, methGR,  type = "within")
-  pairs <- data.frame(cpg = rownames(meth)[GenomicRanges::subjectHits(pairs)], 
-                      exprs = rownames(exprs)[GenomicRanges::queryHits(pairs)], 
+  pairs <- data.frame(cpg = rownames(meth)[S4Vectors::subjectHits(pairs)], 
+                      exprs = rownames(exprs)[S4Vectors::queryHits(pairs)], 
                       stringsAsFactors = FALSE)
   pairs
 }
