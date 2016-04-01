@@ -315,35 +315,6 @@ head(methExprs)
 
 The results shows the CpG name, the expression probe, the change of the relationship and se, and the p-value and adjusted p-value (using B&H). Results are ordered by the adjusted p-value, so we can than in our data there are no correlated CpGs-expression probes.
 
-## Methylation expression multivariate correlation
-
-The function `multiCorrMethExprs` performs a redundancy analysis (RDA) between the methylation and the expression values. The aim of this analysis is to evaluate, in a specific region, the proportion of variance of the expression probes that is explained by the methylation probes. In our example, we will use the inversion region:
-
-```{r Corr Meth Exp RDA}
-methExprsRDA <- multiCorrMethExprs(multiset = multi2, range = range)
-methExprsRDA
-```
-
-`multiCorrMethExprs` returns a RDA object from `vegan` package. In the following lines, some useful functions related to this object will be explained while a more deep explanation can be found in the `vegan` package documentation. 
-
-In the devel version of MEAL, we have included a function to plot the results of `multiCorrMethExprs`. `plotRDAMulti` only plots the probes most related to the components. In addition, it allows to plot the samples with different colors depending on a categorical variable:
-
-```{r RDAmetExpr2, fig.cap = fn("RDA plot of the relationship between expression and methylation. Samples are not grouped by the inversion haplotype."), fig.width=8, fig.height=5}
-plotRDAMulti(methExprsRDA, color = pData(multi2[["methylation"]])$inv)
-```
-
-In figure 12, blue arrows are top methylation probes, black labels top expression probes and points the samples. The R^2^ is the ammount of variance of the expression probes that is explained by the methylation probes. In the picture, we have only considered the first two RDA components. The p-value shows us if the samples can be grouped by the inversion haplotype. The big R^2^ means that the methylation can explain a big part of the variance of the expression. However, the big p-value indicates that the samples cannot by grouped by the inversion haplotypes. 
-
-Using some functions of `r CRANpkg("vegan")`, we can extract more information from the object. The following code returns the R^2^, i.e. the ammount of variance of the expression that is explained by the methylation, and its corresponding p-value. These values provides us quantitative information about the global relationship:
-
-```{r RDA pval}
-library(vegan)
-RsquareAdj(methExprsRDA)
-anova.cca(methExprsRDA)
-```
-
-The results suggest that the methylation and the expression are correlated in our region of interest. However, as we have previously seen, they are not correlated with the inversion haplotypes.
-
 # Conclusions
 
 This case example shows the main functionalities of `r Biocpkg("MEAL")` package. It has been shown how to evaluate the effect of a phenotype on the methylation and on the expression at genome wide and at region level. Finally, the integration between methylation and expression is tested. First, we have looked if there are expression probes correlated to the differentially methylated probes. Then, we have checked if methylation and expression are correlated between them and with the inversion haplotypes in the region of the inversions. The results suggests that the inversion can modify the methylation pattern but there is no effect onk the expression profile. 

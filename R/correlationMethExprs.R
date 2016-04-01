@@ -150,6 +150,7 @@ setResidues <- function(set, vars_names, vars_types){
         vals <- exprs(set)
       } else{
         vals <- betas(set)
+        ## Convert methylation to M values prior fitting the linear model
         vals <- minfi::logit2(vals)
       }
       res <- residuals(limma::lmFit(vals, model), vals)

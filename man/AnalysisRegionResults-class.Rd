@@ -5,17 +5,21 @@
 \alias{AnalysisRegionResults}
 \alias{AnalysisRegionResults-class}
 \alias{AnalysisRegionResults-methods}
+\alias{RDAPval,AnalysisRegionResults-method}
 \alias{analysisRegionResults}
 \alias{getRDA}
 \alias{getRDA,AnalysisRegionResults-method}
 \alias{getRange}
 \alias{getRange,AnalysisRegionResults-method}
+\alias{globalPval,AnalysisRegionResults-method}
+\alias{globalR2}
+\alias{globalR2,AnalysisRegionResults-method}
+\alias{globalpval}
 \alias{plotRDA,AnalysisRegionResults-method}
 \alias{plotRegionR2,AnalysisRegionResults-method}
 \alias{regionLM}
 \alias{regionLM,AnalysisRegionResults-method}
 \alias{regionPval}
-\alias{regionPval,AnalysisRegionResults-method}
 \alias{regionR2}
 \alias{regionR2,AnalysisRegionResults-method}
 \alias{snps}
@@ -29,15 +33,19 @@
 \usage{
 analysisRegionResults(analysisResults, set, range, snpspvals = data.frame(),
   regionlm = list(), relevantsnps = character(), snpsVar = as.numeric(NA),
-  equation = NULL)
+  equation = NULL, nperm = 1e+05)
 
 \S4method{getRange}{AnalysisRegionResults}(object)
 
 \S4method{getRDA}{AnalysisRegionResults}(object)
 
+\S4method{globalPval}{AnalysisRegionResults}(object)
+
+\S4method{globalR2}{AnalysisRegionResults}(object)
+
 \S4method{regionLM}{AnalysisRegionResults}(object)
 
-\S4method{regionPval}{AnalysisRegionResults}(object)
+\S4method{RDAPval}{AnalysisRegionResults}(object)
 
 \S4method{regionR2}{AnalysisRegionResults}(object)
 
@@ -71,6 +79,8 @@ used to adjust the linear model.}
 
 \item{equation}{Character containing the formula to be used to create the model.}
 
+\item{nperm}{Numeric with the number of permutations used to compute RDAs p-values.}
+
 \item{object}{\code{MethylationResults}}
 
 \item{n_feat}{Numeric with the number of features to be highlighted.}
@@ -96,9 +106,13 @@ AnalysisRegionResults instances
 
 \item \code{getRDA}: Get rda object.
 
+\item \code{globalPval}: Get global p-value.
+
+\item \code{globalR2}: Get global R2.
+
 \item \code{regionLM}: Get R2 values of cpgs vs variables.
 
-\item \code{regionPval}: Get p-value of lineal model R2.
+\item \code{RDAPval}: Get p-value of RDA.
 
 \item \code{regionR2}: Get R2 of the region vs variables lineal model
 
@@ -136,7 +150,12 @@ variable of interest and against significant SNPs for each cpg.}
 
 \item{\code{regionR2}}{Numeric with the R2 of the region calculated using a redundancy analysis.}
 
-\item{\code{regionPval}}{Numeric with the pval of the region's R2.}
+\item{\code{RDAPval}}{Numeric with the p-value of the RDA.}
+
+\item{\code{globalR2}}{Numeric with the global R2.}
+
+\item{\code{globalPval}}{Numeric with the probability of finding a region with the same number of probes with
+a bigger R^2.}
 }}
 \examples{
 showClass("AnalysisRegionResults")

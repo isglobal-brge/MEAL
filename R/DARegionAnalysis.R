@@ -41,6 +41,7 @@
 #' @param num_cores Numeric with the number of cores to be used.
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
 #' If FALSE nothing should be printed.
+#' @param nperm Numeric with the number of permutations used to compute RDA p-values.
 #' @param ... Further arguments passsed to \code{DAPipeline} function.
 #' @return \code{AnalysisRegionResult} object 
 #' @seealso \code{\link{preparePhenotype}}, \code{\link{DAPipeline}}
@@ -61,7 +62,7 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
                              sva = FALSE, use_snps = TRUE, snps_cutoff = 0.01, 
                              region_methods = c("blockFinder", "bumphunter", "DMRcate"),
                              shrinkVar = FALSE, probe_method = "robust", max_iterations = 100, 
-                             num_cores = 1, verbose = FALSE,  ...){
+                             num_cores = 1, verbose = FALSE, nperm = 1e3,  ...){
   snps <- FALSE
   
   if (!(is(set, "MethylationSet") | is(set, "ExpressionSet") | is(set, "MultiDataSet"))){
@@ -114,11 +115,6 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
     message("Filtering the set.")
   }
   
-  set <- filterSet(set, range)
-  if (!nrow(set)){
-    stop("There are no cpgs in the range specified.")
-  }  
-  
   additives <- FALSE
   allvar <- c(variable_types, covariable_types)
   if (length(allvar) != sum(is.na(allvar))){
@@ -135,6 +131,35 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
                                  variable_names = c(variable_names, covariable_names),
                                  variable_types = c(variable_types, covariable_types))
   
+  ### Create model first to adjust for SVA using the whole dataset
+  model <- createModel(data = pData(set), equation = equation, names = labels)
+  if (sva){
+    if (verbose){
+      message("Computing SVA")
+    }
+    if (is(set, "ExpressionSet")){
+      vals <- exprs(set)
+    }else{
+      vals <- betas(set)
+    }
+    if (nrow(vals) > 1){
+      if (length(covariable_names) == 0){
+        model0 <- model.matrix(~ 1, pData(set))
+      }else{
+        model0 <- model.matrix(~ ., pData(set)[ , covariable_names, drop = FALSE])
+      }
+      n.sv <- sva::num.sv(vals, model)
+      if (n.sv > 0){
+        svobj <- sva::sva(vals, model, model0, n.sv = n.sv)
+        pData(set) <- cbind(pData(set), svobj$sv)
+      }
+    }
+  }
+  
+  filt.set <- filterSet(set, range)
+  if (!nrow(filt.set)){
+    stop("There are no features in the range specified.")
+  }  
   if (snps){
     if (verbose){
       message("Filtering the SNPs.")
@@ -146,7 +171,7 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
         message("Obtaining SNPs P-values")
       }
       
-      snpspvals <- calculateRelevantSNPs(set, snps = snpSet, num_cores = num_cores)
+      snpspvals <- calculateRelevantSNPs(filt.set, snps = snpSet, num_cores = num_cores)
       relevantsnps <- rownames(snpspvals)[sapply(rownames(snpspvals),
                                                  function(x) any(snpspvals[x, ] < snps_cutoff))]
       snpsgeno <- snpCall(snpSet)
@@ -160,15 +185,15 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
       if (sum(snpspvals < snps_cutoff) == 0){
         regionLM <- list()
       }else{
-        regionLM <- lapply(rownames(set), function(x) 
-          explainedVariance(data = data.frame(as.vector(getMs(set[x, ])), 
-                                              pData(set)[ , variable_names],
+        regionLM <- lapply(rownames(filt.set), function(x) 
+          explainedVariance(data = data.frame(as.vector(getMs(filt.set[x, ])), 
+                                              pData(filt.set)[ , variable_names],
                                               t(snpsgeno[snpspvals[ , x ] < snps_cutoff, , drop = FALSE]),
-                                              pData(set)[ , covariable_names]), 
+                                              pData(filt.set)[ , covariable_names]), 
                             num_mainvar = length(variable_names),
                             num_covariates = length(covariable_names),
                             variable_label = variable_label))
-        names(regionLM) <- rownames(set)
+        names(regionLM) <- rownames(filt.set)
       }  
       #Prepare snps to be included in the phenotypes matrix
       snpsgeno <- snpsgeno[relevantsnps, , drop = FALSE]
@@ -184,21 +209,21 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
           snpsVar <- 1
         }
         colnames(snpsgeno) <- paste0("snp", colnames(snpsgeno))
-        pheno <- merge(pData(set), snpsgeno, by=0)
+        pheno <- merge(pData(filt.set), snpsgeno, by=0)
         rownames(pheno) <- pheno$Row.names
-        pheno <- pheno[colnames(betas(set)), ]
+        pheno <- pheno[colnames(betas(filt.set)), ]
         pheno <- pheno[ , -1]
-        pData(set) <- pheno
+        pData(filt.set) <- pheno
         covariable_names <- c(covariable_names, colnames(snpsgeno))
       } else {
         snpsVar <- as.numeric(NA)
       }
     }
   }
-  results <- DAPipeline(set, variable_names = variable_names, 
+  results <- DAPipeline(filt.set, variable_names = variable_names, 
                         covariable_names = covariable_names, 
-                        verbose = verbose, sva = sva, num_cores = num_cores, 
-                        num_feats = nrow(set), region_methods = region_methods, 
+                        verbose = verbose, num_cores = num_cores, 
+                        num_feat = nrow(filt.set), region_methods = region_methods, 
                         equation = equation, num_var = num_var, ...)
   if (additives){
     if (snps){
@@ -212,10 +237,10 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
     output <- analysisRegionResults(analysisResults = results, set = set, range = range,
                                     snpspvals = snpspvals, snpsVar = snpsVar, 
                                     regionlm = regionLM, relevantsnps = relevantsnps, 
-                                    equation = equation)
+                                    equation = equation, nperm = nperm)
   }else{
     output <- analysisRegionResults(analysisResults = results, set = set, range = range,
-                                    equation = equation)                           
+                                    equation = equation, nperm = nperm)                           
   }
   return(output)
 }

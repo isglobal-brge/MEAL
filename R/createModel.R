@@ -13,7 +13,7 @@
 # original names will be preserved. 
 #  
 # @param data Data.frame with variables.
-# @param equation Character string containing the formula to be used to create 
+# @param equation Character string containing the formula used to create 
 # the model.
 # @param names Character vector with the names of the columns of the model matrix. 
 # @return Model.matrix
@@ -32,6 +32,9 @@ createModel <- function(data, equation = NULL, names = NULL){
                          error = function(e) stop("Equation is an invalid formula."))
     model <- tryCatch(model.matrix(equation, data = data), 
                       error = function(e) stop("A model can't be created with this equation."))
+  }
+  if (nrow(data) != nrow(model)){
+    stop("There are NAs in the phenotypes data.frame.")
   }
   if (!is.null(names)){
     if (length(names) == 0){

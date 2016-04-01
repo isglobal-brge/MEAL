@@ -4,17 +4,20 @@ setMethod(
   f = "plotQQ", 
   signature = "AnalysisResults",
   definition = function(object, variable = modelVariables(object)[1]){
-  if (is(object, "AnalysisRegionResults")){
-    warning("QQplot is not recommended in range analyis.")
+    if (is(object, "AnalysisRegionResults")){
+      warning("QQplot is not recommended in range analyis.")
+    }
+    if (!is.character(variable)){
+      stop("variable must be a character vector.")
+    }
+    if (length(variable) != 1){
+      stop("variable must have one value.")
+    }  
+    if (!variable %in% modelVariables(object)){
+      stop("Variable is not present in phenodata.")
+    }
+    qqplotBand(probeResults(object, drop = FALSE)[[variable]]$P.Value, main = paste("QQplot of", variable, "analysis"))  
   }
-  if (length(variable) != 1){
-    stop("variable must have one value.")
-  }  
-  if (!variable %in% modelVariables(object)){
-    stop("Variable is not present in phenodata.")
-  }
-  qqplotBand(probeResults(object)[[variable]]$P.Value)  
-}
 ) 
 
 qqplotBand <- function(x, main = NULL, alpha = 0.1)
@@ -40,5 +43,5 @@ qqplotBand <- function(x, main = NULL, alpha = 0.1)
     ggplot2::ggtitle(main) + ggplot2::geom_smooth(ggplot2::aes_string(y = "e"), method = lm)
   
   print(p)
-
+  
 }

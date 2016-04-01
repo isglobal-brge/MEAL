@@ -6,7 +6,7 @@ setMethod(
  signature = "AnalysisRegionResults",
  definition =  function(object, n_feat = 5){
   if (n_feat > length(feats(object))){
-    warning("n_feat is greater than the total number of cpgs in the range.")
+    warning("n_feat is greater than the total number of features in the range.")
     n_feat <- length(feats(object))
   }
   if (n_feat < 1){
@@ -27,7 +27,13 @@ setMethod(
   }
   
   ans <- getRDA(object)
-  r2 <- round(vegan::RsquareAdj(ans)$r.squared,3)
+  r2 <- regionR2(object)
+  pval <- RDAPval(object)
+  if (pval < 1e-3){
+    pval <- format(signif(pval, 3), scientific = TRUE)
+  } else{
+    pval <- round(pval, 3)
+  }
   
   if (!is.null(factor)){
     ans$CCA$centroids <- t(data.matrix(data.frame(
@@ -48,8 +54,6 @@ setMethod(
   
   filter <- union(o1[1:n_feat], o2[1:n_feat])
     
-  points(ans, display="sp", select = !(1:nrow(temp) %in% filter), col="red",
-         pch=3, cex=0.4)
   text(ans, display = "species", select = filter, cex=0.6)
   
   points(ans, display = "wa", col = ggplot2::alpha(as.numeric(phenofactor), 0.5), pch=19)
@@ -58,8 +62,8 @@ setMethod(
     text(ans, display = "cn", col = "blue", label = factor)
   }
   
-  legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(r2))), levels(phenofactor)), 
-         col = c("white", 1:nlevels(phenofactor)), cex = 0.8, bty = "n", pch = 19) 
+  legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(round(r2, 3)))), paste("p-value:", pval), levels(phenofactor)), 
+         col = c("white", "white", 1:nlevels(phenofactor)), cex = 0.8, bty = "n", pch = 19) 
 }
 )
 

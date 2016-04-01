@@ -11,6 +11,9 @@ setMethod(
       warning("For a better visualization of the region, use plotRegion.")
       range <- NULL
     }
+    if (!is.character(variable)){
+      stop("variable must be a character vector.")
+    }
     if (length(variable) != 1){
       stop("variable must have one value.")
     }  
@@ -18,14 +21,20 @@ setMethod(
       stop("Variable is not present in the model.")
     }
     
-    dmp <- probeResults(object)[[variable]]
+    dmp <- probeResults(object, drop = FALSE)[[variable]]
     
-    dmp$CHR <- gsub("chr", "", dmp$chromosome)
+    dmp$CHR <- as.character(dmp$chromosome)
+    dmp$CHR <- vapply(strsplit(dmp$CHR, c("_", "|")), `[`, character(1), 1)
+    dmp$CHR <- gsub("chr", "", dmp$CHR)
     dmp$CHR[dmp$CHR %in% c("X","x")] <- 23
     dmp$CHR[dmp$CHR %in% c("Y","y")] <- 24
     dmp$CHR[dmp$CHR == "XY"] <- 25
-    dmp$CHR[dmp$CHR == "MT"] <- 26
+    dmp$CHR[dmp$CHR %in% c("MT", "M")] <- 26
     dmp$CHR <- as.numeric(dmp$CHR)
+    
+    ## Filter rows with wrong chromosome names
+    nas <- is.na(dmp$CHR)
+    dmp <- dmp[!nas, , drop = FALSE]
     if ("start" %in% colnames(dmp)){
       dmp$position <- dmp$start
     }
@@ -44,12 +53,12 @@ setMethod(
     bonflevel <- -log10(0.05/nrow(dmp))
     p <- ggplot2::ggplot(dmp, ggplot2::aes_string(x = "idx", y = "logP", color = "col")) + 
       ggplot2::geom_point(aes(fill = col)) + 
-      ggplot2::scale_x_continuous("Chromosome", labels = unique(dmp$chr), 
+      ggplot2::scale_x_continuous("Chromosome", labels = unique(dmp$CHR), 
                                   breaks = breaks, limits = c(1, max(dmp$idx))) +
       ggplot2::scale_y_continuous(expression(~~-log[10](italic(p)))) +
       ggplot2::theme(legend.position = "none",  axis.text.x  = ggplot2::element_text(angle = 45, size = 8)) + 
       ggplot2::geom_hline(yintercept = bonflevel, linetype = 1, col = 'red') +
-      ggplot2::scale_colour_manual(values = cbPalette)
+      ggplot2::scale_colour_manual(values = cbPalette) + ggplot2::ggtitle(paste("Manhattan plot of", variable, "results"))
     print(p)
   }
 )

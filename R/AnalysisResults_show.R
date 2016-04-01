@@ -31,7 +31,7 @@ setMethod(
     cate <- dmrCate(object)
     cat("Number of regions:", paste(sapply(cate, nrow), collapse = ", "), "\n")
     
-    probe <- probeResults(object)
+    probe <- probeResults(object, drop = FALSE)
     if (object@originalclass == "MethylationSet"){
       text <- "methylated"
     }else{

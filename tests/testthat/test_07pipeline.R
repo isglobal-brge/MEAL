@@ -15,11 +15,9 @@ pData(eset) <- data.frame(sex = c("H", "M", "H", "M"))
 test_that("One variable categorical, two levels", {
   results <- DAPipeline(set = set, variable_names = "sex", variable_types = "categorical")
   expect_match(class(results), "AnalysisResults")
-  expect_equal(names(probeResults(results)), "sex")  
   results <- DAPipeline(set = eset, variable_names = "sex", variable_types = "categorical",
                             verbose = TRUE)
   expect_match(class(results), "AnalysisResults")
-  expect_equal(names(probeResults(results)), "sex") 
   results <- DAPipeline(set = set, variable_names = "sex", variable_types = "categorical", sva = TRUE)
   expect_match(class(results), "AnalysisResults")
 })

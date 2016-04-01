@@ -15,7 +15,20 @@ setMethod(
     range <- getRange(object)
     cat("Range:\n\tChr: ", as.character(S4Vectors::runValue(GenomicRanges::seqnames(range))),"\tstart: ", 
         GenomicRanges::start(range),"\tend: ", GenomicRanges::end(range),"\n")
-    cat("Rsquared: ", regionR2(object),"\n")
-    cat("P-value: ", regionPval(object),"\n")
+    cat("R2: ", round(regionR2(object), 3), "\n")
+    pval <- RDAPval(object)
+    if (pval < 1e-3){
+      cat("R2 P-value: ", format(signif(pval, 3), scientific = TRUE),"\n")
+    }else{
+      cat("R2 P-value: ", signif(pval, 3), "\n")
+    }
+    globPval <- globalPval(object)
+    if (globPval < 1e-3){
+      cat("Region P-value: ", format(signif(globPval, 3), scientific = TRUE),"\n")
+    }else{
+      cat("Region P-value: ", signif(globPval, 3), "\n")
+    }
+    cat("Global R2: ", round(globalR2(object), 3), "\n")
+    
   }
 )

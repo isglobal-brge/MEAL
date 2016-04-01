@@ -24,12 +24,12 @@ plotFeature <- function(set, feat, variables = variableNames(set)[1]){
   if (is.numeric(feat)) {
     if (is(set, "AnalysisResults")){
       if (feat < 1 || feat > length(feats(set))){
-        stop("feat index must be greater than 0 and smaller than the number of cpgs.")
+        stop("feat index must be greater than 0 and smaller than the number of features.")
       }
       feat <- feats(set)[feat]
     }else if (is(set, "MethylationSet") || is(set, "ExpressionSet")){
       if (feat < 1 || feat > nrow(set)){
-        stop("feat index must be greater than 0 and smaller than the number of cpgs.")
+        stop("feat index must be greater than 0 and smaller than the number of features.")
       }
       feat<- rownames(set)[feat]
     }else{

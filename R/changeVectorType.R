@@ -8,7 +8,9 @@
 
 changeVectorType <- function(vector, type){
   if (is.na(type)){
-    vector <- vector
+    if (is.character(vector)){
+      vector <- as.factor(vector)
+    }
   }else if (type == "categorical"){
     vector <- as.factor(vector)
   }

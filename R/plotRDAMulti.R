@@ -23,11 +23,10 @@ plotRDAMulti <- function(object, color = "black"){
   
   eigrda <- object$CCA$eig
   eigpca <- object$CA$eig
-  r2 <- round(sum(eigrda[1:2])/sum(c(eigrda, eigpca)), 3)
-  
+
   exps <- object$CCA$v
   if (ncol(exps) == 1){
-    exp <- cbind(exps, object$CA$v[ , 1])
+    exps <- cbind(exps, object$CA$v[ , 1])
   }
   e1 <- order(abs(exps[,1]), decreasing=TRUE)
   e2 <- order(abs(exps[,2]), decreasing=TRUE)
@@ -53,12 +52,15 @@ plotRDAMulti <- function(object, color = "black"){
   
   text(object, display = "bp", select = m.filt, cex=0.6, col = "blue")
   
+  r2 <- round(object$R2, 3)
+  globalR2 <- round(object$globalR2, 3)
+  
+  legendtext <- c(as.expression(bquote(R^2 ~ "=" ~ .(r2))), paste("p.val:", object$pval), as.expression(bquote(Global ~ R^2 ~ ":" ~ .(globalR2))))
+  col <- rep("white", 3)
   if (is.factor(color)){
-    pval <- vegan::adonis(object$CCA$u[, 1:2] ~ color, method = "euclidean")$aov.tab$`Pr(>F)`
-    legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(r2))), levels(color), 
-                        as.expression(bquote(p.val ~ "=" ~ .(pval)))), 
-           col = c("white", 1:nlevels(color)), cex = 0.8, bty = "n", pch = 19)
-  } else{
-    legend("topleft", as.expression(bquote(R^2 ~ "=" ~ .(r2))), cex = 0.8, bty = "n", pch = 19) 
-  }
+    legendtext <- c(legendtext, levels(color))
+    col <- c(col, 1:nlevels(color))
+  } 
+  legend("topleft", legendtext, col = col, cex = 0.8, bty = "n", pch = 19) 
+  
 }

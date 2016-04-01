@@ -19,6 +19,26 @@ setMethod(
   }
 )
 
+#' @describeIn AnalysisRegionResults Get global p-value.
+#' @aliases AnalysisRegionResults-methods globalPval
+setMethod(
+  f = "globalPval",
+  signature = "AnalysisRegionResults",
+  definition = function(object) {
+    return(object@globalPval)
+  }
+)
+
+#' @describeIn AnalysisRegionResults Get global R2.
+#' @aliases AnalysisRegionResults-methods globalR2
+setMethod(
+  f = "globalR2",
+  signature = "AnalysisRegionResults",
+  definition = function(object) {
+    return(object@globalR2)
+  }
+)
+
 
 #' @describeIn AnalysisRegionResults Get R2 values of cpgs vs variables.
 #' @aliases AnalysisRegionResults-methods regionLM
@@ -30,13 +50,13 @@ setMethod(
   }
 )
 
-#' @describeIn AnalysisRegionResults Get p-value of lineal model R2. 
-#' @aliases AnalysisRegionResults-methods regionPval
+#' @describeIn AnalysisRegionResults Get p-value of RDA. 
+#' @aliases AnalysisRegionResults-methods RDAPval
 setMethod(
-  f = "regionPval",
+  f = "RDAPval",
   signature = "AnalysisRegionResults",
   definition = function(object) {
-    return(object@regionPval)
+    return(object@RDAPval)
   }
 )
 

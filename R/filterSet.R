@@ -40,6 +40,7 @@ filterSet <- function(set, range){
     positions <- positions[apply(!is.na(positions), 1, all), ]
     mask <- as.vector(positions[ , 1] == as.character(S4Vectors::runValue(GenomicRanges::seqnames(range)))) & 
       positions[ , 2] >= start(range) & positions[ , 2] <= end(range)
+    mask <- rownames(positions)[mask]
   }else{
     if (!all(c("chromosome", "start", "end") %in% fvarLabels(set))){
       stop("Expression needs to contain feature data with chromosome, start and end columns.")
@@ -49,11 +50,12 @@ filterSet <- function(set, range){
     mask <- as.vector(positions[ , 1] == as.character(S4Vectors::runValue(GenomicRanges::seqnames(range)))) & 
       ((positions[ , 2] <= start(range) & positions[ , 3] >= start(range)) | 
       (positions[ , 2] >= start(range) & positions[ , 3] <= end(range)))
+    mask <- rownames(positions)[mask]
   }
 
   set <- set[mask, ]
   
-  if (sum(mask) == 0){
+  if (length(mask) == 0){
     warning("There are no features in the range. An empty set will be returned.")
   }
   

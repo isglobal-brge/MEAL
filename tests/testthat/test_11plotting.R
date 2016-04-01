@@ -33,8 +33,8 @@ pData(eset) <- data.frame(sex = c("H", "M", "H", "M"))
 esetRes <- DAPipeline(eset, variable_names = "sex", probe_method = "ls")
 
 test_that("Plot CPGs",{
-  expect_error(plotFeature(methyOneVar, 12351413654), "feat index must be greater than 0 and smaller than the number of cpgs.")
-  expect_error(plotFeature(methyOneVar, -12), "feat index must be greater than 0 and smaller than the number of cpgs.")
+  expect_error(plotFeature(methyOneVar, 12351413654), "feat index must be greater than 0 and smaller than the number of features.")
+  expect_error(plotFeature(methyOneVar, -12), "feat index must be greater than 0 and smaller than the number of features.")
   expect_error(plotFeature(methyOneVar, 1, variables = character()), "variables must have one or two values.")
   expect_error(plotFeature(methyOneVar, 1, variables = "character"),"Not all variables are present in set phenodata.")
   expect_error(plotFeature(methyOneVar, 1, variables = c("age", "sex", "status")), "variables must have one or two values.")
@@ -70,7 +70,7 @@ test_that("QQPlot", {
 
 test_that("plotRDA", {
   expect_error(plotRDA(rangeNoSNPs, n_feat = -1), "n_feat must be greater than 1.")
-  expect_warning(plotRDA(rangeNoSNPs, n_feat = 9999), "n_feat is greater than the total number of cpgs in the range.")
+  expect_warning(plotRDA(rangeNoSNPs, n_feat = 9999), "n_feat is greater than the total number of features in the range.")
 })
 
 test_that("Plot Region", {

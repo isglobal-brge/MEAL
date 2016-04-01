@@ -73,7 +73,7 @@ analysisResults(set, model, regionResults, probeResults, num_feat = 50,
 
 \S4method{pData}{AnalysisResults,ANY}(object) <- value
 
-\S4method{probeResults}{AnalysisResults}(object)
+\S4method{probeResults}{AnalysisResults}(object, drop = TRUE)
 
 \S4method{regionResults}{AnalysisResults}(object)
 
@@ -94,7 +94,7 @@ analysisResults(set, model, regionResults, probeResults, num_feat = 50,
   variable = modelVariables(object)[[1]], range = NULL)
 
 \S4method{plotVolcano}{AnalysisResults}(object,
-  variable = modelVariables(object)[1])
+  variable = modelVariables(object)[1], mindiff = NULL)
 }
 \arguments{
 \item{set}{\code{MethylationSet} or \code{ExpressionSet} used to perform the analysis}
@@ -118,6 +118,8 @@ that should be considered as variables.}
 
 \item{value}{AnnotatedDataFrame or data.frame with the phenotype}
 
+\item{drop}{Logical. If TRUE, a data.frame is returned when the list of results contains one element,}
+
 \item{dir}{Character with the path to export.}
 
 \item{prefix}{Character with a prefix to be added to all file names.}
@@ -129,6 +131,8 @@ names should be that of the model.}
 Note: model name should be used. Original variable name might not be valid.}
 
 \item{range}{GenomicRange whose probes will be highlighted}
+
+\item{mindiff}{Numeric with the threshold to consider a difference in methylation or expression significant.}
 }
 \value{
 \code{AnalysisResults}

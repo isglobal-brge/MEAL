@@ -9,7 +9,7 @@ DAPipeline(set, variable_names, variable_types = rep(NA,
   covariable_types = rep(NA, length(covariable_names)), equation = NULL,
   num_var = NULL, labels = NULL, sva = FALSE,
   region_methods = c("bumphunter", "DMRcate"), shrinkVar = FALSE,
-  probe_method = "robust", max_iterations = 100, num_feat = 50,
+  probe_method = "ls", max_iterations = 100, num_feat = 50,
   num_cores = 1, verbose = FALSE, ...)
 }
 \arguments{

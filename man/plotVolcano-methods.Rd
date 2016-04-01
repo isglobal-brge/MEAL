@@ -4,13 +4,15 @@
 \alias{plotVolcano}
 \title{Make a Volcano plot with the probe results}
 \usage{
-plotVolcano(object, variable = modelVariables(object)[[1]])
+plotVolcano(object, variable = modelVariables(object)[1], mindiff = NULL)
 }
 \arguments{
 \item{object}{\code{MethylationResults} or \code{MethylationRegionResults}}
 
 \item{variable}{Character with the variable name used to obtain the probe results.
 Note: model name should be used. Original variable name might not be valid.}
+
+\item{mindiff}{Numeric with the minimum change in methylation or expression needed to be significant}
 }
 \value{
 A plot is generated on the current graphics device.

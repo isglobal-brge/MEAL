@@ -30,15 +30,12 @@ test_that("One variable categorical, two levels", {
   results <- DARegionAnalysis(set = set, variable_names = "sex", 
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
-  expect_equal(names(probeResults(results)), "sex")  
   results <- DARegionAnalysis(set = multiset, variable_names = "sex", 
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
-  expect_equal(names(probeResults(results)), "sex")  
   results <- DARegionAnalysis(set = eset, variable_names = "sex", 
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
-  expect_equal(names(probeResults(results)), "sex")
   results <- DARegionAnalysis(set = eset, variable_names = "sex", sva = TRUE,
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
@@ -85,5 +82,5 @@ test_that("Empty variables", {
                                      ranges = IRanges(30000, end=123000000))
   expect_error(DARegionAnalysis(set = set, variable_names = "sex", 
                                     variable_types = "categorical", range = outrange), 
-               "There are no cpgs in the range specified.")
+               "There are no features in the range specified.")
 })

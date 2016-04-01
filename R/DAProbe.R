@@ -94,20 +94,19 @@ DAProbe <- function(set, model, coefficient = 2, shrinkVar = FALSE, method = "ro
                         minfi::ilogit2(fit$coefficients[ , 1]), sd = (toptable[ , 1] - toptable[ , 2])/CI, 
                       toptable[ , 5:7])
   }
+  rownames(tab) <- rownames(M)
+  
   o <- order(tab$P.Value)
-  tab <- tab[o, ]
+  tab <- tab[o, , drop = FALSE]
   colnames(tab)[2] <- colnames(model)[coefficient]
   if (is(set, "MethylationSet")){
     positions <- fData(set)[ , c("chromosome", "position", "genes", "group")]
-    tab <- merge(tab, positions, by = 0)
-    rownames(tab) <- tab[ , 1]
-    tab <- tab[ , -1]
   } else if (is(set, "ExpressionSet")){
-    tab <- merge(tab, fData(set), by = 0)
-    rownames(tab) <- tab[ , 1]
-    tab <- tab[ , -1]
+    positions <- fData(set)
   }
-  tab <- tab[apply(!is.na(tab), 1, all),]
+  if (is(set, "MethylationSet") | is(set, "ExpressionSet")){
+    tab <- cbind(tab, positions[rownames(tab), , drop = FALSE])
+  }
   tab <- tab[order(tab$P.Value, na.last = TRUE),]
   tab
 }

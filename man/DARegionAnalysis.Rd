@@ -10,7 +10,8 @@ DARegionAnalysis(set, range, omicset = "methylation", variable_names,
   num_var = NULL, labels = NULL, sva = FALSE, use_snps = TRUE,
   snps_cutoff = 0.01, region_methods = c("blockFinder", "bumphunter",
   "DMRcate"), shrinkVar = FALSE, probe_method = "robust",
-  max_iterations = 100, num_cores = 1, verbose = FALSE, ...)
+  max_iterations = 100, num_cores = 1, verbose = FALSE, nperm = 1000,
+  ...)
 }
 \arguments{
 \item{set}{\code{MethylationSet}, \code{ExpressionSet} or \code{MultiDataSet}.}
@@ -63,6 +64,8 @@ regression.}
 
 \item{verbose}{Logical value. If TRUE, it writes out some messages indicating progress. 
 If FALSE nothing should be printed.}
+
+\item{nperm}{Numeric with the number of permutations used to compute RDA p-values.}
 
 \item{...}{Further arguments passsed to \code{DAPipeline} function.}
 }

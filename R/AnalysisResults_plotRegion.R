@@ -4,18 +4,21 @@ setMethod(
   f = "plotRegion",
   signature = "AnalysisResults",
   definition = function(object, variable = modelVariables(object)[[1]], range = NULL){
-    if (!"position" %in% colnames(probeResults(object)[[1]])){
+    if (!"position" %in% colnames(probeResults(object, drop = FALSE)[[1]])){
       stop("Results must have a column called position to perform this plot.")
     }
     if (length(variable) != 1){
       stop("variable must have one value.")
     }  
+    if (!is.character(variable)){
+      stop("variable must be a character vector.")
+    }
     if (!variable %in% modelVariables(object)){
       stop(paste("Variable is not present in modelVariables.\nValid variables are", 
                  paste(modelVariables(object), collapse = ", ")))
     }
     
-    results <- probeResults(object)[[variable]]
+    results <- probeResults(object, drop = FALSE)[[variable]]
     
     if (!is(object, "AnalysisRegionResults")){
       if (is.null(range)){
@@ -30,7 +33,8 @@ setMethod(
       ggplot2::geom_point() + ggplot2::geom_line(ggplot2::aes(y = 0.05), colour = "blue") +
       ggplot2::geom_line(ggplot2::aes(y = -0.05), colour = "blue") +
       ggplot2::theme(legend.position = "none") + ggplot2::scale_fill_manual(values=c("red", "green")) +
-      ggplot2::scale_y_continuous(expression(paste("Change in methylation (", Delta, "beta)")))
+      ggplot2::scale_y_continuous(expression(paste("Change in methylation (", Delta, "beta)"))) + 
+      ggplot2::ggtitle(paste("Region plot of", variable, "results"))
     print(p)
   }
 )

@@ -116,7 +116,10 @@ setClass (
 #' @slot regionLM List with the R2 of the linear model of beta values against our 
 #' variable of interest and against significant SNPs for each cpg.
 #' @slot regionR2 Numeric with the R2 of the region calculated using a redundancy analysis.
-#' @slot regionPval Numeric with the pval of the region's R2. 
+#' @slot RDAPval Numeric with the p-value of the RDA. 
+#' @slot globalR2 Numeric with the global R2.
+#' @slot globalPval Numeric with the probability of finding a region with the same number of probes with
+#' a bigger R2.
 setClass (
   Class = "AnalysisRegionResults",
   contains = "AnalysisResults",
@@ -128,6 +131,8 @@ setClass (
     rda = "list",
     regionLM = "list",
     regionR2 = "numeric",
-    regionPval = "numeric"   
+    RDAPval = "numeric",
+    globalR2 = "numeric",
+    globalPval = "numeric"
   )
 )

@@ -69,10 +69,10 @@ setMethod(
     if (!is(gene, "character")){
       stop("gene must be a character vector")
     }
-    if (!"genes" %in% colnames(probeResults(object)[[1]])){
+    if (!"genes" %in% colnames(probeResults(object, drop = FALSE)[[1]])){
       stop("Results must have a column called genes to extract the probes.")
     }
-    res <- lapply(probeResults(object), function(x){
+    res <- lapply(probeResults(object, drop = FALSE), function(x){
       genelist <- strsplit(x$genes, ";")
       mask <- vapply(genelist, function(y) gene %in% y, logical(length(gene)))
       if (length(gene) > 1){
@@ -167,12 +167,17 @@ setMethod(
 )
 
 #' @describeIn AnalysisResults Get per probe analysis results
+#' @param drop Logical. If TRUE, a data.frame is returned when the list of results contains one element, 
 #' @aliases AnalysisResults-methods probeResults 
 setMethod(
   f = "probeResults",
   signature = "AnalysisResults",
-  definition = function(object) {
-    return(object@results)
+  definition = function(object, drop = TRUE) {
+    res <- object@results
+    if (drop & length(res) == 1){
+      res <- res[[1]]
+    }
+    return(res)
   }
 )
 

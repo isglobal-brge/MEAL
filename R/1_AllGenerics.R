@@ -248,6 +248,17 @@ setGeneric("getRDA", function(object){
   standardGeneric("getRDA")
 })
 
+#' @export 
+setGeneric("globalPval", function(object){
+  standardGeneric("globalPval")
+})
+
+
+#' @export 
+setGeneric("globalR2", function(object){
+  standardGeneric("globalR2")
+})
+
 #' @export
 setGeneric("model", function(object){
   standardGeneric("model")
@@ -385,6 +396,7 @@ setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]]){
 #' @param object \code{MethylationResults} or \code{MethylationRegionResults} 
 #' @param variable Character with the variable name used to obtain the probe results.
 #' Note: model name should be used. Original variable name might not be valid.  
+#' @param mindiff Numeric with the minimum change in methylation or expression needed to be significant
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData)){
@@ -393,12 +405,12 @@ setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]]){
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotEWAS(methyOneVar)
 #' }
-setGeneric("plotVolcano", function(object, variable = modelVariables(object)[[1]]){
+setGeneric("plotVolcano", function(object, variable = modelVariables(object)[1], mindiff = NULL){
   standardGeneric("plotVolcano")
 })
 
 #' @export
-setGeneric("probeResults", function(object){
+setGeneric("probeResults", function(object, drop = TRUE){
   standardGeneric("probeResults")
 })
 
@@ -408,8 +420,8 @@ setGeneric("regionLM", function(object){
 })
 
 #' @export 
-setGeneric("regionPval", function(object){
-  standardGeneric("regionPval")
+setGeneric("RDAPval", function(object){
+  standardGeneric("RDAPval")
 })
 
 #' @export 

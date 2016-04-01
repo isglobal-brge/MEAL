@@ -1,14 +1,15 @@
-# Plot a vector of R2
-# 
-# Plot a vector of R2 where the first value is the main variable and the last one,
-# if named \emph{covariates} is treated as covariates.
-# 
-# @param Rsquares Numerical vector of R2
-# @param title Character with the plot title
-# @param cpg_name Name of the cpg. Only used in default title.
-# @param variable_name Character for the first column name
-# @param max_columns NUmerical with the maximum number of columns to be plotted.
-
+#' Plot a vector of R2
+#' 
+#' Plot a vector of R2 where the first value is the main variable and the last one,
+#' if named \emph{covariates} is treated as covariates.
+#' 
+#' @export plotLM
+#' 
+#' @param Rsquares Numerical vector of R2
+#' @param title Character with the plot title
+#' @param feat_name Name of the feature used in default title.
+#' @param variable_name Character for the first column name
+#' @param max_columns Numerical with the maximum number of columns to be plotted.
 plotLM <- function(Rsquares, title = paste("Variance Explained in", feat_name), feat_name = NULL,
                    variable_name = names(Rsquares)[1], max_columns = 6){
   names(Rsquares)[1] <- variable_name

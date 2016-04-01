@@ -52,10 +52,10 @@ test_that("ExpressionSet filtering, empty variables", {
 })
 
 test_that("Results filtering", {
-  filteredResults <- filterResults(probeResults(methyOneVar)[[1]], range)
+  filteredResults <- filterResults(probeResults(methyOneVar), range)
   expect_match(class(filteredResults), "data.frame")
   expect_equal(nrow(filteredResults), 32)
-  filteredResults <- filterResults(probeResults(methyOneVar)[[1]], range)
+  filteredResults <- filterResults(probeResults(methyOneVar), range)
   expect_match(class(filteredResults), "data.frame")
   expect_equal(nrow(filteredResults), 32)
 })
@@ -64,16 +64,16 @@ test_that("Results filtering, empty variables", {
   emptyRes <- data.frame()
   emptyrange <- GRanges()
   expect_error(filterResults(emptyRes, emptyrange), "results is empty")
-  expect_error(filterResults(probeResults(methyOneVar)[[1]], emptyrange), "range is empty")
+  expect_error(filterResults(probeResults(methyOneVar), emptyrange), "range is empty")
 })
 
 test_that("Results filtering, wrong variables", {
   outrange <- GenomicRanges::GRanges(seqnames=Rle("chrM"), 
                                      ranges = IRanges(30000, end=123000000))
-  expect_warning(filterResults(probeResults(methyOneVar)[[1]], outrange), "There are no cpgs in the range. An empty data.frame will be returned.")
+  expect_warning(filterResults(probeResults(methyOneVar), outrange), "There are no cpgs in the range. An empty data.frame will be returned.")
   outrange <- data.frame(chr = "chr1", start = 19051, end = 1251905)
-  expect_error(filterResults(probeResults(methyOneVar)[[1]], outrange), "range must be a GenomicRanges object.")
+  expect_error(filterResults(probeResults(methyOneVar), outrange), "range must be a GenomicRanges object.")
   outrange <- GenomicRanges::GRanges(seqnames=Rle(c("chr1", "chr2")), 
                                      ranges = IRanges(c(30000, 2149421), end=c(123000000, 234841418)))
-  expect_error(filterResults(probeResults(methyOneVar)[[1]], outrange), "range must be a GenomicRanges with only one range.")
+  expect_error(filterResults(probeResults(methyOneVar), outrange), "range must be a GenomicRanges with only one range.")
 })

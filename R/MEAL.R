@@ -36,6 +36,8 @@
 #' @importFrom limma lmFit contrasts.fit eBayes topTable 
 #' @importFrom minfi logit2 ilogit2 bumphunter GenomicRatioSet cpgCollapse blockFinder getBeta
 #' @importFrom parallel mclapply
+#' @importFrom permute how
+#' @importFrom S4Vectors Rle runValue
 #' @importFrom SNPassoc dominant recessive additive
 #' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom sva num.sv sva

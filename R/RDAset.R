@@ -30,23 +30,24 @@ RDAset <- function(set, equation = NULL){
     stop("set must contain variable names.")
   }
   
-  varmatrix <- pData(set)[ , variableNames(set), drop = FALSE]
-  if (is.null(equation)){
-    varmatrix <- model.matrix(~ ., data = varmatrix)
-  }else{
-    equation <- tryCatch(formula(equation), 
-                         error = function(e) stop("Equation is an invalid formula."))
-    varmatrix <- tryCatch(model.matrix(equation, data = varmatrix), 
-                      error = function(e) stop("varmatrix can't be created with this equation."))
+  if (set@originalclass == "ExpressionSet"){
+    vals <- t(featvals(set))
+  } else{
+    vals <- t(getMs(set))
   }
   
-  if (length(covariableNames(set))){
-    covmatrix <- pData(set)[ , covariableNames(set), drop = FALSE]
-    covmatrix <- model.matrix(~ ., data = covmatrix)[, -1]
-    rdaRes <- vegan::rda(t(featvals(set)), varmatrix, covmatrix)
+  
+  varmatrix <- model(set)
+  covs <- covariableNames(set)
+  if (length(covs)){
+    covsind <- lapply(covs, function(x) grep(x, colnames(varmatrix)))
+    covsind <- unique(unlist(covsind))
+    covmatrix <- varmatrix[ , covsind, drop = FALSE]
+    varmatrix <- varmatrix[ , -covsind, drop = FALSE]
+    rdaRes <- vegan::rda(vals, varmatrix, covmatrix)
   }else{
-    rdaRes <- vegan::rda(t(featvals(set)), varmatrix)
+    rdaRes <- vegan::rda(vals, varmatrix)
   }
-
+  
   return(rdaRes)
 }
