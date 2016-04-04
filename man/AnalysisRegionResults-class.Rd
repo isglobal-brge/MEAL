@@ -5,21 +5,21 @@
 \alias{AnalysisRegionResults}
 \alias{AnalysisRegionResults-class}
 \alias{AnalysisRegionResults-methods}
+\alias{RDAPval}
 \alias{RDAPval,AnalysisRegionResults-method}
 \alias{analysisRegionResults}
 \alias{getRDA}
 \alias{getRDA,AnalysisRegionResults-method}
 \alias{getRange}
 \alias{getRange,AnalysisRegionResults-method}
+\alias{globalPval}
 \alias{globalPval,AnalysisRegionResults-method}
 \alias{globalR2}
 \alias{globalR2,AnalysisRegionResults-method}
-\alias{globalpval}
 \alias{plotRDA,AnalysisRegionResults-method}
 \alias{plotRegionR2,AnalysisRegionResults-method}
 \alias{regionLM}
 \alias{regionLM,AnalysisRegionResults-method}
-\alias{regionPval}
 \alias{regionR2}
 \alias{regionR2,AnalysisRegionResults-method}
 \alias{snps}
@@ -155,7 +155,7 @@ variable of interest and against significant SNPs for each cpg.}
 \item{\code{globalR2}}{Numeric with the global R2.}
 
 \item{\code{globalPval}}{Numeric with the probability of finding a region with the same number of probes with
-a bigger R^2.}
+a bigger R2.}
 }}
 \examples{
 showClass("AnalysisRegionResults")

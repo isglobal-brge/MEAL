@@ -12,11 +12,11 @@ plotLM(Rsquares, title = paste("Variance Explained in", feat_name),
 
 \item{title}{Character with the plot title}
 
+\item{feat_name}{Name of the feature used in default title.}
+
 \item{variable_name}{Character for the first column name}
 
 \item{max_columns}{Numerical with the maximum number of columns to be plotted.}
-
-\item{cpg_name}{Name of the cpg. Only used in default title.}
 }
 \description{
 Plot a vector of R2 where the first value is the main variable and the last one,
