@@ -76,7 +76,7 @@ test_that("plotRDA", {
 test_that("Plot Region", {
   expect_error(plotRegion(rangeNoSNPs, variable = character()), "variable must have one value.")
   expect_error(plotRegion(rangeNoSNPs, variable = c("a", "b")), "variable must have one value.")
-  expect_error(plotRegion(rangeNoSNPs, variable = "a"), "Variable is not present in modelVariables.\nValid variables are sex.")
+  expect_error(plotRegion(rangeNoSNPs, variable = "a"), "Variable is not present in modelVariables.\nValid variables are sex")
   expect_error(plotRegion(methyOneVar), "range must be present to use plotRegion with a AnalysisResults")
   expect_error(plotRegion(esetRes), "Results must have a column called position to perform this plot.")
   plotRegion(rangeNoSNPs)
