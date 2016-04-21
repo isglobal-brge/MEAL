@@ -97,8 +97,6 @@ An \code{AnalysisRegionResults}
 \description{
 \code{AnalysisResults} heir with the analyses performed in a range of the 
 whole genome.
-
-AnalysisRegionResults instances
 }
 \section{Methods (by generic)}{
 \itemize{

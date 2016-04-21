@@ -16,7 +16,7 @@ computeRDAR2 <- function(set, res, R2, nperm = 1e6-1){
   } else{
     matMs <- getMs(set)
   }
-  allvar <- apply(matMs, 1, var)
+  allvar <- apply(matMs, 1, stats::var)
   ## Get the model used in the regression
   varmatrix <- model(res)
   covs <- covariableNames(res)
@@ -31,10 +31,10 @@ computeRDAR2 <- function(set, res, R2, nperm = 1e6-1){
     matMs <- matMs - covfit
   }
   fit <- limma::fitted.MArrayLM(limma::lmFit(matMs, varmatrix))
-  varfit <- apply(fit, 1, var)
+  varfit <- apply(fit, 1, stats::var)
   num_feats <- length(feats(res))
   
-  inds <- sample(1:(nrow(set)-num_feats), nperm, replace = TRUE)
+  inds <- sample(1:(nrow(set) - num_feats), nperm, replace = TRUE)
   
   ## Compute the R2 explained by groups with the same number of features than the region of interest
   randomR2 <- vapply(inds, function(x) { 

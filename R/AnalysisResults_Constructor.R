@@ -1,5 +1,3 @@
-#' AnalysisResults instances
-#'  
 #' @export 
 #' @name analysisResults
 #' @rdname AnalysisResults-class

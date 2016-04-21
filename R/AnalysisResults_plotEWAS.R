@@ -24,7 +24,7 @@ setMethod(
     dmp <- probeResults(object, drop = FALSE)[[variable]]
     
     dmp$CHR <- as.character(dmp$chromosome)
-    dmp$CHR <- vapply(strsplit(dmp$CHR, c("_", "|")), `[`, character(1), 1)
+    dmp$CHR <- vapply(strsplit(dmp$CHR, c("_", "|"), fixed = TRUE), `[`, character(1), 1)
     dmp$CHR <- gsub("chr", "", dmp$CHR)
     dmp$CHR[dmp$CHR %in% c("X","x")] <- 23
     dmp$CHR[dmp$CHR %in% c("Y","y")] <- 24
@@ -42,23 +42,25 @@ setMethod(
     dmp$idx <- seq_len(nrow(dmp))
     dmp$logP <- -log10(dmp$P.Value)
     dmp$col <- dmp$CHR %% 2 + 1
-    if (!is.null(range)){
-      selectedcpgs <- rownames(filterResults(dmp, range))
-      dmp[selectedcpgs, "col"] <- 3
-    }
+
     dmp$col <- as.factor(dmp$col)
     breaks <- vapply(split(dmp, dmp$CHR), 
                      function(x) round((max(x$idx) - min(x$idx))/2) + min(x$idx), numeric(1))
     cbPalette <- c("#999999", "#000000", "#33FF33")
     bonflevel <- -log10(0.05/nrow(dmp))
     p <- ggplot2::ggplot(dmp, ggplot2::aes_string(x = "idx", y = "logP", color = "col")) + 
-      ggplot2::geom_point(aes(fill = col)) + 
+      ggplot2::geom_point(ggplot2::aes(fill = col)) + 
       ggplot2::scale_x_continuous("Chromosome", labels = unique(dmp$CHR), 
                                   breaks = breaks, limits = c(1, max(dmp$idx))) +
       ggplot2::scale_y_continuous(expression(~~-log[10](italic(p)))) +
       ggplot2::theme(legend.position = "none",  axis.text.x  = ggplot2::element_text(angle = 45, size = 8)) + 
       ggplot2::geom_hline(yintercept = bonflevel, linetype = 1, col = 'red') +
       ggplot2::scale_colour_manual(values = cbPalette) + ggplot2::ggtitle(paste("Manhattan plot of", variable, "results"))
+    if (!is.null(range)){
+      selectedcpgs <- rownames(filterResults(dmp, range))
+      seldmp <- dmp[selectedcpgs, , drop = FALSE]
+      p <- p + ggplot2::geom_point(data = seldmp, ggplot2::aes_string(x = "idx", y = "logP"), color = "green")
+    }
     print(p)
   }
 )

@@ -139,8 +139,6 @@ Note: model name should be used. Original variable name might not be valid.}
 }
 \description{
 Container with the results of per probe and per region analyses.
-
-AnalysisResults instances
 }
 \section{Methods (by generic)}{
 \itemize{

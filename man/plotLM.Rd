@@ -18,8 +18,16 @@ plotLM(Rsquares, title = paste("Variance Explained in", feat_name),
 
 \item{max_columns}{Numerical with the maximum number of columns to be plotted.}
 }
+\value{
+A plot in the graphical device
+}
 \description{
 Plot a vector of R2 where the first value is the main variable and the last one,
 if named \emph{covariates} is treated as covariates.
+}
+\examples{
+data(mtcars)
+R2 <- explainedVariance(mtcars, variable_label = "cyl") ## variable equals to cyl column
+plotLM(R2)
 }
 

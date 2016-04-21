@@ -10,6 +10,11 @@
 #' @param feat_name Name of the feature used in default title.
 #' @param variable_name Character for the first column name
 #' @param max_columns Numerical with the maximum number of columns to be plotted.
+#' @return A plot in the graphical device
+#' @examples 
+#' data(mtcars)
+#' R2 <- explainedVariance(mtcars, variable_label = "cyl") ## variable equals to cyl column
+#' plotLM(R2)
 plotLM <- function(Rsquares, title = paste("Variance Explained in", feat_name), feat_name = NULL,
                    variable_name = names(Rsquares)[1], max_columns = 6){
   names(Rsquares)[1] <- variable_name

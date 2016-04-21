@@ -1,97 +1,3 @@
-#' Method to add a slot of expression to \code{MultiDataSet}.
-#'
-#' This method adds or overwrites the slot \code{"expression"} of an
-#' \code{MultiDataSet} with the content of the given \code{ExpressionSet}.
-#' 
-#' @aliases add.genexp
-#' @rdname add.genexp-methods
-#' @exportMethod add.genexp
-#' @param object \code{MultiDataSet} that will be filled.
-#' @param gexpSet \code{ExpressionSet} to be used to fill the slot.
-#' @param warnings Logical to indicate if warnings will be displayed.
-#' @return A new \code{MultiDataSet} with the slot \code{"expression"}
-#' filled.
-#' @examples 
-#' multi <- new("MultiDataSet")
-#' eset <- new("ExpressionSet", exprs = matrix(runif(4), 2))
-#' fData(eset) <- data.frame(chromosome = c("chr1", "chr2"), start = c(12414, 1234321),
-#'  end = c(121241, 12412412414), stringsAsFactors = FALSE)
-#' multi <- add.genexp(multi, eset)
-setGeneric("add.genexp", function(object, gexpSet, warnings = TRUE) {
-  standardGeneric("add.genexp")
-})
-
-#' Method to add a slot of methylation to \code{MultiDataSet}.
-#'
-#' This method adds or overwrites the slot \code{"methylation"} of an
-#' \code{MultiDataSet} with the content of the given \code{MethylationSet}.
-#'
-#' @rdname add.methy-methods
-#' @aliases add.methy-methods
-#' @param object \code{MultiDataSet} that will be filled.
-#' @param methySet \code{MethylationSet} to be used to fill the slot.
-#' @param warnings Logical to indicate if warnings will be displayed.
-#' @return A new \code{MultiDataSet} with the slot \code{"methylation"}
-#' filled.
-#' @exportMethod add.methy
-#' @examples 
-#' if (require(MEALData)){
-#'  multi <- new("MultiDataSet")
-#'  betavals <- betavals[1:100, ]  ## To speed up the example, the beta values are reduced
-#'  methy <- prepareMethylationSet(betavals, pheno)
-#'  multi <- add.methy(multi, methy)
-#' }
-setGeneric("add.methy", function(object, methySet, warnings = TRUE) {
-  standardGeneric("add.methy")
-})
-
-#' Method to add a slot to \code{MultiDataSet}.
-#'
-#' This method adds or overwrites a slot of a \code{MultiDataSet} with the content 
-#' of the given \code{eSet}.
-#'
-#' @rdname add.set-methods
-#' @aliases add.set-methods
-#' @param object \code{MultiDataSet} that will be filled.
-#' @param set Object derived from \code{eSet} to be used to fill the slot.
-#' @param dataset.name Character with the name of the slot to be filled.
-#' @param warnings Logical to indicate if warnings will be displayed.
-#' @return A new \code{MultiDataSet} with a slot filled.
-#' @exportMethod add.set
-#' @examples 
-#' multi <- new("MultiDataSet")
-#' eset <- new("ExpressionSet", exprs = matrix(runif(10), 5))
-#' multi <- add.set(multi, eset, "exampledata")
-#' @examples 
-#' multi <- new("MultiDataSet")
-#' snps <- new("SnpSet", call = matrix(runif(10), 5))
-#' multi <- add.snps(multi, snps)
-setGeneric("add.set", function(object, set, dataset.name, warnings = TRUE) {
-  standardGeneric("add.set")
-})
-
-#' Method to add a slot of SNPs to \code{MultiDataSet}.
-#'
-#' This method adds or overwrites the slot \code{"snps"} of an
-#' \code{MultiDataSet} with the content of the given \code{SnpSet}.
-#'
-#' @rdname add.snps-methods
-#' @aliases add.snps
-#' @param object \code{MultiDataSet} that will be filled.
-#' @param snpSet \code{SnpSet} to be used to fill the slot.
-#' @param warnings Logical to indicate if warnings will be displayed.
-#' @return A new \code{MultiDataSet} with the slot \code{"snps"}
-#' filled.
-#' @exportMethod add.snps
-setGeneric("add.snps", function(object, snpSet, warnings = TRUE) {
-  standardGeneric("add.snps")
-})
-
-#' @export 
-setGeneric("betas", function(object){
-  standardGeneric("betas")
-})
-
 #' @export
 setGeneric("blocks", function(object){
   standardGeneric("blocks")
@@ -100,48 +6,6 @@ setGeneric("blocks", function(object){
 #' @export
 setGeneric("bumps", function(object){
   standardGeneric("bumps")
-})
-
-#' Filter \code{MethylationSet} probes
-#' 
-#' This function selects probes present in the annotation matrix. Probes without
-#' annotation and annotation values without beta values are discarded. 
-#' 
-#' @rdname checkProbes-methods
-#' @export 
-#' @aliases checkProbes
-#' @param object \code{MethylationSet}
-#' @return \code{MethylationSet} containing the common samples.
-#' @examples 
-#' if (require(MEALData)){
-#'  betavals <- betavals[1:100, ]  ## To speed up the example, the beta values are reduced
-#'  methy <- prepareMethylationSet(betavals, pheno)
-#'  checkProbes(methy)
-#' }
-setGeneric("checkProbes", function(object){
-  standardGeneric("checkProbes")
-})
-
-#' Modify a \code{MethylationSet} to only contain common samples
-#' 
-#' This function removes samples that have beta values but no phenotypes and vice versa.
-#' If snps object is present, only samples present in the three set are retained.
-#' 
-#' @name checkSamples
-#' @rdname checkSamples-methods
-#' @aliases checkSamples 
-#' @export 
-#' 
-#' @param object \code{MethylationSet}
-#' @return \code{MethylationSet} containing the common samples.
-#' @examples 
-#' if (require(MEALData)){
-#'  betavals <- betavals[1:100, ]  ## To speed up the example, the beta values are reduced
-#'  methy <- prepareMethylationSet(betavals, pheno)
-#'  checkSamples(methy)
-#' }
-setGeneric("checkSamples", function(object){
-  standardGeneric("checkSamples")
 })
 
 #' @export
@@ -213,29 +77,6 @@ setGeneric("featvals", function(object){
 #' }
 setGeneric("getGeneVals", function(object, gene){
   standardGeneric("getGeneVals")
-})
-
-
-#' Transforms beta values to M-values
-#' 
-#' Given a \code{MethylationSet} or a \code{AnalysisResults} returns 
-#' the matrix of M values using a logit2 transformation. Betas equal to 0 will 
-#' be transformed to threshold and betas equal to 1, to 1 - threshold. 
-#' 
-#' @name getMs
-#' @rdname getMs-methods
-#' @export
-#' @param object \code{MethylationSet} or \code{AnalysisResults}
-#' @param threshold Numeric with the threshold to avoid 0s and 1s. 
-#' @return Matrix with the M values.
-#' @examples
-#' if (require(minfiData)){
-#' set <- prepareMethylationSet(MsetEx[1:100, ], pData(MsetEx))
-#' mvalues <- getMs(set)
-#' head(mvalues)
-#' }
-setGeneric("getMs", function(object, threshold = 0.0001){
-  standardGeneric("getMs")
 })
 
 #' @export 

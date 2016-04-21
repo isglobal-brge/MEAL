@@ -1,5 +1,3 @@
-#' AnalysisRegionResults instances
-#' 
 #' @export
 #' 
 #' @name analysisRegionResults

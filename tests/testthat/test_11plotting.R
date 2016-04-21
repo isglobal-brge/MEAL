@@ -20,8 +20,8 @@ rownames(map) <- rownames(geno)
 snps <- new("SnpSet", call = geno, featureData = map)
 
 multiset <- new("MultiDataSet")
-multiset <- add.methy(multiset, set)
-multiset <- add.snps(multiset, snps)
+multiset <- add_methy(multiset, set)
+multiset <- add_snps(multiset, snps)
 rangeSNPsCov <- DARegionAnalysis(multiset, variable_names = "sex", range = range, 
                                     snps_cutoff = 0.05)
 

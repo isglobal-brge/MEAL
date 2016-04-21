@@ -16,8 +16,8 @@ snps <- new("SnpSet", call = geno)
 fData(snps) <- map
 
 multiset <- new("MultiDataSet")
-multiset <- add.methy(multiset, set)
-multiset <- add.snps(multiset, snps)
+multiset <- add_methy(multiset, set)
+multiset <- add_snps(multiset, snps)
 
 eset <- ExpressionSet(matrix(runif(12, max = 15), 3))
 annot <- data.frame(chromosome = rep("chrY", 3), start = c(10000, 4500000, 5000000), 

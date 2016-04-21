@@ -10,7 +10,8 @@ Description: Package to integrate methylation and expression data. It can
     redundancy analysis. Effect of SNPs on a region can also be estimated.
 Depends:
     R (>= 3.2.0),
-    Biobase
+    Biobase,
+    MultiDataSet
 License: Artistic-2.0
 biocViews: DNAMethylation, Microarray, Software, WholeGenome
 LazyData: true
@@ -28,7 +29,7 @@ Imports:
     methods,
     doParallel,
     parallel,
-    ggplot2,
+    ggplot2 (>= 2.0.0),
     sva, 
     permute
 Suggests:

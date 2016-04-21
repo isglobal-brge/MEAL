@@ -6,7 +6,9 @@
 \usage{
 correlationMethExprs(multiset, vars_meth = NULL, vars_exprs = NULL,
   vars_meth_types = rep(NA, length(vars_meth)), vars_exprs_types = rep(NA,
-  length(vars_exprs)), flank = 250000, num_cores = 1, verbose = TRUE)
+  length(vars_exprs)), meth_set_name = "methylation",
+  exprs_set_name = "expression", sel_cpgs, flank = 250000, num_cores = 1,
+  verbose = TRUE)
 }
 \arguments{
 \item{multiset}{\code{MultiDataSet} containing a \code{methylation} and an 
@@ -25,6 +27,15 @@ By default, variables type won't be changed.}
 
 \item{vars_exprs_types}{Character vector with the types of the expression variables. 
 By default, variables type won't be changed.}
+
+\item{meth_set_name}{Character vector with the name of the \code{MultiDataSet}'s slot containing methylation
+data.}
+
+\item{exprs_set_name}{Character vector with the name of the \code{MultiDataSet}'s slot containing expression
+data.}
+
+\item{sel_cpgs}{Character vector with the name of the CpGs used in the analysis. If empty, all the CpGs of the 
+methylation set will be used.}
 
 \item{flank}{Numeric with the number of pair bases used to define the cpg-expression 
 probe pairs.}

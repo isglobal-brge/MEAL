@@ -24,6 +24,12 @@
 #' residuals are not computed.
 #' @param vars_exprs_types Character vector with the types of the expression variables. 
 #' By default, variables type won't be changed.
+#' @param meth_set_name Character vector with the name of the \code{MultiDataSet}'s slot containing methylation
+#' data.
+#' @param exprs_set_name Character vector with the name of the \code{MultiDataSet}'s slot containing expression
+#' data.
+#' @param sel_cpgs Character vector with the name of the CpGs used in the analysis. If empty, all the CpGs of the 
+#' methylation set will be used. 
 #' @param flank Numeric with the number of pair bases used to define the cpg-expression 
 #' probe pairs.
 #' @param num_cores Numeric with the number of cores to be used.
@@ -40,43 +46,52 @@
 #' }
 correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL, 
                                  vars_meth_types = rep(NA, length(vars_meth)), 
-                                 vars_exprs_types = rep(NA, length(vars_exprs)), 
-                                 flank = 250000, num_cores = 1, verbose = TRUE){
+                                 vars_exprs_types = rep(NA, length(vars_exprs)),
+                                 meth_set_name = "methylation", exprs_set_name = "expression",
+                                 sel_cpgs, flank = 250000, num_cores = 1, verbose = TRUE){
   
   options("mc.cores" = num_cores)
   
+  # Check MultiDataSet
   if (!is(multiset, "MultiDataSet")){
     stop("multiset must be a MultiDataSet")
   }
   
-  if (!all(c("methylation", "expression") %in% names(multiset))){
-    stop("multiset must contain methylation and expression data.")
+  if (!all(c(meth_set_name, exprs_set_name) %in% names(multiset))){
+    stop("multiset must contain meth_set_name and exprs_set_name.")
   }
   
-  mset <- multiset[["methylation"]]
-  eset <- multiset[["expression"]]
+  # Select only our sets
+  multiset <- multiset[, c(meth_set_name, exprs_set_name)]
   
-  if (ncol(mset) == 0 | nrow(mset) == 0){
-    stop("The mset has no beta values")
+  ## Select common samples
+  multiset <- commonSamples(multiset)
+  
+  mset <- multiset[[meth_set_name]]
+  if (!missing(sel_cpgs)){
+    if (!is.character(sel_cpgs) | length(sel_cpgs) == 0){
+      stop("sel_cpgs must be a character vector with the name of the CpGs to be used.")
+    } else{
+      mset <- mset[sel_cpgs, ]
+    }
   }
   
-  if (ncol(eset) == 0 | nrow(eset) == 0){
-    stop("The eset has no expression values")
-  }
+  eset <- multiset[[exprs_set_name]]
   
-  if (!all(c("chromosome", "start", "end") %in% fvarLabels(eset))){
-    stop("eset must contain a featureData with columns chromosome, start and end")
-  }
-  
-  if (!is(flank, "numeric") || length(flank) > 1 || flank < 0){
+ if (!is(flank, "numeric") || length(flank) > 1 || flank < 0){
     stop("flank must be a positive integer")
   }
   
-  if (verbose){
-    message("Calculating cpg-expression probe pairs")
-  }
-  
-  pairs <- pairsExprsMeth(fData(mset), fData(eset), flank)
+  # Compute Methylation-Expression pairs
+  rangesMeth <- rowRanges(multiset)[[meth_set_name]]
+  rangesMeth <- rangesMeth[featureNames(mset)]
+  start(rangesMeth) <- start(rangesMeth) - flank
+  end(rangesMeth) <- end(rangesMeth) + flank
+  rangesExprs <- rowRanges(multiset)[[exprs_set_name]]
+  pairs <- GenomicRanges::findOverlaps(rangesExprs, rangesMeth,  type = "within")
+  pairs <- data.frame(cpg = rownames(mset)[S4Vectors::subjectHits(pairs)], 
+                      exprs = rownames(eset)[S4Vectors::queryHits(pairs)], 
+                      stringsAsFactors = FALSE)
   
   if (nrow(pairs) == 0){
     warning("There are no expression probes in the range of the cpgs. An empty data.frame will be returned.")
@@ -84,6 +99,7 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
                       se = integer(0), P.Value = integer(0), adj.P.val = integer(0)))
   }
   
+  ## Filter sets to only features in the pairs
   mset <- mset[unique(pairs[ , 1]), ]
   eset <- eset[unique(pairs[ , 2]), ]
   
@@ -92,15 +108,20 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
     message("Computing residuals")
   }
   
+  # Computing residuals
   methres <- setResidues(mset, vars_names = vars_meth, vars_types = vars_meth_types)
   exprsres <- setResidues(eset, vars_names = vars_exprs, vars_types = vars_exprs_types)
-    
+  
   if (verbose){
     message("Computing correlation Methylation-Expression")
   }
   
+  residualsCorr <- function (methy_res, exprs_res){
+    fit <- lm(exprs_res ~ methy_res)
+    return(c(summary(fit)$coef[2, 1], summary(fit)$coef[2,2], summary(fit)$coef[2,4]))
+  }
   regvals <- mclapply(1:nrow(pairs), 
-                    function(x) residualsCorr(methres[pairs[x, 1], ], exprsres[pairs[x, 2], ]))
+                      function(x) residualsCorr(methres[pairs[x, 1], ], exprsres[pairs[x, 2], ]))
   
   res <- data.frame(pairs, t(data.frame(regvals)))
   colnames(res) <- c("cpg", "exprs", "Beta", "se", "P.Value")
@@ -108,27 +129,6 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
   res <- res[order(res$adj.P.Val), ]
   rownames(res) <- NULL
   res
-}
-
-
-pairsExprsMeth <- function(meth, exprs, flank){
-  meth$start <- meth$position - flank
-  meth[ meth < 0] <- 0
-  meth$end <- meth$position + flank
-  methGR <- GenomicRanges::makeGRangesFromDataFrame(meth, seqnames.field = "chromosome", 
-                                                    ignore.strand = TRUE)
-  exprsGR <- GenomicRanges::makeGRangesFromDataFrame(exprs, seqnames.field = "chromosome",
-                                                     ignore.strand = TRUE)
-  pairs <- GenomicRanges::findOverlaps(exprsGR, methGR,  type = "within")
-  pairs <- data.frame(cpg = rownames(meth)[S4Vectors::subjectHits(pairs)], 
-                      exprs = rownames(exprs)[S4Vectors::queryHits(pairs)], 
-                      stringsAsFactors = FALSE)
-  pairs
-}
-
-residualsCorr <- function (methy_res, exprs_res){
-  fit <- lm(exprs_res ~ methy_res)
-  return(c(summary(fit)$coef[2, 1], summary(fit)$coef[2,2], summary(fit)$coef[2,4]))
 }
 
 setResidues <- function(set, vars_names, vars_types){

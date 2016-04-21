@@ -18,9 +18,9 @@ setMethod(
     cat("R2: ", round(regionR2(object), 3), "\n")
     pval <- RDAPval(object)
     if (pval < 1e-3){
-      cat("R2 P-value: ", format(signif(pval, 3), scientific = TRUE),"\n")
+      cat("RDA P-value: ", format(signif(pval, 3), scientific = TRUE),"\n")
     }else{
-      cat("R2 P-value: ", signif(pval, 3), "\n")
+      cat("RDA P-value: ", signif(pval, 3), "\n")
     }
     globPval <- globalPval(object)
     if (globPval < 1e-3){

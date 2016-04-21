@@ -48,6 +48,7 @@ Given its complex design^[More information can be found at this [minfi tutorial]
 
 ```{r, message = FALSE}
 library(MEAL)
+library(MultiDataSet)
 library(minfiData)
 library(GenomicRanges)
 ```
