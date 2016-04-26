@@ -91,7 +91,8 @@ DAProbe <- function(set, model, coefficient = 2, shrinkVar = FALSE, method = "ro
   else {
     tab <- data.frame(intercept = minfi::ilogit2(fit$coefficients[ , 1]),
                       minfi::ilogit2(fit$coefficients[ , 2] + fit$coefficients[ , 1]) -
-                        minfi::ilogit2(fit$coefficients[ , 1]), sd = (minfi::ilogit2(toptable[ , 1]) - minfi::ilogit2(toptable[ , 2]))/CI, 
+                        minfi::ilogit2(fit$coefficients[ , 1]), 
+                      sd = (minfi::ilogit2(fit$coefficients[ , 2] + fit$coefficients[ , 1]) - minfi::ilogit2(toptable[ , 2] + fit$coefficients[ , 1]))/CI, 
                       toptable[ , 5:7])
   }
   rownames(tab) <- rownames(M)
