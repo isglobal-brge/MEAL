@@ -197,7 +197,8 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
       proberes <- DAProbe(set = set, model = model, coefficient = coefficient,
                           method = "ls")
     }
-    myannotation <- dmrcateCreator(proberes)
+    myannotation <- DMRcate::cpg.annotate(datatype = "array", object = MultiDataSet::getMs(set), 
+                                          design = model, coef = coefficient)
     dmrcoutput <- tryCatch(DMRcate::dmrcate(myannotation, lambda = 1000, C = 2), 
                            error = function(e) NULL)
     if (is.null(dmrcoutput)){
@@ -214,14 +215,15 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
 dmrcateCreator <- function(proberesults){
   dmrcate <- list()
   proberesults <- proberesults[order(proberesults$chr, proberesults$pos), ]
-  dmrcate[["ID"]] <- proberesults$Row.names
-  dmrcate[["weights"]] <- proberesults$t
+  dmrcate[["ID"]] <- rownames(proberesults)
+  dmrcate[["stat"]] <- proberesults$t
   dmrcate[["CHR"]] <- proberesults$chromosome
   dmrcate[["pos"]] <- proberesults$position
   dmrcate[["gene"]] <- proberesults$genes
   dmrcate[["group"]] <- proberesults$group
   dmrcate[["betafc"]] <- proberesults[, 6]
   dmrcate[["indfdr"]] <- proberesults$adj.P.Val
+  dmrcate[["is.sig"]] <- proberesults$adj.P.Val < 0.05
   class(dmrcate) <- "annot"
   return(dmrcate)
 }

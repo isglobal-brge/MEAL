@@ -29,7 +29,7 @@
 #' @import methods
 #' @import MultiDataSet
 #' @importFrom doParallel registerDoParallel
-#' @importFrom DMRcate dmrcate
+#' @importFrom DMRcate cpg.annotate dmrcate
 #' @importFrom GenomicRanges seqnames start end makeGRangesFromDataFrame findOverlaps GRanges
 #' @importFrom ggplot2 aes aes_string alpha facet_grid geom_bar geom_errorbar geom_hline geom_line geom_point geom_polygon geom_smooth geom_text geom_vline ggplot ggtitle position_jitter scale_colour_manual scale_fill_manual scale_x_continuous scale_y_continuous theme
 #' @importFrom IRanges IRanges
