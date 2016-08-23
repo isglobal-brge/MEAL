@@ -85,16 +85,20 @@ analysisResults(set, model, regionResults, probeResults, num_feat = 50,
   vars = modelVariables(object))
 
 \S4method{plotEWAS}{AnalysisResults}(object,
-  variable = modelVariables(object)[1], range = NULL)
+  variable = modelVariables(object)[1], range = NULL,
+  main = paste("Manhattan plot of ", variable))
 
 \S4method{plotQQ}{AnalysisResults}(object,
-  variable = modelVariables(object)[1])
+  variable = modelVariables(object)[1], main = paste("QQplot of", variable,
+  "analysis"))
 
 \S4method{plotRegion}{AnalysisResults}(object,
-  variable = modelVariables(object)[[1]], range = NULL)
+  variable = modelVariables(object)[[1]], range = NULL,
+  main = paste("Region plot of ", variable))
 
 \S4method{plotVolcano}{AnalysisResults}(object,
-  variable = modelVariables(object)[1], mindiff = NULL)
+  variable = modelVariables(object)[1], mindiff = NULL,
+  main = paste("Volcano plot of", variable, "results"))
 }
 \arguments{
 \item{set}{\code{MethylationSet} or \code{ExpressionSet} used to perform the analysis}
@@ -131,6 +135,8 @@ names should be that of the model.}
 Note: model name should be used. Original variable name might not be valid.}
 
 \item{range}{GenomicRange whose probes will be highlighted}
+
+\item{main}{Character with the plot title.}
 
 \item{mindiff}{Numeric with the threshold to consider a difference in methylation or expression significant.}
 }

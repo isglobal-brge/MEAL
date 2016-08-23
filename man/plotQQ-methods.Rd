@@ -4,13 +4,16 @@
 \alias{plotQQ}
 \title{QQ plot of probe analysis}
 \usage{
-plotQQ(object, variable = modelVariables(object)[[1]])
+plotQQ(object, variable = modelVariables(object)[[1]],
+  main = paste("QQplot of", variable, "analysis"))
 }
 \arguments{
 \item{object}{\code{AnalysisResults} or \code{AnalysisRegionResults}}
 
 \item{variable}{Character with the variable name used to obtain the probe results.
 Note: model name should be used. Original variable name might not be valid.}
+
+\item{main}{Character with the plot title.}
 }
 \value{
 A plot is generated on the current graphics device.

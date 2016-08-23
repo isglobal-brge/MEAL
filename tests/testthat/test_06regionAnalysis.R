@@ -8,7 +8,7 @@ pData(set) <- preparePhenotype(pData(set), variable_names = c("status", "age"),
 model <- createModel(pData(set))
 
 test_that("Region Analysis works", {
-  regions <- DARegion(set = set, model = model)
+  regions <- DARegion(set = set, model = model, methods = c("DMRcate", "bumphunter", "blockFinder"))
   expect_match(class(regions), "list")
   expect_equal(length(regions), 3)
   expect_equal(names(regions), c("bumphunter", "blockFinder", "DMRcate"))
@@ -24,7 +24,7 @@ test_that("Multiple variables", {
 })
 
 test_that("Check Permutations", {
-  regions <- DARegion(set = set, model = model, num_permutations = 10, verbose = TRUE)
+  regions <- DARegion(set = set, model = model, num_permutations = 10, verbose = TRUE, methods = c("DMRcate", "bumphunter", "blockFinder"))
   expect_match(class(regions), "list")
   expect_equal(length(regions), 3)
   expect_equal(names(regions), c("bumphunter", "blockFinder", "DMRcate"))
@@ -60,5 +60,13 @@ test_that("Empty variables", {
   emptymodel <-  matrix(ncol = 0, nrow = 0)
   expect_error(DARegion(set = emptyset, model = emptymodel), "The set is empty.")
   expect_error(DARegion(set = set, model = emptymodel), "The model matrix is empty.")
+  expect_error(DARegion(set = emptyset, model = model), "The set is empty.")
+})
+
+test_that("Check Errors", {
+  model2 <- model[1:3, ]
+  expect_error(DARegion(set = set, model = model2), "The number of samples is different in the set and in the model.")
+  eset <- ExpressionSet(matrix(runif(12, max = 15), 3))
+  expect_error(DARegion(set = eset, model = model), "set must be a MethylationSet.")
   expect_error(DARegion(set = emptyset, model = model), "The set is empty.")
 })

@@ -4,7 +4,8 @@
 \alias{plotEWAS}
 \title{Plot a Manhattan plot with the probe results}
 \usage{
-plotEWAS(object, variable = modelVariables(object)[[1]], range = NULL)
+plotEWAS(object, variable = modelVariables(object)[[1]], range = NULL,
+  main = paste("Manhattan plot of ", variable))
 }
 \arguments{
 \item{object}{\code{AnalysisResults} or \code{AnalysisRegionResults}}
@@ -13,6 +14,8 @@ plotEWAS(object, variable = modelVariables(object)[[1]], range = NULL)
 Note: model name should be used. Original variable name might not be valid.}
 
 \item{range}{GenomicRange whose cpgs will be highlighted}
+
+\item{main}{Character with the plot title.}
 }
 \value{
 A plot is generated on the current graphics device.

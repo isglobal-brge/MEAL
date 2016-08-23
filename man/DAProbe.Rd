@@ -8,7 +8,7 @@ DAProbe(set, model, coefficient = 2, shrinkVar = FALSE, method = "robust",
   max_iterations = 100)
 }
 \arguments{
-\item{set}{\code{MethylationSet}, matrix of M-values or \code{ExpressionSet}.}
+\item{set}{\code{MethylationSet}, matrix of beta values or \code{ExpressionSet}.}
 
 \item{model}{Matrix with the model}
 

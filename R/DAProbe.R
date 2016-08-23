@@ -5,7 +5,7 @@
 #' 
 #' @export DAProbe
 #' 
-#' @param set \code{MethylationSet}, matrix of M-values or \code{ExpressionSet}. 
+#' @param set \code{MethylationSet}, matrix of beta values or \code{ExpressionSet}. 
 #' @param model Matrix with the model
 #' @param coefficient Numeric with the index of the model matrix used to perform
 #'  the analysis. If a vector is supplied, a list will be returned.
@@ -64,7 +64,7 @@ DAProbe <- function(set, model, coefficient = 2, shrinkVar = FALSE, method = "ro
       message(paste(msg, collapse = "\n"))
       stop("checkProbes and checkSamples might solve validity issues.")
     }
-    M <- getMs(set)
+    M <- betas(set)
   } 
   else if (is(set, "matrix")){
     M <- set
@@ -89,10 +89,9 @@ DAProbe <- function(set, model, coefficient = 2, shrinkVar = FALSE, method = "ro
                       toptable[ , 5:7])
   }
   else {
-    tab <- data.frame(intercept = minfi::ilogit2(fit$coefficients[ , 1]),
-                      minfi::ilogit2(fit$coefficients[ , 2] + fit$coefficients[ , 1]) -
-                        minfi::ilogit2(fit$coefficients[ , 1]), 
-                      sd = (minfi::ilogit2(fit$coefficients[ , 2] + fit$coefficients[ , 1]) - minfi::ilogit2(toptable[ , 2] + fit$coefficients[ , 1]))/CI, 
+    tab <- data.frame(intercept = fit$coefficients[ , 1],
+                      fit$coefficients[ , 2], 
+                      sd = (toptable[ , 1] - toptable[ , 2])/CI, 
                       toptable[ , 5:7])
   }
   rownames(tab) <- rownames(M)

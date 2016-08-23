@@ -1,10 +1,11 @@
 #' @describeIn AnalysisRegionResults  Plot RDA results
 #' @aliases AnalysisRegionResults-methods
 #' @param n_feat Numeric with the number of features to be highlighted.
+#' @param main Character with the plot title.
 setMethod(
  f = "plotRDA",
  signature = "AnalysisRegionResults",
- definition =  function(object, n_feat = 5){
+ definition =  function(object, n_feat = 5, main = "RDA plot"){
   if (n_feat > length(feats(object))){
     warning("n_feat is greater than the total number of features in the range.")
     n_feat <- length(feats(object))
@@ -50,7 +51,7 @@ setMethod(
   o1 <- order(abs(temp[,1]), decreasing=TRUE)
   o2 <- order(abs(temp[,2]), decreasing=TRUE)
   
-  plot(ans, display=c("sp", "cn", "wa"), type="n")
+  plot(ans, display=c("sp", "cn", "wa"), type="n", main = main)
   
   filter <- union(o1[1:n_feat], o2[1:n_feat])
     

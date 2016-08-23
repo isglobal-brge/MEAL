@@ -4,12 +4,14 @@
 \alias{plotRDA}
 \title{Plot RDA results}
 \usage{
-plotRDA(object, n_feat = 5)
+plotRDA(object, n_feat = 5, main = "RDA plot")
 }
 \arguments{
 \item{object}{\code{AnalysisRegionResults}}
 
 \item{n_feat}{Numeric with the number of cpgs to be highlighted.}
+
+\item{main}{Character with the plot title.}
 }
 \value{
 A plot is generated on the current graphics device.

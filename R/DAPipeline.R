@@ -164,8 +164,8 @@ DAPipeline <-  function(set, variable_names,
       message("Region Analysis started")
     }
     region <- DARegion(set = set, model = model, methods = region_methods,  
-                           coefficient = coefficient, proberes = probes, 
-                           verbose = verbose, num_cores = num_cores, ...)
+                           coefficient = coefficient, verbose = verbose, 
+                       num_cores = num_cores, ...)
     
   }else{
     region <- list(bumphunter = NA, blockFinder = NA, DMRcate = NA)

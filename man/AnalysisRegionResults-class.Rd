@@ -55,7 +55,8 @@ analysisRegionResults(analysisResults, set, range, snpspvals = data.frame(),
 
 \S4method{snpsVar}{AnalysisRegionResults}(object)
 
-\S4method{plotRDA}{AnalysisRegionResults}(object, n_feat = 5)
+\S4method{plotRDA}{AnalysisRegionResults}(object, n_feat = 5,
+  main = "RDA plot")
 
 \S4method{plotRegionR2}{AnalysisRegionResults}(object, feat, ...)
 
@@ -84,6 +85,8 @@ used to adjust the linear model.}
 \item{object}{\code{MethylationResults}}
 
 \item{n_feat}{Numeric with the number of features to be highlighted.}
+
+\item{main}{Character with the plot title.}
 
 \item{feat}{Numeric with the index of the cpg or character with its name.}
 

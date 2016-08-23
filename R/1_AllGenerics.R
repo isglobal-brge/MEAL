@@ -124,6 +124,7 @@ setGeneric("modelVariables", function(object){
 #' @param variable Character with the variable name used to obtain the probe results.
 #' Note: model name should be used. Original variable name might not be valid.  
 #' @param range GenomicRange whose cpgs will be highlighted
+#' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData)){
@@ -132,7 +133,8 @@ setGeneric("modelVariables", function(object){
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotEWAS(methyOneVar)
 #' }
-setGeneric("plotEWAS", function(object, variable = modelVariables(object)[[1]], range = NULL){
+setGeneric("plotEWAS", function(object, variable = modelVariables(object)[[1]], range = NULL, 
+                                main = paste("Manhattan plot of ", variable)){
   standardGeneric("plotEWAS")
 })
 
@@ -145,6 +147,7 @@ setGeneric("plotEWAS", function(object, variable = modelVariables(object)[[1]], 
 #' 
 #' @param object \code{AnalysisRegionResults}
 #' @param n_feat Numeric with the number of cpgs to be highlighted.
+#' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
@@ -154,7 +157,7 @@ setGeneric("plotEWAS", function(object, variable = modelVariables(object)[[1]], 
 #' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
 #' plotRDA(rangeNoSNPs)
 #' }
-setGeneric("plotRDA", function(object, n_feat = 5){
+setGeneric("plotRDA", function(object, n_feat = 5, main = "RDA plot"){
   standardGeneric("plotRDA")
 })
 
@@ -174,6 +177,7 @@ setGeneric("plotRDA", function(object, n_feat = 5){
 #' Note: model name should be used. Original variable name might not be valid.  
 #' @param range GenomicRange whose cpgs will be shown (only for \code{AnalysisResults}
 #' objects)
+#' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
@@ -183,7 +187,8 @@ setGeneric("plotRDA", function(object, n_feat = 5){
 #' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
 #' plotRegion(rangeNoSNPs)
 #' }
-setGeneric("plotRegion", function(object, variable = modelVariables(object)[[1]], range = NULL){
+setGeneric("plotRegion", function(object, variable = modelVariables(object)[[1]], range = NULL,
+                                  main = paste("Region plot of ", variable)){
   standardGeneric("plotRegion")
 })
 
@@ -213,6 +218,7 @@ setGeneric("plotRegionR2", function(object, feat, ...){
 #' @param object \code{AnalysisResults} or \code{AnalysisRegionResults} 
 #' @param variable Character with the variable name used to obtain the probe results.
 #' Note: model name should be used. Original variable name might not be valid.
+#' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData)){
@@ -221,7 +227,8 @@ setGeneric("plotRegionR2", function(object, feat, ...){
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotQQ(methyOneVar)
 #' }
-setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]]){
+setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]], 
+                              main = paste("QQplot of", variable, "analysis")){
   standardGeneric("plotQQ")
 })
 
@@ -238,15 +245,17 @@ setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]]){
 #' @param variable Character with the variable name used to obtain the probe results.
 #' Note: model name should be used. Original variable name might not be valid.  
 #' @param mindiff Numeric with the minimum change in methylation or expression needed to be significant
+#' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData)){
 #' betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
 #' set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
-#' plotEWAS(methyOneVar)
+#' plotVolcano(methyOneVar)
 #' }
-setGeneric("plotVolcano", function(object, variable = modelVariables(object)[1], mindiff = NULL){
+setGeneric("plotVolcano", function(object, variable = modelVariables(object)[1], mindiff = NULL,
+                                   main = paste("Volcano plot of", variable, "results")){
   standardGeneric("plotVolcano")
 })
 

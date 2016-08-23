@@ -1,10 +1,12 @@
 #' @describeIn AnalysisResults  Make a Volcano plot with the probe results
 #' @param mindiff Numeric with the threshold to consider a difference in methylation or expression significant.
+#' @param main Character with the plot title.
 #' @aliases AnalysisResults-methods
 setMethod(
   f = "plotVolcano",
   signature = "AnalysisResults",
-  definition = function(object, variable = modelVariables(object)[1], mindiff = NULL){
+  definition = function(object, variable = modelVariables(object)[1], mindiff = NULL, 
+                        main = paste("Volcano plot of", variable, "results")){
     if (length(variable) != 1){
       stop("variable must have one value.")
     }  
@@ -32,7 +34,7 @@ setMethod(
       ggplot2::geom_point() + ggplot2::geom_vline(xintercept = mindiff, linetype = "dashed", col = 'red') +
       ggplot2::geom_vline(xintercept = -mindiff, linetype = "dashed", col = 'red') +
       ggplot2::scale_y_continuous(expression(~~-log[10](italic(p))), limits = c(0, NA)) + 
-      ggplot2::ggtitle(paste("Volcano plot of", variable, "results")) +
+      ggplot2::ggtitle(main) +
       ggplot2::geom_hline(yintercept = bonflevel, linetype = "dashed", col = 'red') + 
       ggplot2::theme(legend.position = "none") 
     

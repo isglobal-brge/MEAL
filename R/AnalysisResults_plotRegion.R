@@ -3,7 +3,8 @@
 setMethod(
   f = "plotRegion",
   signature = "AnalysisResults",
-  definition = function(object, variable = modelVariables(object)[[1]], range = NULL){
+  definition = function(object, variable = modelVariables(object)[[1]], range = NULL,
+                        main = paste("Region plot of ", variable)){
     if (!"position" %in% colnames(probeResults(object, drop = FALSE)[[1]])){
       stop("Results must have a column called position to perform this plot.")
     }
@@ -32,6 +33,7 @@ setMethod(
     p <- ggplot2::ggplot(results, ggplot2::aes_string(x = "positions", y = "beta", colour = "color")) +
       ggplot2::geom_point() + ggplot2::geom_line(ggplot2::aes(y = 0.05), colour = "blue") +
       ggplot2::geom_line(ggplot2::aes(y = -0.05), colour = "blue") +
+      ggplot2::ggtitle(main) +
       ggplot2::theme(legend.position = "none") + ggplot2::scale_fill_manual(values=c("red", "green")) +
       ggplot2::scale_y_continuous(expression(paste("Change in methylation (", Delta, "beta)"))) + 
       ggplot2::ggtitle(paste("Region plot of", variable, "results"))

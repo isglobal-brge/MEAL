@@ -7,8 +7,6 @@
 #' @export DARegion
 #' @param set \code{MethylationSet}. 
 #' @param model Model matrix representing a linear model.
-#' @param proberes Data.frame or list of data.frames with the results of 
-#' \code{DAProbe}
 #' @param methods Character vector with the names of the methods used to estimate 
 #' the regions. Valid names are: "blockFinder", "bumphunter" and "DMRcate".
 #' @param coefficient Numeric with the index of the model matrix used to perform
@@ -67,7 +65,7 @@
 #'  res
 #' }
 
-DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunter", "DMRcate"), 
+DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRcate"), 
                       coefficient = 2, num_permutations = 0, bumphunter_cutoff = 0.05, 
                       bumps_max = 30000, num_cores = 1, verbose = FALSE, ...)
 {
@@ -81,7 +79,7 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
     stop("The model matrix is empty.")
   }
   if (ncol(set) != nrow(model)){
-    stop("The number of samples is different in the set and in the model")
+    stop("The number of samples is different in the set and in the model.")
   }
   if (!is(set, "MethylationSet")){
     stop("set must be a MethylationSet.")
@@ -106,9 +104,9 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
   }
   dmrs <- list()
   if("bumphunter" %in% methods){
-    M <- getMs(set)
+    mat <- betas(set)
     annot <- fData(set)
-    Bumphunter <-  minfi::bumphunter(object = M, design = model, coef = coefficient,
+    Bumphunter <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
                                      chr = annot[, "chromosome"], pos = annot[, "position"],
                                      cutoff = bumphunter_cutoff, 
                                      nullMethod = "bootstrap", verbose = verbose, ...)$table
@@ -122,7 +120,7 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
                         "cutoff:", bumphunter_cutoff))
         }
         bumphunter_cutoff <- bumphunter_cutoff + 0.05
-        Bumphunter <-  minfi::bumphunter(object = M, design = model, coef = coefficient,
+        Bumphunter <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
                                          chr = annot[ , "chromosome"], pos = annot[, "position"],
                                          cutoff = bumphunter_cutoff, B = 0, 
                                          nullMethod = "bootstrap", verbose = verbose, ...)$table
@@ -132,7 +130,7 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
         message(paste("Iteration",i,"Num bumps:", nrow(Bumphunter), 
                       "cutoff:", bumphunter_cutoff))
       }
-      Bumphunter <-  minfi::bumphunter(object = M, design = model, coef = coefficient,
+      Bumphunter <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
                                        chr = annot[, "chromosome"], pos = annot[, "position"],
                                        cutoff = bumphunter_cutoff, B = num_permutations, 
                                        nullMethod = "bootstrap", verbose = verbose, ...)$table
@@ -193,10 +191,6 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
     dmrs[["blockFinder"]] <- NA
   }
   if("DMRcate" %in% methods){
-    if (!is(proberes, "data.frame")){
-      proberes <- DAProbe(set = set, model = model, coefficient = coefficient,
-                          method = "ls")
-    }
     myannotation <- DMRcate::cpg.annotate(datatype = "array", object = MultiDataSet::getMs(set), 
                                           design = model, coef = coefficient)
     dmrcoutput <- tryCatch(DMRcate::dmrcate(myannotation, lambda = 1000, C = 2), 
@@ -210,20 +204,4 @@ DARegion <- function (set, model, proberes, methods = c("blockFinder", "bumphunt
     dmrs[["DMRcate"]] <- NA
   }
   dmrs
-}
-
-dmrcateCreator <- function(proberesults){
-  dmrcate <- list()
-  proberesults <- proberesults[order(proberesults$chr, proberesults$pos), ]
-  dmrcate[["ID"]] <- rownames(proberesults)
-  dmrcate[["stat"]] <- proberesults$t
-  dmrcate[["CHR"]] <- proberesults$chromosome
-  dmrcate[["pos"]] <- proberesults$position
-  dmrcate[["gene"]] <- proberesults$genes
-  dmrcate[["group"]] <- proberesults$group
-  dmrcate[["betafc"]] <- proberesults[, 6]
-  dmrcate[["indfdr"]] <- proberesults$adj.P.Val
-  dmrcate[["is.sig"]] <- proberesults$adj.P.Val < 0.05
-  class(dmrcate) <- "annot"
-  return(dmrcate)
 }

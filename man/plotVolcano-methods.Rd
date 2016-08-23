@@ -4,7 +4,8 @@
 \alias{plotVolcano}
 \title{Make a Volcano plot with the probe results}
 \usage{
-plotVolcano(object, variable = modelVariables(object)[1], mindiff = NULL)
+plotVolcano(object, variable = modelVariables(object)[1], mindiff = NULL,
+  main = paste("Volcano plot of", variable, "results"))
 }
 \arguments{
 \item{object}{\code{MethylationResults} or \code{MethylationRegionResults}}
@@ -13,6 +14,8 @@ plotVolcano(object, variable = modelVariables(object)[1], mindiff = NULL)
 Note: model name should be used. Original variable name might not be valid.}
 
 \item{mindiff}{Numeric with the minimum change in methylation or expression needed to be significant}
+
+\item{main}{Character with the plot title.}
 }
 \value{
 A plot is generated on the current graphics device.
@@ -25,7 +28,7 @@ if (require(minfiData)){
 betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
 set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
 methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
-plotEWAS(methyOneVar)
+plotVolcano(methyOneVar)
 }
 }
 

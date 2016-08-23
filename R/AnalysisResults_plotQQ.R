@@ -3,7 +3,7 @@
 setMethod(
   f = "plotQQ", 
   signature = "AnalysisResults",
-  definition = function(object, variable = modelVariables(object)[1]){
+  definition = function(object, variable = modelVariables(object)[1], main = paste("QQplot of", variable, "analysis")){
     if (is(object, "AnalysisRegionResults")){
       warning("QQplot is not recommended in range analyis.")
     }
@@ -16,7 +16,7 @@ setMethod(
     if (!variable %in% modelVariables(object)){
       stop("Variable is not present in phenodata.")
     }
-    qqplotBand(probeResults(object, drop = FALSE)[[variable]]$P.Value, main = paste("QQplot of", variable, "analysis"))  
+    qqplotBand(probeResults(object, drop = FALSE)[[variable]]$P.Value, main = main)  
   }
 ) 
 

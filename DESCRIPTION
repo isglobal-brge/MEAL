@@ -1,9 +1,9 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.3.3
-Authors@R: c(person("Carlos", "Ruiz", , "cruiz@creal.cat", role = c("aut", "cre")),
-  person("Carles", "Hernandez-Ferrer", , "chernandez@creal.cat", role = "aut"),
-  person("Juan R.", "González", ,"jrgonzalez@creal.cat", role = "aut"))
+Version: 1.3.5
+Authors@R: c(person("Carlos", "Ruiz", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
+  person("Carles", "Hernandez-Ferrer", , "carles.hernandez@isglobal.org", role = "aut"),
+  person("Juan R.", "González", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
     also perform methylation or expression analysis alone. Several plotting
     functionalities are included as well as a new region analysis based on

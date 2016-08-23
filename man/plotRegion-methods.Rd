@@ -4,7 +4,8 @@
 \alias{plotRegion}
 \title{Plot of the region}
 \usage{
-plotRegion(object, variable = modelVariables(object)[[1]], range = NULL)
+plotRegion(object, variable = modelVariables(object)[[1]], range = NULL,
+  main = paste("Region plot of ", variable))
 }
 \arguments{
 \item{object}{\code{AnalysisResults} or \code{AnalysisRegionResults}}
@@ -14,6 +15,8 @@ Note: model name should be used. Original variable name might not be valid.}
 
 \item{range}{GenomicRange whose cpgs will be shown (only for \code{AnalysisResults}
 objects)}
+
+\item{main}{Character with the plot title.}
 }
 \value{
 A plot is generated on the current graphics device.
