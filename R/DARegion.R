@@ -84,9 +84,6 @@ DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRc
   if (!is(set, "MethylationSet")){
     stop("set must be a MethylationSet.")
   }
-  if (missing(proberes)){
-    proberes <- rep(NA, length(coefficient))
-  }
   if (length(coefficient) > 1){
     regions <- lapply(coefficient, 
                       function(x) DARegion(set = set, model = model, methods = methods, 
