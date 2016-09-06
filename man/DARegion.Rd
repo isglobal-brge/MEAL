@@ -4,18 +4,14 @@
 \alias{DARegion}
 \title{Detect regions differentially methylated}
 \usage{
-DARegion(set, model, proberes, methods = c("blockFinder", "bumphunter",
-  "DMRcate"), coefficient = 2, num_permutations = 0,
-  bumphunter_cutoff = 0.05, bumps_max = 30000, num_cores = 1,
-  verbose = FALSE, ...)
+DARegion(set, model, methods = c("blockFinder", "bumphunter", "DMRcate"),
+  coefficient = 2, num_permutations = 0, bumphunter_cutoff = 0.05,
+  bumps_max = 30000, num_cores = 1, verbose = FALSE, ...)
 }
 \arguments{
 \item{set}{\code{MethylationSet}.}
 
 \item{model}{Model matrix representing a linear model.}
-
-\item{proberes}{Data.frame or list of data.frames with the results of 
-\code{DAProbe}}
 
 \item{methods}{Character vector with the names of the methods used to estimate 
 the regions. Valid names are: "blockFinder", "bumphunter" and "DMRcate".}
@@ -73,8 +69,7 @@ the use of \emph{BlockFinder} is not recommended.
 \emph{DMRcate} uses a first step where linear regression is performed in order
 to estimate coefficients of the variable of interest. This first step is equal
 to the calculation performed in \code{DAProbe}, but using in this situation
-linear regression and not robust linear regression. The results of \code{DAProbe}
-can be supplied in proberes argument, skipping this first step.
+linear regression and not robust linear regression. 
  
 \code{DARegion} supports multiple variable analyses. If coefficient is a vector,
 a list of lists will be returned. Each member will be named after the name of the

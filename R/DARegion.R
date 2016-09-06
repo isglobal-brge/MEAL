@@ -48,8 +48,7 @@
 #' \emph{DMRcate} uses a first step where linear regression is performed in order
 #' to estimate coefficients of the variable of interest. This first step is equal
 #' to the calculation performed in \code{DAProbe}, but using in this situation
-#' linear regression and not robust linear regression. The results of \code{DAProbe}
-#' can be supplied in proberes argument, skipping this first step.
+#' linear regression and not robust linear regression. 
 #'  
 #' \code{DARegion} supports multiple variable analyses. If coefficient is a vector,
 #' a list of lists will be returned. Each member will be named after the name of the
@@ -69,6 +68,9 @@ DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRc
                       coefficient = 2, num_permutations = 0, bumphunter_cutoff = 0.05, 
                       bumps_max = 30000, num_cores = 1, verbose = FALSE, ...)
 {
+  if (!is(set, "MethylationSet")){
+    stop("set must be a MethylationSet.")
+  }
   if (sum(methods %in% c("blockFinder", "bumphunter", "DMRcate", "none")) == 0){
     stop("Method variable is empty or none of the methods introduced is valid.")
   }
@@ -81,14 +83,11 @@ DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRc
   if (ncol(set) != nrow(model)){
     stop("The number of samples is different in the set and in the model.")
   }
-  if (!is(set, "MethylationSet")){
-    stop("set must be a MethylationSet.")
-  }
+
   if (length(coefficient) > 1){
     regions <- lapply(coefficient, 
                       function(x) DARegion(set = set, model = model, methods = methods, 
-                                           coefficient = x, proberes = proberes[[which(coefficient == x)]],
-                                           num_permutations = num_permutations, 
+                                           coefficient = x,                                            num_permutations = num_permutations, 
                                            bumphunter_cutoff = bumphunter_cutoff,
                                            bumps_max = bumps_max, num_cores = num_cores, 
                                            verbose = verbose, ...))

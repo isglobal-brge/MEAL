@@ -83,11 +83,11 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
   }
   
   # Compute Methylation-Expression pairs
-  rangesMeth <- rowRanges(multiset)[[meth_set_name]]
+  rangesMeth <- MultiDataSet::rowRanges(multiset)[[meth_set_name]]
   rangesMeth <- rangesMeth[featureNames(mset)]
   start(rangesMeth) <- start(rangesMeth) - flank
   end(rangesMeth) <- end(rangesMeth) + flank
-  rangesExprs <- rowRanges(multiset)[[exprs_set_name]]
+  rangesExprs <- MultiDataSet::rowRanges(multiset)[[exprs_set_name]]
   pairs <- GenomicRanges::findOverlaps(rangesExprs, rangesMeth,  type = "within")
   pairs <- data.frame(cpg = rownames(mset)[S4Vectors::subjectHits(pairs)], 
                       exprs = rownames(eset)[S4Vectors::queryHits(pairs)], 

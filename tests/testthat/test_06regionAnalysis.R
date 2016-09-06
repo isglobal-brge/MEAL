@@ -68,5 +68,6 @@ test_that("Check Errors", {
   expect_error(DARegion(set = set, model = model2), "The number of samples is different in the set and in the model.")
   eset <- ExpressionSet(matrix(runif(12, max = 15), 3))
   expect_error(DARegion(set = eset, model = model), "set must be a MethylationSet.")
+  emptyset <- new(Class = "MethylationSet")
   expect_error(DARegion(set = emptyset, model = model), "The set is empty.")
 })
