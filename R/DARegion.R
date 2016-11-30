@@ -187,9 +187,11 @@ DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRc
     dmrs[["blockFinder"]] <- NA
   }
   if("DMRcate" %in% methods){
-    myannotation <- DMRcate::cpg.annotate(datatype = "array", object = MultiDataSet::getMs(set), 
-                                          design = model, coef = coefficient)
-    dmrcoutput <- tryCatch(DMRcate::dmrcate(myannotation, lambda = 1000, C = 2), 
+    if("DMRcate" %in% methods){
+      myannotation <- DMRcate::cpg.annotate(datatype = "array", object = MultiDataSet::getMs(set), 
+                                            arraytype = "450K", design = model, 
+                                            what = "M", coef = coefficient)
+      dmrcoutput <- tryCatch(DMRcate::dmrcate(myannotation, lambda = 1000, C = 2), 
                            error = function(e) NULL)
     if (is.null(dmrcoutput)){
       dmrs[["DMRcate"]] <-  data.frame()
