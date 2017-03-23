@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.5.0
+Version: 1.5.2
 Authors@R: c(person("Carlos", "Ruiz", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Carles", "Hernandez-Ferrer", , "carles.hernandez@isglobal.org", role = "aut"),
   person("Juan R.", "González", ,"juanr.gonzalez@isglobal.org", role = "aut"))

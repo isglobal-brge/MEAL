@@ -25,6 +25,17 @@ test_that("p-vals calculation works", {
   expect_equal(ncol(pvals), as.integer(nrow(set)))
 })
 
+snps <- new("SnpSet", call = geno)
+fData(snps) <- map
+multi <- createMultiDataSet()
+multi <- add_methy(multi, set)
+multi <- add_snps(multi, snps)
+
+test_that("Correlation Function", {
+  res <- correlationMethSNPs(multi, range = range, variable_names = "sex", snps_cutoff = 0.5)
+})
+
+
 test_that("Empty variables", {
   emptyset <- new(Class = "MethylationSet")
   emptySnps <- new(Class = "SnpSet")
@@ -34,3 +45,5 @@ test_that("Empty variables", {
   expect_error(calculateRelevantSNPs(MsetEx, snps), "set must be a MethylationSet")
   
 })
+
+

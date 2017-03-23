@@ -7,11 +7,10 @@
 DARegionAnalysis(set, range, omicset = "methylation", variable_names,
   variable_types = rep(NA, length(variable_names)), covariable_names = NULL,
   covariable_types = rep(NA, length(covariable_names)), equation = NULL,
-  num_var = NULL, labels = NULL, sva = FALSE, use_snps = TRUE,
-  snps_cutoff = 0.01, region_methods = c("blockFinder", "bumphunter",
-  "DMRcate"), shrinkVar = FALSE, probe_method = "robust",
-  max_iterations = 100, num_cores = 1, verbose = FALSE, nperm = 1000,
-  ...)
+  num_var = NULL, labels = NULL, sva = FALSE,
+  region_methods = c("blockFinder", "bumphunter", "DMRcate"),
+  shrinkVar = FALSE, probe_method = "robust", max_iterations = 100,
+  num_cores = 1, verbose = FALSE, nperm = 1000, ...)
 }
 \arguments{
 \item{set}{\code{MethylationSet}, \code{ExpressionSet} or \code{MultiDataSet}.}
@@ -43,11 +42,6 @@ analysis will be performed. Compulsory if equation is not null.}
 
 \item{sva}{Logical indicating if Surrogate Variable Analysis should be applied.}
 
-\item{use_snps}{Logical indicating if SNPs should be used in the analysis.}
-
-\item{snps_cutoff}{Numerical with the threshold to consider a SNP-cpg correlation
-p-value significant.}
-
 \item{region_methods}{Character vector with the methods used in \code{DARegion}. If
 "none", region analysis is not performed.}
 
@@ -73,14 +67,13 @@ If FALSE nothing should be printed.}
 \code{AnalysisRegionResult} object
 }
 \description{
-Methylation analysis in a genomic range, taking into account snps.
+Methylation analysis in a genomic range.
 }
 \details{
-Set is filtered to the range specified. If SNPs are present in the set, 
-those are also filtered and then, correlation between SNPs and cpgs is tested. 
-SNPs that are correlated to at least one cpg are added to covariables. After that,
-\code{DAPipeline} is run. RDA test of the region is performed, returning the
-R2 between the variables and the beta matrix and a p-value of this R2.
+Set is filtered to the range specified. Probe analysis and DMR detection
+are run using the filtering set. Finally, RDA test of the region is performed, 
+returning the R2 between the variables and the beta matrix and a p-value of 
+this R2.
 }
 \examples{
 if (require(minfiData)){

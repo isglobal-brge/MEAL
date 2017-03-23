@@ -53,14 +53,8 @@ setClass (
 #' @aliases AnalysisRegionResults-class AnalysisRegionResults-methods
 #'  
 #' @slot range \code{GenomicRanges} used to perform the analysis.
-#' @slot snps Character vector with the snps that are correlated to at least one cpg.
-#' @slot snpsPvals Data.frame with the results of the correlation test SNP-cpg.
-#' @slot snpsVar Numeric with the variability of the SNP matrix explained by the components 
-#' used to adjust the linear model. 
 #' @slot rda \code{rda} object from \code{vegan} package with the results of RDA
 #' analysis in the range.
-#' @slot regionLM List with the R2 of the linear model of beta values against our 
-#' variable of interest and against significant SNPs for each cpg.
 #' @slot regionR2 Numeric with the R2 of the region calculated using a redundancy analysis.
 #' @slot RDAPval Numeric with the p-value of the RDA. 
 #' @slot globalR2 Numeric with the global R2.
@@ -71,11 +65,7 @@ setClass (
   contains = "AnalysisResults",
   representation(
     range = className("GRanges","GenomicRanges"),
-    snps = "character",
-    snpsPvals = "data.frame",
-    snpsVar = "numeric",
     rda = "list",
-    regionLM = "list",
     regionR2 = "numeric",
     RDAPval = "numeric",
     globalR2 = "numeric",

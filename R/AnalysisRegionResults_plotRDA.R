@@ -51,16 +51,17 @@ setMethod(
   o1 <- order(abs(temp[,1]), decreasing=TRUE)
   o2 <- order(abs(temp[,2]), decreasing=TRUE)
   
-  plot(ans, display=c("sp", "cn", "wa"), type="n", main = main)
+  plot(ans, display=c("sp", "cn", "wa"), type="n", main = main, scaling = 3)
   
   filter <- union(o1[1:n_feat], o2[1:n_feat])
     
-  text(ans, display = "species", select = filter, cex=0.6)
+  text(ans, display = "species", select = filter, cex=0.6, scaling = 3)
   
-  points(ans, display = "wa", col = ggplot2::alpha(as.numeric(phenofactor), 0.5), pch=19)
+  points(ans, display = "wa", col = ggplot2::alpha(as.numeric(phenofactor), 0.5), 
+         pch=19, scaling = 3)
   
   if (!is.null(factor)){
-    text(ans, display = "cn", col = "blue", label = factor)
+    text(ans, display = "cn", col = "blue", label = factor, scaling = 3)
   }
   
   legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(round(r2, 3)))), paste("p-value:", pval), levels(phenofactor)), 

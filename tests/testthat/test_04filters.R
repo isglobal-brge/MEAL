@@ -6,7 +6,6 @@ library(minfiData)
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
                                 ranges = IRanges(3000000, end = 12300000))
 set <- prepareMethylationSet(MsetEx[1:100, ], pData(MsetEx))
-methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 
 eset <- ExpressionSet(matrix(runif(6, max = 15), 4))
 annot <- data.frame(chromosome = c(rep("chrY", 3), "chr1" ), start = c(10000, 4500000, 5000000, 10000), 
@@ -52,6 +51,8 @@ test_that("ExpressionSet filtering, empty variables", {
 })
 
 test_that("Results filtering", {
+    methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+    
   filteredResults <- filterResults(probeResults(methyOneVar), range)
   expect_match(class(filteredResults), "data.frame")
   expect_equal(nrow(filteredResults), 32)
@@ -61,6 +62,8 @@ test_that("Results filtering", {
 })
 
 test_that("Results filtering, empty variables", {
+    methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+    
   emptyRes <- data.frame()
   emptyrange <- GRanges()
   expect_error(filterResults(emptyRes, emptyrange), "results is empty")
@@ -68,6 +71,8 @@ test_that("Results filtering, empty variables", {
 })
 
 test_that("Results filtering, wrong variables", {
+    methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+    
   outrange <- GenomicRanges::GRanges(seqnames=Rle("chrM"), 
                                      ranges = IRanges(30000, end=123000000))
   expect_warning(filterResults(probeResults(methyOneVar), outrange), "There are no cpgs in the range. An empty data.frame will be returned.")

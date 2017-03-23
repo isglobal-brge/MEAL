@@ -6,7 +6,8 @@
 #'  
 #' @export RDAset
 #' @param set \code{AnalysisResults}
-#' @param equation Character with the equation used in the analysis
+#' @param varsmodel Matrix with the model
+#' @param covarsmodel Matrix with the covariables model
 #' @return Object of class \code{rda}
 #' @seealso \code{\link[vegan]{rda}}
 #' @examples
@@ -16,38 +17,36 @@
 #' rda <- RDAset(methyOneVar)
 #' rda
 #' }
-RDAset <- function(set, equation = NULL){
-  if (!is(set, "AnalysisResults")){
-    stop("set must be a AnalysisResults")
-  }
-  if (ncol(featvals(set)) == 0 || nrow(featvals(set)) == 0){
-    stop("set has no beta values.")
-  }
-  if (ncol(pData(set)) == 0 || nrow(pData(set)) == 0){
-    stop("set has no phenotypic information.")
-  }
-  if (length(variableNames(set)) == 0){
-    stop("set must contain variable names.")
-  }
-  
-  if (set@originalclass == "ExpressionSet"){
-    vals <- t(featvals(set))
-  } else{
-    vals <- t(getMs(set))
-  }
-  
-  
-  varmatrix <- model(set)
-  covs <- covariableNames(set)
-  if (length(covs)){
-    covsind <- lapply(covs, function(x) grep(x, colnames(varmatrix)))
-    covsind <- unique(unlist(covsind))
-    covmatrix <- varmatrix[ , covsind, drop = FALSE]
-    varmatrix <- varmatrix[ , -covsind, drop = FALSE]
-    rdaRes <- vegan::rda(vals, varmatrix, covmatrix)
-  }else{
-    rdaRes <- vegan::rda(vals, varmatrix)
-  }
-  
-  return(rdaRes)
+RDAset <- function(set, varsmodel = NULL, covarsmodel = NULL){
+        
+        if (ncol(set) == 0 | nrow(set) == 0){
+                stop("The set is empty.")
+        }
+        if (ncol(varsmodel) == 0 | nrow(varsmodel) == 0){
+                stop("The model matrix is empty.")
+        }
+        if (ncol(set) != nrow(varsmodel)){
+                stop("The number of samples is different in the set and in the model")
+        }
+        
+        if (is(set, "MethylationSet")){
+                msg <- validObject(set, test = TRUE)
+                if (is(msg, "character")){
+                        message(paste(msg, collapse = "\n"))
+                        stop("checkProbes and checkSamples might solve validity issues.")
+                }
+                vals <- t(MultiDataSet::betas(set))
+        } 
+        else if (is(set, "matrix")){
+                vals <- t(set)
+        } else if (is(set, "ExpressionSet")){
+                vals <- t(exprs(set))
+        } else{
+                stop("set must be a MethylationSet, an ExpressionSet or a matrix.")
+        }
+        
+        
+        rdaRes <- vegan::rda(vals, varsmodel, covarsmodel)
+        
+        return(rdaRes)
 }

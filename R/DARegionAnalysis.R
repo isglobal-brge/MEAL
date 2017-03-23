@@ -1,12 +1,11 @@
 #' Analyse methylation or expression in a specific range
 #' 
-#' Methylation analysis in a genomic range, taking into account snps.
+#' Methylation analysis in a genomic range.
 #' 
-#' @details Set is filtered to the range specified. If SNPs are present in the set, 
-#' those are also filtered and then, correlation between SNPs and cpgs is tested. 
-#' SNPs that are correlated to at least one cpg are added to covariables. After that,
-#' \code{DAPipeline} is run. RDA test of the region is performed, returning the
-#' R2 between the variables and the beta matrix and a p-value of this R2.   
+#' @details Set is filtered to the range specified. Probe analysis and DMR detection
+#' are run using the filtering set. Finally, RDA test of the region is performed, 
+#' returning the R2 between the variables and the beta matrix and a p-value of 
+#' this R2.   
 #' 
 #' @export DARegionAnalysis
 #' @param set \code{MethylationSet}, \code{ExpressionSet} or \code{MultiDataSet}.
@@ -27,9 +26,6 @@
 #' analysis will be performed. Compulsory if equation is not null. 
 #' @param labels Character vector with the labels of the variables.
 #' @param sva Logical indicating if Surrogate Variable Analysis should be applied.
-#' @param use_snps Logical indicating if SNPs should be used in the analysis. 
-#' @param snps_cutoff Numerical with the threshold to consider a SNP-cpg correlation
-#' p-value significant. 
 #' @param region_methods Character vector with the methods used in \code{DARegion}. If
 #' "none", region analysis is not performed.
 #' @param shrinkVar Logical indicating if shrinkage of variance should be applied 
@@ -59,188 +55,185 @@ DARegionAnalysis <- function(set, range, omicset = "methylation", variable_names
                              covariable_names = NULL, 
                              covariable_types = rep(NA, length(covariable_names)), 
                              equation = NULL,   num_var = NULL,  labels = NULL, 
-                             sva = FALSE, use_snps = TRUE, snps_cutoff = 0.01, 
+                             sva = FALSE,  
                              region_methods = c("blockFinder", "bumphunter", "DMRcate"),
                              shrinkVar = FALSE, probe_method = "robust", max_iterations = 100, 
                              num_cores = 1, verbose = FALSE, nperm = 1e3,  ...){
-  snps <- FALSE
-  
-  if (!(is(set, "MethylationSet") | is(set, "ExpressionSet") | is(set, "MultiDataSet"))){
-    stop("set must be a MethylationSet, an ExpressionSet or a MultiDataSet.")
-  }
-  
-  if (is(set, "MultiDataSet")){
-    if (!"snps" %in% names(set)){
-      stop("To use a MultiDataSet, snps must be present in the object.")
+
+    if (!(is(set, "MethylationSet") | is(set, "ExpressionSet"))){
+        stop("set must be a MethylationSet or an ExpressionSet.")
     }
-    snpSet <- set[["snps"]]
-    set <- set[[omicset]]
-    snps <- TRUE
-  }
-  
-  msg <- validObject(set, test = TRUE)
-  
-  options("mc.cores" = num_cores)
-  
-  if (is(msg, "character")){
-    message(paste(msg, collapse = "\n"))
-    stop("checkProbes and checkSamples might solve validity issues.")
-  }
-  if (ncol(set) == 0 | nrow(set) == 0){
-    stop("The set has no beta values")
-  }
-  
-  if (ncol(pData(set)) == 0 | nrow(pData(set)) == 0){
-    stop("Set has no phenotypes")
-  }
-  
-  if (!length(variable_names) | !sum(variable_names %in% colnames(pData(set)))){
-    stop("variable_names is empty or is not a valid column of the phenoData of the set.")
-  }
-  
-  if (!is(range, "GenomicRanges")){
-    stop("range must be a GenomicRanges object.")
-  }
-  
-  if (length(range) == 0){
-    stop("range is empty.")
-  }
-  
-  if (length(range) != 1){
-    stop("range must be a GenomicRanges with only one range.")
-  }
-  
-  
-  if (verbose){
-    message("Filtering the set.")
-  }
-  
-  additives <- FALSE
-  allvar <- c(variable_types, covariable_types)
-  if (length(allvar) != sum(is.na(allvar))){
-    addmask <- allvar == "additive"
-    if (sum(addmask, na.rm = TRUE) > 0){
-      allvar[addmask] <- "categorical"
-      originalpheno <- preparePhenotype(phenotypes = pData(set), 
-                                        variable_names = c(variable_names, covariable_names),
-                                        variable_types = allvar)
-      additives <- TRUE
-    }
-  }
-  pData(set) <- preparePhenotype(phenotypes = pData(set), 
-                                 variable_names = c(variable_names, covariable_names),
-                                 variable_types = c(variable_types, covariable_types))
-  
-  ### Create model first to adjust for SVA using the whole dataset
-  model <- createModel(data = pData(set), equation = equation, names = labels)
-  if (sva){
-    if (verbose){
-      message("Computing SVA")
-    }
-    if (is(set, "ExpressionSet")){
-      vals <- exprs(set)
-    }else{
-      vals <- betas(set)
-    }
-    if (nrow(vals) > 1){
-      if (length(covariable_names) == 0){
-        model0 <- model.matrix(~ 1, pData(set))
-      }else{
-        model0 <- model.matrix(~ ., pData(set)[ , covariable_names, drop = FALSE])
-      }
-      n.sv <- sva::num.sv(vals, model)
-      if (n.sv > 0){
-        svobj <- sva::sva(vals, model, model0, n.sv = n.sv)
-        pData(set) <- cbind(pData(set), svobj$sv)
-      }
-    }
-  }
-  
-  filt.set <- filterSet(set, range)
-  if (!nrow(filt.set)){
-    stop("There are no features in the range specified.")
-  }  
-  if (snps){
-    if (verbose){
-      message("Filtering the SNPs.")
-    }
-    snpSet <- filterSet(snpSet, range)
     
-    if (nrow(snpSet) != 0){
-      if (verbose){
-        message("Obtaining SNPs P-values")
-      }
-      
-      snpspvals <- calculateRelevantSNPs(filt.set, snps = snpSet, num_cores = num_cores)
-      relevantsnps <- rownames(snpspvals)[sapply(rownames(snpspvals),
-                                                 function(x) any(snpspvals[x, ] < snps_cutoff))]
-      snpsgeno <- snpCall(snpSet)
-      snpsgeno <- snpsgeno[rownames(snpspvals), , drop = FALSE]
-      variable_label <- paste0(variable_names, collapse = "")
-      
-      if (verbose){
-        message("Calculating variables R2.")
-      }
-      
-      if (sum(snpspvals < snps_cutoff) == 0){
-        regionLM <- list()
-      }else{
-        regionLM <- lapply(rownames(filt.set), function(x) 
-          explainedVariance(data = data.frame(as.vector(getMs(filt.set[x, ])), 
-                                              pData(filt.set)[ , variable_names],
-                                              t(snpsgeno[snpspvals[ , x ] < snps_cutoff, , drop = FALSE]),
-                                              pData(filt.set)[ , covariable_names]), 
-                            num_mainvar = length(variable_names),
-                            num_covariates = length(covariable_names),
-                            variable_label = variable_label))
-        names(regionLM) <- rownames(filt.set)
-      }  
-      #Prepare snps to be included in the phenotypes matrix
-      snpsgeno <- snpsgeno[relevantsnps, , drop = FALSE]
-      if (nrow(snpsgeno) != 0){
-        snpsgeno <- snpsgeno[!duplicated(snpsgeno, MARGIN = 1), , drop = FALSE]
-        snpsgeno <- normalSNP(snpsgeno)
-        pc <- prcomp(snpsgeno)
-        snpsgeno <- pc$rotation
-        if (ncol(snpsgeno) > 6){
-          snpsgeno <- snpsgeno[ , 1:6]
-          snpsVar <- (cumsum(pc$sdev^2)/sum(pc$sdev^2))[6]
-        } else {
-          snpsVar <- 1
+    msg <- validObject(set, test = TRUE)
+    
+    
+    if (is(msg, "character")){
+        message(paste(msg, collapse = "\n"))
+        stop("checkProbes and checkSamples might solve validity issues.")
+    }
+    if (ncol(set) == 0 | nrow(set) == 0){
+        stop("The set has no beta values")
+    }
+    
+    if (ncol(pData(set)) == 0 | nrow(pData(set)) == 0){
+        stop("Set has no phenotypes")
+    }
+    
+    if (is(set, "ExpressionSet") & !all(c("chromosome", "start", "end") %in% fvarLabels(set))){
+        stop("If set is an ExpressionSet, it must contain a fData with columns chromosome, start and end.")
+    }
+    
+    if (!length(variable_names) | !sum(variable_names %in% colnames(pData(set)))){
+        stop("variable_names is empty or is not a valid column of the phenoData of the set.")
+    }
+    
+    if (!is(range, "GenomicRanges")){
+        stop("range must be a GenomicRanges object.")
+    }
+    
+    if (length(range) == 0){
+        stop("range is empty.")
+    }
+    
+    if (length(range) != 1){
+        stop("range must be a GenomicRanges with only one range.")
+    }
+    
+    if (verbose){
+        message("Filtering the set.")
+    }
+    
+    filt.set <- filterSet(set, range)
+    if (!nrow(filt.set)){
+        stop("There are no features in the range specified.")
+    }  
+    
+    
+    options("mc.cores" = num_cores)
+    
+    additives <- FALSE
+    allvar <- c(variable_types, covariable_types)
+    if (length(allvar) != sum(is.na(allvar))){
+        addmask <- allvar == "additive"
+        if (sum(addmask, na.rm = TRUE) > 0){
+            allvar[addmask] <- "categorical"
+            originalpheno <- preparePhenotype(phenotypes = pData(filt.set), 
+                                              variable_names = c(variable_names, covariable_names),
+                                              variable_types = allvar)
+            additives <- TRUE
         }
-        colnames(snpsgeno) <- paste0("snp", colnames(snpsgeno))
-        pheno <- merge(pData(filt.set), snpsgeno, by=0)
-        rownames(pheno) <- pheno$Row.names
-        pheno <- pheno[colnames(betas(filt.set)), ]
-        pheno <- pheno[ , -1]
-        pData(filt.set) <- pheno
-        covariable_names <- c(covariable_names, colnames(snpsgeno))
-      } else {
-        snpsVar <- as.numeric(NA)
-      }
     }
-  }
-  results <- DAPipeline(filt.set, variable_names = variable_names, 
-                        covariable_names = covariable_names, 
-                        verbose = verbose, num_cores = num_cores, 
-                        num_feat = nrow(filt.set), region_methods = region_methods, 
-                        equation = equation, num_var = num_var, ...)
-  if (additives){
-    if (snps){
-      originalpheno <- merge(originalpheno, snpsgeno, by = 0)
-      originalpheno <- originalpheno[ , -1]
-      rownames(originalpheno) <- originalpheno$Row.names
+    
+    if (verbose){
+        message("Preparing phenotype object")
     }
-    pData(set) <- originalpheno
-  }
-  if (snps){  
-    output <- analysisRegionResults(analysisResults = results, set = set, range = range,
-                                    snpspvals = snpspvals, snpsVar = snpsVar, 
-                                    regionlm = regionLM, relevantsnps = relevantsnps, 
-                                    equation = equation, nperm = nperm)
-  }else{
-    output <- analysisRegionResults(analysisResults = results, set = set, range = range,
-                                    equation = equation, nperm = nperm)                           
-  }
-  return(output)
+    pData(filt.set) <- preparePhenotype(phenotypes = pData(filt.set), 
+                                   variable_names = c(variable_names, covariable_names),
+                                   variable_types = c(variable_types, covariable_types))
+    if (verbose){
+        message("Creating the model")
+    }
+    
+    model <- createModel(data = pData(filt.set), equation = equation, names = labels)
+    
+    if (sva){
+        if (verbose){
+            message("Computing SVA")
+        }
+        if (is(set, "ExpressionSet")){
+            vals <- exprs(set)
+        }else{
+            vals <- betas(set)
+        }
+        if (nrow(vals) > 1){
+            if (length(covariable_names) == 0){
+                model0 <- model.matrix(~ 1, pData(set))
+            }else{
+                model0 <- model.matrix(~ ., pData(set)[ , covariable_names, drop = FALSE])
+            }
+            n.sv <- sva::num.sv(vals, model)
+            if (n.sv > 0){
+                svobj <- sva::sva(vals, model, model0, n.sv = n.sv)
+                model <- cbind(model, svobj$sv)
+            }
+        }
+    }
+    
+    if (!is.null(equation) && is.null(num_var)){
+        stop("If costum equation, num_var must be specified.")
+    }
+    if (is.null(num_var)){
+        phenovar <- pData(filt.set)[, variable_names, drop = FALSE]
+        continuous_vars <- sapply(variable_names, function(x) is.numeric(phenovar[,x]))
+        if (sum(continuous_vars) < ncol(phenovar)){
+            num_var <- sum(sapply(variable_names[!continuous_vars], 
+                                  function(x) nlevels(phenovar[, x]) - 1), continuous_vars)
+        }else{
+            num_var <- sum(continuous_vars)
+        }
+    }
+    coefficient <- 2:(1 + num_var)
+    
+    if (verbose){
+        message("Probe Analysis started")
+    }
+    probes <- DAProbe(set = filt.set, model = model, coefficient = coefficient, 
+                      shrinkVar = shrinkVar, method = probe_method, 
+                      max_iterations = max_iterations)
+    
+    if (is(set, "MethylationSet")){
+        
+        if (verbose){
+            message("Region Analysis started")
+        }
+        region <- DARegion(set = filt.set, model = model, methods = region_methods,  
+                           coefficient = coefficient, verbose = verbose, 
+                           num_cores = num_cores, ...)
+        
+    }else{
+        region <- list(bumphunter = NA, blockFinder = NA, DMRcate = NA)
+    }
+    
+    if (additives){
+        pData(filt.set) <- originalpheno
+    }
+    
+    if (verbose){
+        message("Compute RDA")
+    }
+    varsmodel <- model[, 1:(1 + num_var)]
+    
+    if (ncol(varsmodel) != ncol(model)){
+        covarsmodel <- model[, -c(1:(1 + num_var))]        
+    }else{
+        covarsmodel <- NULL
+    }
+    
+    RDAres <- RDAset(filt.set, varsmodel, covarsmodel)
+    rdapval <- vegan::anova.cca(RDAres, permutations = permute::how(nperm = nperm))[["Pr(>F)"]][1]
+    rdaR2 <- vegan::RsquareAdj(RDAres)$r.squared
+    
+    ### Compute Global RDA vals
+    if (is(set, "MethylationSet")){
+        fullMat <- MultiDataSet::betas(set)
+    }else{
+        fullMat <- exprs(set)
+    }
+    
+    globalRDA <- computeRDAR2(fullMat = fullMat, varsmodel = varsmodel, 
+                              covarsmodel = covarsmodel, featNum = nrow(filt.set),
+                              R2 = rdaR2, nperm = nperm)
+    
+    
+    RDAres <- list(rda = RDAres, rdapval = rdapval, rdaR2 = rdaR2, 
+                   globalpval = globalRDA["globalpval"], 
+                   globalR2 = globalRDA["globalR2"])
+    
+    output1 <-  analysisResults(set = filt.set, model = model, regionResults = region, 
+                                           probeResults = probes, 
+                                num_vars = length(variable_names),
+                                           num_feat = nrow(filt.set))
+    output <- analysisRegionResults(analysisResults = output1, range = range,
+                                        rdaRes = RDAres)                           
+return(output)
 }

@@ -57,7 +57,7 @@ setMethod(
       ggplot2::ggtitle(main) +
       ggplot2::theme(legend.position = "none",  axis.text.x  = ggplot2::element_text(angle = 45, size = 8)) + 
       ggplot2::geom_hline(yintercept = bonflevel, linetype = 1, col = 'red') +
-      ggplot2::scale_colour_manual(values = cbPalette) + ggplot2::ggtitle(paste("Manhattan plot of", variable, "results"))
+      ggplot2::scale_colour_manual(values = cbPalette)
     if (!is.null(range)){
       selectedcpgs <- rownames(filterResults(dmp, range))
       seldmp <- dmp[selectedcpgs, , drop = FALSE]

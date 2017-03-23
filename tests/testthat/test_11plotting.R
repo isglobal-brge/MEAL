@@ -9,22 +9,6 @@ range <- GenomicRanges::GRanges(seqnames=Rle("chrY"),
                                 ranges = IRanges(3000000, end=12300000))
 rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
 
-##Create multiset with snps
-geno <- matrix(rep(c(3, 1, 3, 1, 1, 1), 2), ncol = 6, byrow = T)
-colnames(geno) <- c("5723646052_R02C02", "5723646052_R04C01", "5723646052_R05C02",
-                    "5723646053_R04C02", "5723646053_R05C02", "5723646053_R06C02")
-rownames(geno) <- c("rs3115860", "SNP1-1628854")
-map <- AnnotatedDataFrame(data.frame(chromosome = c("chrY", "chr2"), position = c(4241114, 1234321),
-                  stringsAsFactors = FALSE))
-rownames(map) <- rownames(geno)
-snps <- new("SnpSet", call = geno, featureData = map)
-
-multiset <- new("MultiDataSet")
-multiset <- add_methy(multiset, set)
-multiset <- add_snps(multiset, snps)
-rangeSNPsCov <- DARegionAnalysis(multiset, variable_names = "sex", range = range, 
-                                    snps_cutoff = 0.05)
-
 eset <- ExpressionSet(matrix(runif(12, max = 15), 3))
 annot <- data.frame(chromosome = rep("chrY", 3), start = c(10000, 4500000, 5000000), 
                     end = c(100090, 6000000, 90000000))
@@ -80,15 +64,6 @@ test_that("Plot Region", {
   expect_error(plotRegion(methyOneVar), "range must be present to use plotRegion with a AnalysisResults")
   expect_error(plotRegion(esetRes), "Results must have a column called position to perform this plot.")
   plotRegion(rangeNoSNPs)
-})
-
-test_that("Plot Region R2", {  
-  expect_error(plotRegionR2(rangeSNPsCov, 12351413654), "feat index must be greater than 0 and smaller than the number of cpgs.")
-  expect_error(plotRegionR2(rangeSNPsCov, -12), "feat index must be greater than 0 and smaller than the number of cpgs.")
-  expect_error(plotRegionR2(rangeSNPsCov, "12"), "feat name is not present in the set.")
-  expect_error(plotRegionR2(rangeSNPsCov, 1:4), "feat must contain only one value")
-  expect_error(plotRegionR2(rangeSNPsCov, 1:5), "feat must contain only one value.")
-  plotRDA(rangeSNPsCov)
 })
 
 dev.off()

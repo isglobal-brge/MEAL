@@ -5,7 +5,8 @@
 #' 
 #' @export DAProbe
 #' 
-#' @param set \code{MethylationSet}, matrix of beta values or \code{ExpressionSet}. 
+#' @param set \code{MethylationSet}, matrix of beta values (methylation), matrix
+#' of expression values or \code{ExpressionSet}. 
 #' @param model Matrix with the model
 #' @param coefficient Numeric with the index of the model matrix used to perform
 #'  the analysis. If a vector is supplied, a list will be returned.
@@ -71,7 +72,7 @@ DAProbe <- function(set, model, coefficient = 2, shrinkVar = FALSE, method = "ro
   } else if (is(set, "ExpressionSet")){
     M <- exprs(set)
   } else{
-    stop("set must be a MethylationSet or a matrix.")
+    stop("set must be a MethylationSet, an ExpressionSet or a matrix.")
   }
   
   fit <- limma::lmFit(M, model, method = method, maxit = max_iterations)

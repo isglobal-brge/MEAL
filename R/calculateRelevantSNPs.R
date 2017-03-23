@@ -30,7 +30,7 @@ calculateRelevantSNPs <- function(set, snps, num_cores = 1){
     stop("SnpSet is empty.")
   }
   
-  Ms <- data.frame(t(getMs(set)))
+  Ms <- data.frame(t(betas(set)))
   snps <- new("SnpMatrix", t(snpCall(snps)))
   
   if (nrow(snps) != nrow(Ms)){

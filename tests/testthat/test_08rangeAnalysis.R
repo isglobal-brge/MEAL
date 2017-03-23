@@ -4,20 +4,6 @@ library(minfiData)
 set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
                                 ranges = IRanges(3000000, end=12300000))
-##Create multiset with snps
-geno <- matrix(rep(c(2, 1, 2, 1, 1, 1), 2), ncol = 6)
-colnames(geno) <- c("5723646052_R02C02", "5723646052_R04C01", "5723646052_R05C02",
-                    "5723646053_R04C02", "5723646053_R05C02", "5723646053_R06C02")
-rownames(geno) <- c("rs3115860", "SNP1-1628854")
-map <- data.frame(chromosome = c("chrY", "chr2"), position = c(4241114, 1234321),
-                       stringsAsFactors = FALSE)
-rownames(map) <- rownames(geno)
-snps <- new("SnpSet", call = geno)
-fData(snps) <- map
-
-multiset <- new("MultiDataSet")
-multiset <- add_methy(multiset, set)
-multiset <- add_snps(multiset, snps)
 
 eset <- ExpressionSet(matrix(runif(12, max = 15), 3))
 annot <- data.frame(chromosome = rep("chrY", 3), start = c(10000, 4500000, 5000000), 
@@ -30,10 +16,7 @@ test_that("One variable categorical, two levels", {
   results <- DARegionAnalysis(set = set, variable_names = "sex", 
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
-  results <- DARegionAnalysis(set = multiset, variable_names = "sex", 
-                                  variable_types = "categorical", range = range)
-  expect_match(class(results), "AnalysisRegionResults")
-  results <- DARegionAnalysis(set = eset, variable_names = "sex", 
+ results <- DARegionAnalysis(set = eset, variable_names = "sex", 
                                   variable_types = "categorical", range = range)
   expect_match(class(results), "AnalysisRegionResults")
   results <- DARegionAnalysis(set = eset, variable_names = "sex", sva = TRUE,
@@ -60,18 +43,7 @@ test_that("Empty variables", {
   emptyset <- new(Class = "MethylationSet")
   expect_error(DARegionAnalysis(set = emptyset, variable_names = character(), 
                                     variable_types = character(), range = range), "The set has no beta values")
-  expect_error(DARegionAnalysis(set = multiset, variable_names = character(), 
-                                    variable_types = character(), range = range), "variable_names is empty.")
-  expect_error(DARegionAnalysis(set = multiset, variable_names = "sex", 
-                                    variable_types = character(), range = range), "variable_types is empty.")
-  expect_error(DARegionAnalysis(set = multiset, variable_names = character(), 
-                                    covariable_names = "sex", covariable_types = "categorical",
-                                    range = range),
-               "variable_names is empty or is not a valid column of the phenoData of the set.")
-  expect_error(DARegionAnalysis(set = multiset, variable_names = "cot", covariable_names = "sex",
-                                    covariable_types = "categorical", range = range),
-               "variable_names is empty or is not a valid column of the phenoData of the set.")
-  dataset <- matrix(runif(20), 5)
+   dataset <- matrix(runif(20), 5)
   expect_error(DARegionAnalysis(set = dataset, variable_names = character(), 
                                     variable_types = character(), range = range),
                "set must be a MethylationSet.")

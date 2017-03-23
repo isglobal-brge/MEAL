@@ -22,7 +22,7 @@ performs per probe analysis and \link{DARegion} performs per region analysis.
 There are two wrappers: \link{DAPipeline} and \link{DARegionAnalysis} 
 that performs per probe and per region analysis. The first one analyses the whole
 methylation sites and the second one only a given region. Finally, 
-\link{correlationMethExprs} compute the correlation 
+\link{correlationMethExprs} and \link{multiCorrMethExprs} compute the correlation 
 between methylation and expression probes
 }
 

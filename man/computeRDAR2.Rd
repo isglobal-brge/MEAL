@@ -4,14 +4,19 @@
 \alias{computeRDAR2}
 \title{Compute signification of RDA test}
 \usage{
-computeRDAR2(set, res, R2, nperm = 1e+06 - 1)
+computeRDAR2(fullMat, varsmodel, covarsmodel = NULL, featNum, R2,
+  nperm = 1e+06 - 1)
 }
 \arguments{
-\item{set}{\code{MethylationSet} or \code{ExpressionSet}}
+\item{fullMat}{Matrix with the whole genome expression or methylation values}
 
-\item{res}{\code{AnalysisResults}}
+\item{varsmodel}{Matrix with the model}
 
-\item{R2}{Numeric with the R2 obtained in the RDA}
+\item{covarsmodel}{Matrix with the covariables model}
+
+\item{featNum}{Numeric with the number of features of the RDA model}
+
+\item{R2}{Numeric with the R2 of the RDA model}
 
 \item{nperm}{Numeric with the number of permutations.}
 }

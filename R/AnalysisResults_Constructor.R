@@ -63,7 +63,7 @@ analysisResults <- function(set, model, regionResults, probeResults, num_feat = 
   if (is(set, "ExpressionSet")){
     features <- exprs(set[feats, ])
   }else{
-    features <- betas(set[feats, ])
+    features <- MultiDataSet::betas(set[feats, ])
   }
   results <- new(Class = "AnalysisResults", features = features, phenotypes = phenotypes,
                  model = model, sampleNames = sampleNames, variableNames = variablesNames, 

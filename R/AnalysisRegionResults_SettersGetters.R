@@ -39,16 +39,16 @@ setMethod(
   }
 )
 
-
-#' @describeIn AnalysisRegionResults Get R2 values of cpgs vs variables.
-#' @aliases AnalysisRegionResults-methods regionLM
-setMethod(
-  f = "regionLM",
-  signature = "AnalysisRegionResults",
-  definition = function(object) {
-    return(object@regionLM)
-  }
-)
+#' 
+#' #' @describeIn AnalysisRegionResults Get R2 values of cpgs vs variables.
+#' #' @aliases AnalysisRegionResults-methods regionLM
+#' setMethod(
+#'   f = "regionLM",
+#'   signature = "AnalysisRegionResults",
+#'   definition = function(object) {
+#'     return(object@regionLM)
+#'   }
+#' )
 
 #' @describeIn AnalysisRegionResults Get p-value of RDA. 
 #' @aliases AnalysisRegionResults-methods RDAPval
@@ -60,7 +60,7 @@ setMethod(
   }
 )
 
-#' @describeIn AnalysisRegionResults Get R2 of the region vs variables lineal model 
+#' @describeIn AnalysisRegionResults Get R2 of the RDA model
 #' @aliases AnalysisRegionResults-methods regionR2
 setMethod(
   f = "regionR2",
@@ -69,35 +69,35 @@ setMethod(
     return(object@regionR2)
   }
 )
-
-#' @describeIn AnalysisRegionResults Get SNPs data
-#' @aliases AnalysisRegionResults-methods snps
-setMethod(
-  f = "snps",
-  signature = "AnalysisRegionResults",
-  definition = function(object) {
-    return(object@snps)
-  }
-)
-
-#' @describeIn AnalysisRegionResults Get p-values of correlations of snps-cpgs
-#' pairs
-#' @aliases AnalysisRegionResults-methods snpsPvals
-setMethod(
-  f = "snpsPvals",
-  signature = "AnalysisRegionResults",
-  definition = function(object) {
-    return(object@snpsPvals)
-  }
-)
-
-#' @describeIn AnalysisRegionResults Get variance of SNP matrix present in the 
-#' component used to adjusting.
-#' @aliases AnalysisRegionResults-methods snpsVar
-setMethod(
-  f = "snpsVar",
-  signature = "AnalysisRegionResults",
-  definition = function(object) {
-    return(object@snpsVar)
-  }
-)
+#' 
+#' #' @describeIn AnalysisRegionResults Get SNPs data
+#' #' @aliases AnalysisRegionResults-methods snps
+#' setMethod(
+#'   f = "snps",
+#'   signature = "AnalysisRegionResults",
+#'   definition = function(object) {
+#'     return(object@snps)
+#'   }
+#' )
+#' 
+#' #' @describeIn AnalysisRegionResults Get p-values of correlations of snps-cpgs
+#' #' pairs
+#' #' @aliases AnalysisRegionResults-methods snpsPvals
+#' setMethod(
+#'   f = "snpsPvals",
+#'   signature = "AnalysisRegionResults",
+#'   definition = function(object) {
+#'     return(object@snpsPvals)
+#'   }
+#' )
+#' 
+#' #' @describeIn AnalysisRegionResults Get variance of SNP matrix present in the 
+#' #' component used to adjusting.
+#' #' @aliases AnalysisRegionResults-methods snpsVar
+#' setMethod(
+#'   f = "snpsVar",
+#'   signature = "AnalysisRegionResults",
+#'   definition = function(object) {
+#'     return(object@snpsVar)
+#'   }
+#' )

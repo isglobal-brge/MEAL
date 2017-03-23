@@ -4,12 +4,14 @@
 \alias{RDAset}
 \title{Calculate RDA for a set}
 \usage{
-RDAset(set, equation = NULL)
+RDAset(set, varsmodel = NULL, covarsmodel = NULL)
 }
 \arguments{
 \item{set}{\code{AnalysisResults}}
 
-\item{equation}{Character with the equation used in the analysis}
+\item{varsmodel}{Matrix with the model}
+
+\item{covarsmodel}{Matrix with the covariables model}
 }
 \value{
 Object of class \code{rda}

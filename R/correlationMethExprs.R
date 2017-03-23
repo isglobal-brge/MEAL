@@ -44,30 +44,65 @@
 #'  \item P.Value: p-value of the beta coefficient
 #'  \item adj.P.Val: q-value computed using B&H
 #' }
-correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL, 
+correlationMethExprs <- function(multiset, 
+                                 meth_set_name = NULL, exprs_set_name = NULL,
+                                 vars_meth = NULL, vars_exprs = NULL, 
                                  vars_meth_types = rep(NA, length(vars_meth)), 
                                  vars_exprs_types = rep(NA, length(vars_exprs)),
-                                 meth_set_name = "methylation", exprs_set_name = "expression",
                                  sel_cpgs, flank = 250000, num_cores = 1, verbose = TRUE){
   
-  options("mc.cores" = num_cores)
-  
-  # Check MultiDataSet
+  ######################################################################################
+  ## Data Checking
+  # Check object is a MultiDataSet
   if (!is(multiset, "MultiDataSet")){
     stop("multiset must be a MultiDataSet")
   }
   
+  # Check meth_set_name and exprs_set_name are characters
+  if (!(is.character(meth_set_name) | is.null(meth_set_name))){
+    stop("meth_set_name must be a character.")
+  } 
+  if (!(is.character(exprs_set_name) | is.null(exprs_set_name))){
+    stop("exprs_set_name must be a character.")
+  } 
+  
+  # Add the dataset type to the names
+  meth_set_name <- paste(c("methylation", meth_set_name), collapse = "+")
+  exprs_set_name <- paste(c("expression", exprs_set_name), collapse = "+")
+  
+  
+  # Check our object has the right sets
   if (!all(c(meth_set_name, exprs_set_name) %in% names(multiset))){
     stop("multiset must contain meth_set_name and exprs_set_name.")
   }
   
+  if (!all(c(meth_set_name, exprs_set_name) %in% rowRangesElements(multiset))){
+    stop("multiset must contain meth_set_name and exprs_set_name.")
+  }
+  
+  # Check that flank is numeric, positive and is only one number
+  if (!is(flank, "numeric") || length(flank) > 1 || flank < 0){
+    stop("flank must be a positive integer")
+  }
+  #####################################################################################
+  
+  #####################################################################################
+  ## Preparation of data
+  #############################
+  ## Preparation of data 1
   # Select only our sets
   multiset <- multiset[, c(meth_set_name, exprs_set_name)]
   
   ## Select common samples
   multiset <- commonSamples(multiset)
+  #############################
+  ## Preparation of data 2
   
   mset <- multiset[[meth_set_name]]
+  eset <- multiset[[exprs_set_name]]
+  
+  #############################
+  ## Preparation of data 3
   if (!missing(sel_cpgs)){
     if (!is.character(sel_cpgs) | length(sel_cpgs) == 0){
       stop("sel_cpgs must be a character vector with the name of the CpGs to be used.")
@@ -76,29 +111,30 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
     }
   }
   
-  eset <- multiset[[exprs_set_name]]
-  
- if (!is(flank, "numeric") || length(flank) > 1 || flank < 0){
-    stop("flank must be a positive integer")
-  }
-  
+  #############################
+  ## Preparation of data 4
   # Compute Methylation-Expression pairs
-  rangesMeth <- MultiDataSet::rowRanges(multiset)[[meth_set_name]]
+  rangesMeth <- rowRanges(multiset)[[meth_set_name]]
   rangesMeth <- rangesMeth[featureNames(mset)]
+  rangesExprs <- rowRanges(multiset)[[exprs_set_name]]
+  #####################################################################################
+  
+  #####################################################################################
+  ## Implementation of the algorithm
+  #############################
+  ## Implementation of the algorithm 1
   start(rangesMeth) <- start(rangesMeth) - flank
   end(rangesMeth) <- end(rangesMeth) + flank
-  rangesExprs <- MultiDataSet::rowRanges(multiset)[[exprs_set_name]]
   pairs <- GenomicRanges::findOverlaps(rangesExprs, rangesMeth,  type = "within")
   pairs <- data.frame(cpg = rownames(mset)[S4Vectors::subjectHits(pairs)], 
                       exprs = rownames(eset)[S4Vectors::queryHits(pairs)], 
                       stringsAsFactors = FALSE)
-  
   if (nrow(pairs) == 0){
     warning("There are no expression probes in the range of the cpgs. An empty data.frame will be returned.")
     return(data.frame(cpg = character(0), exprs = character(0), Beta = integer(0), 
                       se = integer(0), P.Value = integer(0), adj.P.val = integer(0)))
   }
-  
+  #############################
   ## Filter sets to only features in the pairs
   mset <- mset[unique(pairs[ , 1]), ]
   eset <- eset[unique(pairs[ , 2]), ]
@@ -108,27 +144,36 @@ correlationMethExprs <- function(multiset, vars_meth = NULL, vars_exprs = NULL,
     message("Computing residuals")
   }
   
+  #############################
+  ## Implementation of the algorithm 2
   # Computing residuals
   methres <- setResidues(mset, vars_names = vars_meth, vars_types = vars_meth_types)
   exprsres <- setResidues(eset, vars_names = vars_exprs, vars_types = vars_exprs_types)
-  
+  #############################
   if (verbose){
     message("Computing correlation Methylation-Expression")
   }
   
+  #############################
+  ## Implementation of the algorithm 3
   residualsCorr <- function (methy_res, exprs_res){
     fit <- lm(exprs_res ~ methy_res)
     return(c(summary(fit)$coef[2, 1], summary(fit)$coef[2,2], summary(fit)$coef[2,4]))
   }
   regvals <- mclapply(1:nrow(pairs), 
-                      function(x) residualsCorr(methres[pairs[x, 1], ], exprsres[pairs[x, 2], ]))
+                      function(x) residualsCorr(methres[pairs[x, 1], ], exprsres[pairs[x, 2], ]), 
+                      mc.cores = num_cores)
+  #####################################################################################
   
+  #####################################################################################
+  ## Formatting the results
   res <- data.frame(pairs, t(data.frame(regvals)))
   colnames(res) <- c("cpg", "exprs", "Beta", "se", "P.Value")
   res$adj.P.Val <- p.adjust(res$P.Value, "BH")
   res <- res[order(res$adj.P.Val), ]
   rownames(res) <- NULL
   res
+  #####################################################################################
 }
 
 setResidues <- function(set, vars_names, vars_types){

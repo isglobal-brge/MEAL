@@ -6,7 +6,8 @@
 \usage{
 DARegion(set, model, methods = c("blockFinder", "bumphunter", "DMRcate"),
   coefficient = 2, num_permutations = 0, bumphunter_cutoff = 0.05,
-  bumps_max = 30000, num_cores = 1, verbose = FALSE, ...)
+  bumps_max = 30000, num_cores = 1, verbose = FALSE, lambda = 1000,
+  C = 2, ...)
 }
 \arguments{
 \item{set}{\code{MethylationSet}.}
@@ -32,6 +33,10 @@ If two values are given, they will be upper and lower limits.}
 
 \item{verbose}{Logical value. If TRUE, it writes out some messages indicating progress. 
 If FALSE nothing should be printed.}
+
+\item{lambda}{Parameter of the gaussian kernel of \code{DMRcate}}
+
+\item{C}{Parameter of the scaling factor for bandwidth of \code{DMRcate}}
 
 \item{...}{Further arguments passsed to \code{bumphunter} function.}
 }
