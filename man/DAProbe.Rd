@@ -42,4 +42,3 @@ if (require(minfiData)){
  head(res)
 }
 }
-

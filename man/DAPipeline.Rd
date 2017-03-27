@@ -79,7 +79,8 @@ for which the calculation will be done \strong{must} be specified.
 }
 \examples{
 if (require(minfiData)){
- set <- prepareMethylationSet(matrix = getBeta(MsetEx)[1:10, ], pheno = pData(MsetEx))
+ set <- prepareMethylationSet(matrix = getBeta(MsetEx)[1:10, ], 
+ pheno = data.frame(pData(MsetEx)))
  res <- DAPipeline(set, variable_names = "Sample_Group", probe_method = "ls") 
  res
 }
@@ -87,4 +88,3 @@ if (require(minfiData)){
 \seealso{
 \code{\link{preparePhenotype}}
 }
-

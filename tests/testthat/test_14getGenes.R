@@ -1,7 +1,7 @@
 context("Get genes")
 
 library(minfiData)
-set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 methyTwoVar <- DAPipeline(set, variable_names =  "person", probe_method = "ls")
 

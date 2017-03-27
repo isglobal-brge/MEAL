@@ -14,30 +14,21 @@
 #' 
 #' @param multiset \code{MultiDataSet} containing a \code{methylation} and an 
 #' \code{expression} slots.
-#' @param vars_meth Character vector with the names of the variables that will be
-#' used to obtain the methylation residuals. By default, none is used and residuals 
-#' are not computed.
-#' @param vars_meth_types Character vector with the types of the methylation variables. 
-#' By default, variables type won't be changed. 
-#' @param vars_exprs Character vector with the names of the variables that will
-#' be used to obtain the expression residuals. By default, none is used and
-#' residuals are not computed.
-#' @param vars_exprs_types Character vector with the types of the expression variables. 
-#' By default, variables type won't be changed.
 #' @param meth_set_name Character vector with the name of the \code{MultiDataSet}'s slot containing methylation
 #' data.
-#' @param exprs_set_name Character vector with the name of the \code{MultiDataSet}'s slot containing expression
+#' @param snps_set_name Character vector with the name of the \code{MultiDataSet}'s slot containing SNPs
 #' data.
-#' @param sel_cpgs Character vector with the name of the CpGs used in the analysis. If empty, all the CpGs of the 
-#' methylation set will be used. 
+#' @param variable_names Character vector with the names of the variables that will be
+#' used to obtain the methylation residuals. By default, none is used and residuals 
+#' are not computed.
+#' @param covariable_names Character vector with the names of the variables that
+#' will be used to adjust the model. 
+#' @param range \code{GenomicRanges} with the range used in the analñysis
 #' @param snps_cutoff Numerical with the threshold to consider a p-value from a SNP-cpg correlation
 #' significant. 
-#' @param flank Numeric with the number of pair bases used to define the cpg-expression 
-#' probe pairs.
-#' @param num_cores Numeric with the number of cores to be used.
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
 #' If FALSE nothing should be printed.
-#' @return Data.frame with the results of the linear regression:
+#' @return List with the results:
 #' \itemize{
 #'  \item cpg: Name of the cpg
 #'  \item exprs: Name of the expression probe
@@ -78,21 +69,21 @@ correlationMethSNPs <- function(multiset, meth_set_name = NULL, snps_set_name = 
     stop("multiset must contain meth_set_name and snps_set_name.")
   }
 
-  multi <- multi[c(meth_set_name, snps_set_name)]
+  multiset <- multiset[, c(meth_set_name, snps_set_name)]
   
   if (!is.null(range)){
     if (!is(range, "GenomicRanges")){
       stop("Range should be empty or a GenomicRanges")
     }
-    multi <- multi[, , range]
+    multiset <- multiset[, , range]
     
-    if (any(nrows(multi) == 0)){
+    if (any(MultiDataSet:::nrows(multiset) == 0)){
       stop("There are no SNPs or CpGs in the region")
     } 
   }
   
-  snpSet <- multi[[snps_set_name]]
-  methSet <- multi[[meth_set_name]]
+  snpSet <- multiset[[snps_set_name]]
+  methSet <- multiset[[meth_set_name]]
   
   if (!length(variable_names) | !sum(variable_names %in% colnames(pData(methSet)))){
     stop("variable_names is empty or is not a valid column of the phenoData of the methylation Set.")
@@ -130,61 +121,3 @@ correlationMethSNPs <- function(multiset, meth_set_name = NULL, snps_set_name = 
 }
 
 
-### Testing
-
-## test_08 ####
-##Create multiset with snps
-# geno <- matrix(rep(c(2, 1, 2, 1, 1, 1), 2), ncol = 6)
-# colnames(geno) <- c("5723646052_R02C02", "5723646052_R04C01", "5723646052_R05C02",
-#                     "5723646053_R04C02", "5723646053_R05C02", "5723646053_R06C02")
-# rownames(geno) <- c("rs3115860", "SNP1-1628854")
-# map <- data.frame(chromosome = c("chrY", "chr2"), position = c(4241114, 1234321),
-#                   stringsAsFactors = FALSE)
-# rownames(map) <- rownames(geno)
-# snps <- new("SnpSet", call = geno)
-# fData(snps) <- map
-# 
-# multiset <- new("MultiDataSet")
-# # multiset <- add_methy(multiset, set)
-# multiset <- add_snps(multiset, snps)
-# 
-# results <- DARegionAnalysis(set = multiset, variable_names = "sex", 
-#                             variable_types = "categorical", range = range)
-# expect_match(class(results), "AnalysisRegionResults")
-# expect_error(DARegionAnalysis(set = multiset, variable_names = character(), 
-#                               variable_types = character(), range = range), "variable_names is empty.")
-# expect_error(DARegionAnalysis(set = multiset, variable_names = "sex", 
-#                               variable_types = character(), range = range), "variable_types is empty.")
-# expect_error(DARegionAnalysis(set = multiset, variable_names = character(), 
-#                               covariable_names = "sex", covariable_types = "categorical",
-#                               range = range),
-#              "variable_names is empty or is not a valid column of the phenoData of the set.")
-# expect_error(DARegionAnalysis(set = multiset, variable_names = "cot", covariable_names = "sex",
-#                               covariable_types = "categorical", range = range),
-#              "variable_names is empty or is not a valid column of the phenoData of the set.")
-
-# ## test_11 ####
-# ##Create multiset with snps
-# geno <- matrix(rep(c(3, 1, 3, 1, 1, 1), 2), ncol = 6, byrow = T)
-# colnames(geno) <- c("5723646052_R02C02", "5723646052_R04C01", "5723646052_R05C02",
-#                     "5723646053_R04C02", "5723646053_R05C02", "5723646053_R06C02")
-# rownames(geno) <- c("rs3115860", "SNP1-1628854")
-# map <- AnnotatedDataFrame(data.frame(chromosome = c("chrY", "chr2"), position = c(4241114, 1234321),
-#                                      stringsAsFactors = FALSE))
-# rownames(map) <- rownames(geno)
-# snps <- new("SnpSet", call = geno, featureData = map)
-# 
-# multiset <- new("MultiDataSet")
-# multiset <- add_methy(multiset, set)
-# multiset <- add_snps(multiset, snps)
-# rangeSNPsCov <- DARegionAnalysis(multiset, variable_names = "sex", range = range, 
-#                                  snps_cutoff = 0.05)
-# 
-# test_that("Plot Region R2", {  
-#     expect_error(plotRegionR2(rangeSNPsCov, 12351413654), "feat index must be greater than 0 and smaller than the number of cpgs.")
-#     expect_error(plotRegionR2(rangeSNPsCov, -12), "feat index must be greater than 0 and smaller than the number of cpgs.")
-#     expect_error(plotRegionR2(rangeSNPsCov, "12"), "feat name is not present in the set.")
-#     expect_error(plotRegionR2(rangeSNPsCov, 1:4), "feat must contain only one value")
-#     expect_error(plotRegionR2(rangeSNPsCov, 1:5), "feat must contain only one value.")
-#     plotRDA(rangeSNPsCov)
-# })

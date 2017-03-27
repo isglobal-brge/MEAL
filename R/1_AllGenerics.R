@@ -38,7 +38,7 @@ setGeneric("dmrCate", function(object){
 #' @return Files are saved into the given folder.
 #' @examples
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' exportResults(methyOneVar)
 #' }
@@ -71,7 +71,7 @@ setGeneric("featvals", function(object){
 #' the gene 
 #' @examples
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' getGeneVals(methyOneVar, "TSPY4")
 #' }
@@ -129,7 +129,7 @@ setGeneric("modelVariables", function(object){
 #' @examples
 #' if (require(minfiData)){
 #' betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
-#' set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(betas, pheno = data.frame(pData(MsetEx)))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotEWAS(methyOneVar)
 #' }
@@ -151,7 +151,7 @@ setGeneric("plotEWAS", function(object, variable = modelVariables(object)[[1]], 
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
-#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
 #' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
 #' ranges = IRanges(3000000, end=12300000))
 #' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
@@ -181,7 +181,7 @@ setGeneric("plotRDA", function(object, n_feat = 5, main = "RDA plot"){
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
-#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
 #' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
 #' ranges = IRanges(3000000, end=12300000))
 #' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
@@ -223,7 +223,7 @@ setGeneric("plotRegionR2", function(object, feat, ...){
 #' @examples
 #' if (require(minfiData)){
 #' betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
-#' set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(betas, pheno = data.frame(pData(MsetEx)))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotQQ(methyOneVar)
 #' }
@@ -250,7 +250,7 @@ setGeneric("plotQQ", function(object, variable = modelVariables(object)[[1]],
 #' @examples
 #' if (require(minfiData)){
 #' betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
-#' set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(betas, pheno = data.frame(pData(MsetEx)))
 #' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 #' plotVolcano(methyOneVar)
 #' }
@@ -262,11 +262,6 @@ setGeneric("plotVolcano", function(object, variable = modelVariables(object)[1],
 #' @export
 setGeneric("probeResults", function(object, drop = TRUE){
   standardGeneric("probeResults")
-})
-
-#' @export 
-setGeneric("regionLM", function(object){
-  standardGeneric("regionLM")
 })
 
 #' @export 
@@ -284,21 +279,6 @@ setGeneric("regionResults", function(object){
   standardGeneric("regionResults")
 })
 
-#' @export 
-setGeneric("snps", function(object) {
-  standardGeneric("snps")
-})
-
-#' @export 
-setGeneric("snpsPvals", function(object){
-  standardGeneric("snpsPvals")
-})
-
-#' @export 
-setGeneric("snpsVar", function(object){
-  standardGeneric("snpsVar")
-})
-
 #' Get the top features associated with the RDA
 #' 
 #' Get a list of the features significantly associated to the first two RDA components
@@ -313,7 +293,7 @@ setGeneric("snpsVar", function(object){
 #' @return data.frame with the features, the component, the correlation and the p-value
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
-#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = pData(MsetEx))
+#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
 #' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
 #' ranges = IRanges(3000000, end=12300000))
 #' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)

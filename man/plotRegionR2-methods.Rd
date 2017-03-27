@@ -19,4 +19,3 @@ A plot is generated on the current graphics device.
 \description{
 Plot R2 region values
 }
-

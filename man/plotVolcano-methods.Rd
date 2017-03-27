@@ -26,9 +26,8 @@ Plot log p-value versus the change in expression/methylation.
 \examples{
 if (require(minfiData)){
 betas <- getBeta(MsetEx)[floor(seq(1, nrow(MsetEx), 10000)), ]
-set <- prepareMethylationSet(betas, pheno = pData(MsetEx))
+set <- prepareMethylationSet(betas, pheno = data.frame(pData(MsetEx)))
 methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 plotVolcano(methyOneVar)
 }
 }
-

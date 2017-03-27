@@ -19,11 +19,10 @@ Get a list of the features significantly associated to the first two RDA compone
 }
 \examples{
 if (require(minfiData) & require(GenomicRanges)){
-set <- prepareMethylationSet(getBeta(MsetEx), pheno = pData(MsetEx))
+set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
 ranges = IRanges(3000000, end=12300000))
 rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
 topRDAhits(rangeNoSNPs)
 }
 }
-

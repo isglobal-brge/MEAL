@@ -24,4 +24,3 @@ names(dfranges) <- c("range1", "range2", "range3")
 ranges <- createRanges(dfranges)
 ranges
 }
-

@@ -5,7 +5,7 @@ library(minfiData)
 
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
                                 ranges = IRanges(3000000, end = 12300000))
-set <- prepareMethylationSet(MsetEx[1:100, ], pData(MsetEx))
+set <- prepareMethylationSet(MsetEx[1:100, ], data.frame(pData(MsetEx)))
 
 eset <- ExpressionSet(matrix(runif(6, max = 15), 4))
 annot <- data.frame(chromosome = c(rep("chrY", 3), "chr1" ), start = c(10000, 4500000, 5000000, 10000), 

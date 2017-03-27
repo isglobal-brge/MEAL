@@ -1,7 +1,7 @@
 context("RDA calculation")
 
 library(minfiData)
-set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
                                 ranges = IRanges(3000000, end=12300000))

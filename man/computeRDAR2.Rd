@@ -28,4 +28,3 @@ with a bigger R2 and the global R2.
 Compare R2 obtained in our region of interest with the global R^2 and the R^2 of regions with 
 the same number of probes.
 }
-

@@ -39,4 +39,3 @@ pheno <- preparePhenotype(pheno, variable_names = c("a", "c"),
 variable_types = c("categorical", "dominant"))
 pheno
 }
-

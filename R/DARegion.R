@@ -60,8 +60,8 @@
 #' \code{\link[DMRcate]{dmrcate}} 
 #' @examples
 #' if (require(minfiData)){
-#'  set <- prepareMethylationSet(minfi::getBeta(MsetEx)[1:10, ], pheno = pData(MsetEx))
-#'  model <- model.matrix(~Sample_Group, data = pData(MsetEx)) 
+#'  set <- prepareMethylationSet(minfi::getBeta(MsetEx)[1:10, ], pheno = data.frame(pData(MsetEx)))
+#'  model <- model.matrix(~Sample_Group, data = pData(MsetEx))
 #'  res <- DARegion(set, model) 
 #'  res
 #' }
@@ -146,7 +146,7 @@ DARegion <- function (set, model, methods = c("blockFinder", "bumphunter", "DMRc
     granges <- fData(set)[, c("chromosome", "position", "position")]
     granges <- createRanges(granges)
     beta <- betas(set)
-    minfiset <- minfi::GenomicRatioSet(gr = granges, Beta = beta, pData = pData(set),
+    minfiset <- minfi::GenomicRatioSet(gr = granges, Beta = beta, colData = pData(set),
                                        CN = matrix(1, ncol = ncol(beta), nrow = nrow(beta)),
                                        annotation = c(array = "IlluminaHumanMethylation450k",
                                                       annotation = "ilmn12.hg19"))

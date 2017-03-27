@@ -30,4 +30,3 @@ data(mtcars)
 R2 <- explainedVariance(mtcars, variable_label = "cyl") ## variable equals to cyl column
 plotLM(R2)
 }
-

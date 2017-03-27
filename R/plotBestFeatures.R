@@ -13,7 +13,7 @@
 #' @examples
 #' if (require(minfiData)){
 #'  set <- prepareMethylationSet(getBeta(MsetEx)[1:10, ], 
-#'  pheno = pData(MsetEx))
+#'  pheno = data.frame(pData(MsetEx)))
 #'  plotBestFeatures(set, 2, variables = "Sample_Group")
 #'  }
 plotBestFeatures <- function(set, n = 10, variables = variableNames(set)[1]){

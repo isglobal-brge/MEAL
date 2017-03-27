@@ -15,39 +15,26 @@ correlationMethSNPs(multiset, meth_set_name = NULL, snps_set_name = NULL,
 \item{meth_set_name}{Character vector with the name of the \code{MultiDataSet}'s slot containing methylation
 data.}
 
+\item{snps_set_name}{Character vector with the name of the \code{MultiDataSet}'s slot containing SNPs
+data.}
+
+\item{range}{\code{GenomicRanges} with the range used in the analñysis}
+
+\item{variable_names}{Character vector with the names of the variables that will be
+used to obtain the methylation residuals. By default, none is used and residuals 
+are not computed.}
+
+\item{covariable_names}{Character vector with the names of the variables that
+will be used to adjust the model.}
+
 \item{snps_cutoff}{Numerical with the threshold to consider a p-value from a SNP-cpg correlation
 significant.}
 
 \item{verbose}{Logical value. If TRUE, it writes out some messages indicating progress. 
 If FALSE nothing should be printed.}
-
-\item{vars_meth}{Character vector with the names of the variables that will be
-used to obtain the methylation residuals. By default, none is used and residuals 
-are not computed.}
-
-\item{vars_meth_types}{Character vector with the types of the methylation variables. 
-By default, variables type won't be changed.}
-
-\item{vars_exprs}{Character vector with the names of the variables that will
-be used to obtain the expression residuals. By default, none is used and
-residuals are not computed.}
-
-\item{vars_exprs_types}{Character vector with the types of the expression variables. 
-By default, variables type won't be changed.}
-
-\item{exprs_set_name}{Character vector with the name of the \code{MultiDataSet}'s slot containing expression
-data.}
-
-\item{sel_cpgs}{Character vector with the name of the CpGs used in the analysis. If empty, all the CpGs of the 
-methylation set will be used.}
-
-\item{flank}{Numeric with the number of pair bases used to define the cpg-expression 
-probe pairs.}
-
-\item{num_cores}{Numeric with the number of cores to be used.}
 }
 \value{
-Data.frame with the results of the linear regression:
+List with the results:
 \itemize{
  \item cpg: Name of the cpg
  \item exprs: Name of the expression probe
@@ -69,4 +56,3 @@ this range will be selected. For these reason, it is required that the \code{Exp
 contains a featureData with the chromosome and the starting and ending positions 
 of the probes.
 }
-

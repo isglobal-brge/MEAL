@@ -47,7 +47,8 @@
 #' @seealso \code{\link{preparePhenotype}}
 #' @examples
 #' if (require(minfiData)){
-#'  set <- prepareMethylationSet(matrix = getBeta(MsetEx)[1:10, ], pheno = pData(MsetEx))
+#'  set <- prepareMethylationSet(matrix = getBeta(MsetEx)[1:10, ], 
+#'  pheno = data.frame(pData(MsetEx)))
 #'  res <- DAPipeline(set, variable_names = "Sample_Group", probe_method = "ls") 
 #'  res
 #' }

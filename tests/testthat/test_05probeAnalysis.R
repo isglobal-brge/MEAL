@@ -2,7 +2,7 @@ context("Probe Analysis")
 
 library(minfiData)
 miniset <- MsetEx[1:10, ]
-set <- prepareMethylationSet(miniset, pData(MsetEx))
+set <- prepareMethylationSet(miniset, data.frame(pData(MsetEx)))
 pData(set) <- preparePhenotype(pData(set), variable_names = c("status", "age"),
                                    variable_types = c("categorical","continuous"))
 model <- createModel(pData(set))

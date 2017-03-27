@@ -67,4 +67,3 @@ this range will be selected. For these reason, it is required that the \code{Exp
 contains a featureData with the chromosome and the starting and ending positions 
 of the probes.
 }
-

@@ -21,9 +21,8 @@ analysis of all the probes of the gene.
 }
 \examples{
 if (require(minfiData)){
-set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
 getGeneVals(methyOneVar, "TSPY4")
 }
 }
-

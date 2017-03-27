@@ -2,19 +2,19 @@
 #' 
 #' Perform RDA calculation for a \code{AnalysisRegionResults}. Feature values will
 #' be considered the matrix X and phenotypes the matrix Y. Adjusting for covariates 
-#' is done using covariable_names stored in the object.
+#' is done using a model matrix passed in covarsmodel.
 #'  
 #' @export RDAset
-#' @param set \code{AnalysisResults}
+#' @param set \code{MethylationSet}, \code{ExpressionSet} or \code{matrix}
 #' @param varsmodel Matrix with the model
 #' @param covarsmodel Matrix with the covariables model
 #' @return Object of class \code{rda}
 #' @seealso \code{\link[vegan]{rda}}
 #' @examples
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = pData(MsetEx))
-#' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
-#' rda <- RDAset(methyOneVar)
+#' set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = data.frame(pData(MsetEx)))
+#' model <- model.matrix(~set$age)
+#' rda <- RDAset(set, model)
 #' rda
 #' }
 RDAset <- function(set, varsmodel = NULL, covarsmodel = NULL){

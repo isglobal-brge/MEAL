@@ -77,7 +77,8 @@ this R2.
 }
 \examples{
 if (require(minfiData)){
- set <- prepareMethylationSet(getBeta(MsetEx)[1:1000, ], pheno = pData(MsetEx))
+ set <- prepareMethylationSet(getBeta(MsetEx)[1:1000, ], 
+ pheno = data.frame(pData(MsetEx)))
  range <- GenomicRanges::GRanges(seqnames=Rle("chrX"), 
  ranges = IRanges(30000, end = 123000000))
  res <- DARegionAnalysis(set, range = range, variable_names = "Sample_Group",
@@ -88,4 +89,3 @@ if (require(minfiData)){
 \seealso{
 \code{\link{preparePhenotype}}, \code{\link{DAPipeline}}
 }
-

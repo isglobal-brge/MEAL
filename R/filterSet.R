@@ -11,7 +11,7 @@
 #' if (require(minfiData) & require(GenomicRanges)){
 #' range <- GRanges(seqnames=Rle("chrY"), 
 #' ranges = IRanges(3000000, end=12300000))
-#' set <- prepareMethylationSet(MsetEx[1:100, ], pData(MsetEx))
+#' set <- prepareMethylationSet(MsetEx[1:100, ], data.frame(pData(MsetEx)))
 #' set
 #' filteredset <- filterSet(set, range)
 #' filteredset

@@ -39,4 +39,3 @@ data(mtcars)
 R2 <- explainedVariance(mtcars)
 R2
 }
-

@@ -67,7 +67,7 @@ MsetExFilt <- dropMethylationLoci(MsetEx)
 set.seed(0)
 betas <- getBeta(MsetExFilt)
 betas <- betas[sample(1:nrow(betas), 30000), ]
-phenotypes <- pData(MsetExFilt)
+phenotypes <- data.frame(pData(MsetExFilt))
 ```
 
 With `prepareMethylationSet`, a `MethylationSet` is obtained. It contains only the samples having beta values and phenotypes and the probes containing annotation. 

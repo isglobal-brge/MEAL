@@ -2,7 +2,7 @@ context("Pipeline")
 
 library(minfiData)
 miniset <- MsetEx[1:10, ]
-pheno <- pData(MsetEx)
+pheno <- data.frame(pData(MsetEx))
 pheno$geno <- c("aa", "AA", "aA", "AA", "AA", "aA")
 set <- prepareMethylationSet(miniset, pheno)
 

@@ -24,11 +24,10 @@ Wrapper of \code{plotCPG} that plots the top n features.
 \examples{
 if (require(minfiData)){
  set <- prepareMethylationSet(getBeta(MsetEx)[1:10, ], 
- pheno = pData(MsetEx))
+ pheno = data.frame(pData(MsetEx)))
  plotBestFeatures(set, 2, variables = "Sample_Group")
  }
 }
 \seealso{
 \code{\link{plotFeature}}
 }
-

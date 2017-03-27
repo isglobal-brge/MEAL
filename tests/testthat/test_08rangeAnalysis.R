@@ -1,7 +1,7 @@
 context("Range Analysis")
 
 library(minfiData)
-set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = pData(MsetEx))
+set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
 range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
                                 ranges = IRanges(3000000, end=12300000))
 
@@ -29,7 +29,7 @@ test_that("One variable categorical, two levels", {
 
 test_that("One genetic variable", {
   miniset <- MsetEx[1:10, ]
-  pheno <- pData(MsetEx)
+  pheno <- data.frame(pData(MsetEx))
   pheno$geno <- c("aa", "AA", "aA", "AA", "AA", "aA")
   set2 <- prepareMethylationSet(miniset, pheno)
   results <- DARegionAnalysis(set = set2, variable_names = "geno", 

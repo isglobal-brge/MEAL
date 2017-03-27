@@ -25,8 +25,7 @@ Plot values of a feature splitted by one or two variables.
 \examples{
 if (require(minfiData)){
  set <- prepareMethylationSet(getBeta(MsetEx)[1:1000, ], 
- pheno = pData(MsetEx))
+ pheno = data.frame(pData(MsetEx)))
  plotFeature(set, 1, variables = "Sample_Group")
  }
 }
-

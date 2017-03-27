@@ -7,7 +7,7 @@
 RDAset(set, varsmodel = NULL, covarsmodel = NULL)
 }
 \arguments{
-\item{set}{\code{AnalysisResults}}
+\item{set}{\code{MethylationSet}, \code{ExpressionSet} or \code{matrix}}
 
 \item{varsmodel}{Matrix with the model}
 
@@ -19,17 +19,16 @@ Object of class \code{rda}
 \description{
 Perform RDA calculation for a \code{AnalysisRegionResults}. Feature values will
 be considered the matrix X and phenotypes the matrix Y. Adjusting for covariates 
-is done using covariable_names stored in the object.
+is done using a model matrix passed in covarsmodel.
 }
 \examples{
 if (require(minfiData)){
-set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = pData(MsetEx))
-methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
-rda <- RDAset(methyOneVar)
+set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = data.frame(pData(MsetEx)))
+model <- model.matrix(~set$age)
+rda <- RDAset(set, model)
 rda
 }
 }
 \seealso{
 \code{\link[vegan]{rda}}
 }
-

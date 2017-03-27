@@ -30,4 +30,3 @@ set <- prepareMethylationSet(matrix = betamatrix, phenotypes = phenodf)
 relevantSNPs <- calculateRelevantSNPs(set, snpsobject)
 }
 }
-

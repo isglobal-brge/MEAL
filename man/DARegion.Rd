@@ -82,8 +82,8 @@ column of the model matrix.
 }
 \examples{
 if (require(minfiData)){
- set <- prepareMethylationSet(minfi::getBeta(MsetEx)[1:10, ], pheno = pData(MsetEx))
- model <- model.matrix(~Sample_Group, data = pData(MsetEx)) 
+ set <- prepareMethylationSet(minfi::getBeta(MsetEx)[1:10, ], pheno = data.frame(pData(MsetEx)))
+ model <- model.matrix(~Sample_Group, data = pData(MsetEx))
  res <- DARegion(set, model) 
  res
 }
@@ -92,4 +92,3 @@ if (require(minfiData)){
 \code{\link[minfi]{bumphunter}}, \code{\link[minfi]{blockFinder}}, 
 \code{\link[DMRcate]{dmrcate}}
 }
-
