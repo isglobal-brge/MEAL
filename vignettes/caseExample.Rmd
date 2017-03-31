@@ -104,6 +104,13 @@ methSet <- methSet[autosomiccpgs, ]
 methSet
 ```
 
+To avoid problems, we will remove probes without a known position:
+
+```{r Remove NAs}
+methSet <- methSet[!is.na(fData(methSet)$position), ]
+methSet
+```
+
 Once the object is filtered, we are now ready to run the analysis with `DAPipeline`. It can work with an `ExpressionSet` or a `MethylationSet`. In both cases, for each feature, it computes the effect of the variables indicated in the parameter variable\_names. `DAPipeline` also allows the inclusion of adjustment variables (such as cell count) with the parameter covariable\_names. In addition, if a `MethylationSet` is used, algorithms to detect differentially methylated regions will be run (Bumphunter and DMRcate).
 
 In our case, we will set variable\_names to "inv". If we would like to analyse more than one variable, a vector containing all the variables names could be used. Finally, probe\_method is set to "ls" (least squares) to speed up the demonstration. If we would like to use robust linear regression, the option is "robust". 
