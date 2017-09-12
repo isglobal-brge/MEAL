@@ -1,0 +1,19 @@
+CHANGES IN VERSION 1.6.0
+-------------------------
+    
+    NEW FEATURES
+
+o Add function to add matrices to MDS.
+
+o Add Methylation-SNPs correlation.
+
+USER-VISIBLE CHANGES
+
+o Move prepareMethylationSet from MultiDataSet to MEAL.
+
+o Defunct multiCorrMethExprs.
+
+
+BUGS FIXES
+
+o Solve a bug in DARegion when running DMRcate.

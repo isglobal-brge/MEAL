@@ -1,0 +1,345 @@
+---
+title: "Methylation Analysis with MEAL"
+author: 
+  - name: Carlos Ruiz
+    affiliation: 
+    - ISGlobal, Centre for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+    - Bioinformatics Research Group in Epidemiology 
+  - name: Juan R. González
+    affiliation: 
+    - ISGlobal, Centre for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+    - Bioinformatics Research Group in Epidemiology  
+    email: juanr.gonzalez@isglobal.org 
+package: MEAL
+output: 
+  BiocStyle::html_document2:
+    number_sections: true
+    toc_float: yes
+bibliography: ./vignette.bib
+vignette: >
+  %\VignetteIndexEntry{Methylation Analysis with MEAL}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+# Introduction
+Illumina Infinium HumanMethylation 450K BeadChip assay has become a standard tool to analyse methylation in human samples. Developed in 2011, it has already been used in projects such as The Cancer Genome Atlas (TCGA). Their 450.000 probes provide a good overall image of the methylation state of the genome, being one of the reasons of its success.
+
+Given its complex design^[More information can be found at this [minfi tutorial](http://www.bioconductor.org/help/course-materials/2014/BioC2014/minfi_BioC2014.pdf)], many Bioconductor packages have been developed to assess normalization and pre-processing issues (e.g. `r Biocpkg("minfi")` [@Aryee2014] or `r Biocpkg("lumi")` [@Du2008]). In addition, these packages can detect differentially methylated probes (DMPs) and differentially methylated regions (DMRs). However, the interfaces are not very intuitive and several scripting steps are usually required.
+
+`r Biocpkg("MEAL")` aims to facilitate the analysis of Illumina Methylation 450K chips. We have included two methods to analyze DMPs (Differentially Methylated Probes), that test differences in means (limma) or differences in variance (DiffVar). We have included three DMRs (Differentially Methylated Regions) detection algorithms (bumphunter, blockFinder and DMRcate) and a new method to test differences in methylation in a target region (RDA). Finally, we have prepared plots for all these analyses as well as a wrapper to run all the analyses in the same dataset.  
+
+# Input data
+
+`r Biocpkg("MEAL")` is meant to analyze methylation data already preprocessed. All our functions accept a `GenomicRatioSet` as input, which is a class from `r Biocpkg("minfi")` package designed to manage preprocessed methylation data. Users willing to preprocess their own data are encouraged to take a look to [`r Biocpkg("minfi")`'s vignette](http://bioconductor.org/packages/release/bioc/vignettes/minfi/inst/doc/minfi.pdf)
+
+In this vignette, we will use methylation data from `r Githubpkg("isglobal/BRGEdata")` package. This package contains data from a spanish children cohort. We will load the required libraries and the `GenomicRatioSet` called `brge_methy` by typing: 
+
+```{r, message = FALSE}
+library(MEAL)
+library(MultiDataSet)
+library(BRGEdata)
+library(minfi)
+library(missMethyl)
+library(ggplot2)
+
+data("brge_methy")
+brge_methy
+colData(brge_methy)
+```
+
+`brge_methy` contains measurements for 476946 CpGs and 115 samples, as well as some phenotypic variables such as age, sex or cell counts. To speed up the demonstration, we will work with a subset of 20 samples:
+
+```{r subset Methy}
+meth <- brge_methy[, 1:20]
+```
+
+
+# Analyzing Methylation data
+## Pipeline
+
+The function `runPipeline` can run all methods included in `r Biocpkg("MEAL")` to the same dataset. We only need to pass to this function a `GenomicRatioSet` and the name of our variable of interest. In our case, we will analyze the effect of sex on methylation:
+
+```{r Pipeline,  warning=FALSE}
+res <- runPipeline(set = meth, variable_names = "sex")
+res
+```
+
+`runPipeline` includes a lot parameters to customize the analyses. The most important parameters are `covariable_names`, `betas` and `sva`. `covariable_names` is used to include covariates in our models. `betas` allows the user choosing between running the analyis with beta (TRUE) or M-values (FALSE). If `sva` is TRUE, Surrogate Variable Analysis is run and surrogate variables are included in the models. Finally, some parameters modify the behaviour of the methods included in the wrapper and they will be covered in a posterior section. More information about the parameters can be found in the documentation (by typing ?runPipeline). 
+
+We will run the analysis to exemplify how to add covariables in our models. To do so, we will pass the names of the cell counts measurements to `covariable_names`:
+
+```{r Pipeline Adj,  warning=FALSE}
+cellCounts <- colnames(colData(meth))[3:9]
+cellCounts
+resAdj <- runPipeline(set = meth, variable_names = "sex", 
+                      covariable_names = cellCounts)
+resAdj
+```
+
+## Managing the results
+
+`runPipeline` generates a `ResultSet` object. `ResultSet` is a class designed to encapsulate different results from the same dataset. It contains the results of the different methods, the feature data and other data required to get tables or plots. We can examine the analyses included in a `ResultSet` with the function `names`:
+
+```{r}
+names(res)
+names(resAdj)
+```
+
+Both objects contains five analyses. DiffMean is an analysis of difference of means performed with `r Biocpkg("limma")` while the others are named with the method name (DiffVar, bumphunter, blockFinder and dmrcate). 
+
+We can use the function `getAssociation` to get a data.frame with the results, independent of the original method. This method has two main arguments: `object` and `rid`. `object` is the `ResultSet` with our data and `rid` is the name or the index of the analysis we want to extract. 
+
+```{r}
+head(getAssociation(res, "DiffMean"))
+head(getAssociation(res, "DiffVar"))
+head(getAssociation(res, "bumphunter"))
+head(getAssociation(res, "blockFinder"))
+head(getAssociation(res, "dmrcate"))
+```
+
+DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Biocpkg("limma")` results. This class allows testing different constrasts or evaluating different variables simultaneously. The function `getProbeResults` helps the user performing these operations. It has the arguments `object` and `rid` that work as for `getAssociation`. `coef` is a numeric with the index of the coefficient from which we want the results. If we did not pass a custom model to `runPipeline`, the first coefficient (coef=1) is the intercept  and the second coefficient (coef = 2) is the first variable that we included in `variable_names`. We can evaluate different coefficients simultaneously by passing a vector to `coef`. `contrast` is a matrix with the contrasts that we want to evaluate. This option is useful when our variable of interest is a factor with several levels and we want to do all the different comparisons. Finally, the argument `fNames` is used to select the variables from features annotation that will be added to the tables. 
+
+To exemplify the use of this function, we will evaluate our whole adjusted model, including cell counts coefficients. We will also add some annotation of the CpGs:
+
+```{r get Probe Res several coefs}
+head(getProbeResults(resAdj, rid = 1, coef = 2:9, 
+                     fNames = c("chromosome", "start")))
+```
+
+When more than one coefficient is evaluated, a estimate for each coefficient is returned and the t-statistic is substituted by a F-statistic. More information about linear models, including a detailed section of how to create a constrast matrix can be found in [`r Biocpkg("limma")` users' guide](https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf).
+
+Finally, we can obtain the results of CpGs mapped to some genes with the function `getGeneVals`. This function accepts the same arguments than `getProbeResults` but includes the arguments `gene` and `genecol` to pass the names of the genes to be selected and the column name of feature data containing gene names. 
+
+We will retrieve the difference in variance results for all CpGs mapped to BRCA1:
+
+```{r getGeneVals}
+getGeneVals(res, "BRCA1", genecol = "genes")
+```
+
+## Plotting the results
+
+We can easily get Manhattan plots, Volcano plots and QQ-plots for the probes results (DiffMean and DiffVar) using `plot` method. Our extension of `plot` method to `ResultSet` includes the arguments `rid` or `coef` that were already present in `getProbeResult`. In addition, the argument `type` allows choosing between a Manhattan plot ("manhattan"), a Volcano plot ("volcano") or a qq-plot ("qq").
+
+We will get obtain these three plots for the unadjusted analysis of differential means:
+
+```{r 3 plots}
+plot(res, rid = "DiffMean", type = "manhattan")
+plot(res, rid = "DiffMean", type = "volcano")
+plot(res, rid = "DiffMean", type = "qq")
+```
+
+### Manhattan plot
+
+We can customize different aspects of a Manhattan plot. We can highlight the CpGs of a target region by passing a `GenomicRanges` to the argument `highlight`. Similarly, we can get a Manhattan plot with only the CpGs of our target region passing a `GenomicRanges` to the argument `subset`. It should be noticed that the `GenomicRange` should have the chromosome as a number (1-24).
+
+We will show these capabilities by highlighting and subsetting a region of ten Mb in chromosome X:
+
+```{r Manhattan 1}
+targetRange <- GRanges("23:13000000-23000000")
+plot(res, rid = "DiffMean", type = "manhattan", highlight = targetRange)
+plot(res, rid = "DiffMean", type = "manhattan", subset = targetRange)
+```
+
+We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value:
+
+```{r Manhattan 2}
+plot(res, rid = "DiffMean", type = "manhattan", suggestiveline = 9, genomewideline = 15)
+```
+
+Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
+```{r Manhattan 3}
+plot(res, rid = "DiffMean", type = "manhattan", main = "My custom Manhattan")
+abline(h = 13, col = "yellow")
+```
+
+### Volcano plot
+
+In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. Finally, `show.labels` can turn on and turn off the labelling of significant features: 
+
+```{r Volcano 1}
+plot(res, rid = "DiffMean", type = "volcano", tPV = 14, tFC = 0.4, show.labels = FALSE)
+```
+
+Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
+
+```{r Volcano 2}
+plot(res, rid = "DiffMean", type = "volcano", tPV = 30, tFC = 0.1, 
+     show.labels = FALSE) + ggtitle("My custom Volcano")
+```
+
+### QQplot
+
+Our QQplot include the computation of the lambda, a measure of the inflation of the p-values. We can remove this value with the parameter `
+
+Our qqplot is also based on `r CRANpkg("ggplot2")` so we will add a title to customize it:
+
+```{r QQ}
+plot(res, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
+```
+
+
+### Features 
+
+`r Biocpkg("MEAL")` incorporates the function `plotFeature` to plot the beta values distribution of a CpG. `plotFeature` has three main arguments. `set` is the `GenomicRatioSet` with the methylation data. `feat` is the index or name of our target CpG. `variables` is a character vector with the names of the variables used in the plot. We can include two variables in our plot.
+
+In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg05111645) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
+
+```{r Plot_Features, warning = FALSE}
+plotFeature(set = meth, feat = "cg17547524", variables = "sex") + ggtitle("Diff Means")
+plotFeature(set = meth, feat = "cg05111645", variables = "sex") + ggtitle("Diff Vars")
+```
+
+### Regional plotting
+
+We can simultaneously plot of the different methods in a target region along with gene and CpG annotation with the function `plotRegion`. This function has two main arguments. `rset` is the `ResultSet` and `range` is a `GenomicRegion` with our target region. 
+
+We will plot a region of 1 Mb in chromosome X:
+
+```{r Regional plot 1}
+targetRange <- GRanges("chrX:13000000-14000000")
+plotRegion(res, targetRange)
+```
+
+Our plot has three main parts. The top contains the annotation of the regional genes and the CpGs included in the analysis. The middle part contains the results of the DMR detection methods (Bumphunter, blockFinder and DMRcate). The bottom part contains the results of the single probe analyses (differential mean and differential variant). Each analysis has two parts: the coefficients and the p-values adjusted by FDR. A line with a significance 
+
+By default,`plotRegion` includes all analyses run in the plot. However, we can plot only few analyses with the parameter `results`. We can also modify the height of the p-value line with the parameter `tPV`:
+
+```{r Regional plot 2}
+plotRegion(res, targetRange, results = c("DiffMean", "bumphunter"), tPV = 10)
+```
+
+## Methods wrappers
+
+`r Biocpkg("MEAL")` includes wrappers to run the different methods of the pipeline individually. All these functions accept a `GenomicRatioSet` as input and can return the results in a `ResultSet`. Consequently, functionalities described in the above section for the results of the pipeline also apply for the results of a single method. 
+
+### Differences of mean analysis
+
+We can test if a phenotype causes changes in methylation means using the `runDiffMeanAnalysis`. This function is a wrapper of `lmFit` function from  `r Biocpkg("limma")` and requires two arguments: `set` and `model`. `set` contains the methylation data, either in a `GenomicRatioSet` or a matrix. `model` can be a matrix with the linear model or a formula indicating the model. In the former case, `set` must be a `GenomicRatioSet` and the variables included in the model must be present in the colData of our set. 
+
+We exemplify the use of this function by running the same linear model than in our pipeline:
+
+```{r DiffMean}
+resDM <- runDiffMeanAnalysis(set = meth, model = ~ sex)
+```
+
+`runDiffMeanAnalysis` also has other parameters to customize the analysis. If `set` is a `GenomicRatioSet`, the parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). We can also run a robust linear model changing the parameter `method` to "robust". Finally, `resultSet` indicates if the function will return a `ResultSet` (TRUE) or a `MArrayLM` (FALSE). 
+
+All these parameters can be set in the `runPipeline` function with the argument `DiffMean_params`.
+
+### Differences of Variance analysis
+
+We can test if a phenotype causes changes in methylation variance using the `runDiffVarAnalysis`. This function is a wrapper of `varFit` function from  `r Biocpkg("missMethyl")` and requires three arguments: `set`, `model` and `coefficient`. `set` contains the methylation data in a `GenomicRatioSet`. `model` can be a matrix with the linear model or a formula indicating the model. In the former case, the variables included in the model must be present in the colData of our set. `coefficient` indicates the variables of the linear model for which the difference of variance will be computed. By default, all discrete variables will be included. 
+
+We exemplify the use of this function by running the same model than in our pipeline:
+
+```{r DiffVar}
+resDV <- runDiffVarAnalysis(set = meth, model = ~ sex, coefficient = 2)
+```
+
+`runDiffVarAnalysis` also has the parameter `resultSet` that allows returning a `MArrayLM` object instead of a `ResultSet`. Finally, we can change other parameters of `varFit` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `DiffVar_params`.
+
+### Bumphunter
+
+We can detect DMRs using `Bumphunter` from `r Biocpkg("minfi")` with the function `runBumphunter`. This function requires three arguments: `set`, `model` and `coefficient`. `set` contains the methylation data in a `GenomicRatioSet`. `model` can be a matrix with the linear model or a formula indicating the model. In the former case, the variables included in the model must be present in the colData of our set. `coefficient` indicates the variable used to detect the DMRs.  
+
+We exemplify the use of this function by running `bumphunter` as in the pipeline:
+
+```{r Bumphunter}
+resBH <- runBumphunter(set = meth, model = ~ sex, coefficient = 2)
+```
+
+`runBumphunter` also has other parameters to customize the analysis. The parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). `bumphunter_cutoff` specifies the minimum beta change to include a probe in a bump. `num_permutations` indicates the number of permutations run to compute bumps p-values (by default is 0 so no permutations are run and no p-values are returned). `resultSet` allows returning a data.frame object instead of a `ResultSet`. Finally, we can change other parameters of `bumphunter` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `bumphunter_params`.
+
+### Blockfinder
+
+`blockFinder` is an adaptation of `Bumphunter` to detect DMRs from open sea probes. The function `runBlockFinder` has essentially the same arguments than `runBumphunter`.  
+
+We exemplify the use of this function by running `blockFinder` as in the pipeline:
+
+```{r blockFinder}
+resBF <- runBlockFinder(set = meth, model = ~ sex, coefficient = 2)
+```
+
+To change the parameters in the `runPipeline` function, we can pass them to the argument `blockFinder_params`.
+
+### DMRcate
+
+We can detect DMRs using `DMRcate` with the function `runDMRcate`. This function only has four parameters. `set` is the `GenomicRatioSet`, `model` is the linear model or a formula, `coefficient` is the variable used to detect the DMRs and `resultSet` to change the class of the output. 
+
+We exemplify the use of this function by running `DMRcate` as in the pipeline:
+
+
+```{r DMRcate}
+resDC <- runDMRcate(set = meth, model = ~ sex, coefficient = 2)
+```
+
+We can change other parameters of DMRcate functions (`cpg.annotate` and `dmrcate`) passing them to the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `dmrcate_params`.
+
+### RDA
+
+We can determine if a genomic region is differentially methylated with RDA (Redundancy Analysis). This analysis can be run with the function `runRDA` that requires three arguments: `set`, `model` and `range`. As in the previous functions, `set` is a `GenomicRatioSet` with the methylation data and `model` contains the linear model either in a matrix or in a formula. `range` is a `GenomicRanges` with the coordinates of our target region. 
+
+We will exemplify the use of this function by running `RDA` in a region of chromosome X:
+
+```{r RDA}
+targetRange <- GRanges("chrX:13000000-23000000")
+resRDA <- runRDA(set = meth, model = ~ sex, range = targetRange)
+```
+
+`runRDA` also has other parameters to customize the analysis. The parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). `num_vars` selects the number of columns in model matrix considered as variables. The remaining columns will be considered as covariates. `num_permutations` indicates the number of permutations run to compute p-values. `resultSet` allows returning a `rda` object from `r CRANpkg("vegan")` package instead of a `ResultSet`. 
+
+We can RDA along with our pipeline when we are previously interested in evaluating a target genomic range. In this case, we will pass our target region to the argument `range` of `runPipeline` and we can pass other parameters of `runRDA` using the argument `rda_params`.
+
+### Managing and plotting RDA results
+
+We can retrieve RDA results using the function `getAssociation`:
+
+```{r RDA res}
+getAssociation(resRDA, rid = "RDA")
+```
+
+RDA results are encapsulated in a rda object from `r CRANpkg("vegan")` package. We can get a summary of RDA results with the function `getRDAresults`:
+
+```{r getRDAresults}
+getRDAresults(resRDA)
+```
+ 
+This function returns four values: R2, pval, global.R2 and global.pval. R2 is the ammount of variance that the model explains in our target region. pval is the probability of finding this ammount of variance of higher by change. global.R2 is the ammount of variance that our model explains in the whole genome. global.pval is the probability of finding a region with the same number of probes explaining the same or more variance than our target region. With these values, we can determine if our target region is differentially methylated and if this phenomena is local or global. 
+
+The function `topRDAhits` returns a data.frame with features associated to first two RDA components. This functions computes a Pearson correlation test between the methylation values and the RDA components. Only CpGs with a p-value lower than `tPV` parameter (by default 0.05) with any of the components are included in the data.frame:
+
+```{r topRDAhits}
+topRDAhits(resRDA, tPV = 1e-8)
+```
+
+Finally, we can plot the first two dimensions of our RDA with the function `plotRDA`. This function makes a biplot of samples and features. We can color the samples using categorical variables by passing in a data.frame to argument `pheno`. 
+
+We will plot RDA using sex variable of our sets colData:
+
+```{r plotRDA}
+plotRDA(object = resRDA, pheno = colData(meth)[, "sex", drop = FALSE])
+```
+
+The RDA plot prints a label at the center of each group and the summary of RDA results (R^2 and p-value) in the legend. `plotRDA` has two additional arguments. `main` is a character vector with the plot's title. `n_feat` is a numeric with the number of feats that will have a label in the text. Only the `n_feat` features most associated to each of the components will be displayed. 
+
+`plotRDA` relies on `base` paradigm, so we can add layers using functions from this infrastructure (e.g. `lines`, `points`...):
+
+```{r plotRDA 2}
+plotRDA(object = resRDA, pheno = colData(meth)[, "sex", drop = FALSE])
+abline(h = -1)
+```
+
+# Session Info
+
+```{r session Info}
+sessionInfo()
+```
+
+
+ 
+# References

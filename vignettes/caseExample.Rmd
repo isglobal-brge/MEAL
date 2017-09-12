@@ -1,0 +1,275 @@
+---
+title: "Expression and Methylation Analysis with MEAL"
+author: 
+  - name: Carlos Ruiz
+    affiliation: 
+    - ISGlobal, Centre for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+    - Bioinformatics Research Group in Epidemiology 
+  - name: Juan R. González
+    affiliation: 
+    - ISGlobal, Centre for Research in Environmental Epidemiology (CREAL), Barcelona, Spain
+    - Bioinformatics Research Group in Epidemiology  
+    email: juanr.gonzalez@isglobal.org 
+package: MEAL
+output: 
+  BiocStyle::html_document2:
+    number_sections: true
+    toc_float: yes
+bibliography: ./vignette.bib
+vignette: >
+  %\VignetteIndexEntry{Expression and Methylation Analysis with MEAL}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Introduction
+
+Experiments comprising different omic data analyses are becoming common. In this cases, the researchers are interested in analyzing the different omic types independently as well as finding association between the different layers.
+
+In this vignette, we present how address an analysis of methylation and expression data using `r Biocpkg("MEAL")`. We will show how to analyze each data type independently and how to integrate the results of both analyses. We will also exemplify how to run an analysis when we are interested in our target region.
+
+We will use the data from `r Rpackage("BRGEdata")` package. This package contains data from a spanish children cohort. We will work with the methylation and the expression data encapsulated in a `GenomicRatioSet` and in an `ExpressionSet` respectively. In our analysis, we will evaluate the effect of sex on methylation and expression. We will also deeply explore changes in a region of chromosome 11 around MMP3, a gene differently expressed in men and women (chr11:102600000-103300000).
+
+Let's start by loading the required packages and data:
+```{r Load_Packages, message = FALSE}
+library(MEAL)
+library(BRGEdata)
+library(MultiDataSet)
+library(missMethyl)
+library(minfi)
+library(GenomicRanges)
+library(ggplot2)
+```
+
+From the six objects of `r Rpackage("BRGEdata")`, we will focus on those containing methylation and expression data: brge_methy and brge_gexp.
+
+brge_methy is a `GenomicRatioSet` with methylation data corresponding to the Illumina Human Methylation 450K. It contains 476946 probes and 36 samples. The object contains 9 phenotypic variables (age, sex and cell types proportions):
+
+```{r Methylation_Data reduce, include=FALSE}
+data(brge_methy)
+brge_methy <- brge_methy[, 61:96]
+```
+
+```{r Methylation_Data}
+brge_methy
+colData(brge_methy)
+```
+
+brge_gexp is an `ExpressionSet` with the expression data corresponding to an Affimetrix GeneChip Human Gene 2.0 ST Array. It contains 67528 features and 100 samples as well as two phenotypic variables (age and sex):
+
+```{r ExpresionData Reduce, include=FALSE}
+data(brge_gexp)
+brge_gexp <- brge_gexp[, 60:100]
+```
+
+```{r Expression_Data}
+brge_gexp
+lapply(pData(brge_gexp), table)
+```
+
+Finally, we will create a `GenomicRanges` with our target region:
+
+```{r}
+targetRange <- GRanges("chr11:102600000-103300000")
+```
+
+Let's illustrate the use of this package by analyzing the effect of the sex in methylation and expression. First, a genome wide analysis will be performed and then the region funcionalities will be introduced. It should be noticed that methylation and expression analyses will include hypothesis testing and visualitzation. 
+
+# Methylation Analysis
+
+## Running the analyses
+
+This demonstration will show the main functions needed to perform a methylation analysis. A more exhaustive description of these and other auxiliary functions can be found at `r Biocpkg("MEAL")` vignette. 
+
+The function `runPipeline` can run different analyses to the same dataset: limma, DiffVar, bumphunter, blockFinder, DMRcate and RDA. This function accepts a `GenomicRatioSet`, an `ExpressionSet` or a `RangedSummarizedExperiment`, so it can analyze methylation and gene expression data. We can pass our variables of interest to function `runPipeline` with the parameter `variable_names`. `runPipeline` also allows the inclusion of adjustment variables (such as cell count) with the parameter `covariable_names`. When we are inerested in a target region, we can apply RDA by passing a `GenomicRanges`with the region to the argument `range`. Users can find a deeper explanation of this function in the **Methylation Analysis with MEAL** vignette.
+
+As we are interested in evaluating the effect of sex, we will set `variable_names` to "sex". We will include cell counts as covaribles to adjust their effect and we will pass our target region to `range` to compute RDA:
+
+```{r Meth_Analysis}
+cellCounts <- colnames(colData(brge_methy))[3:9]
+methRes <- runPipeline(set = brge_methy, variable_names = "sex", covariable_names = cellCounts, range = targetRange)
+methRes
+names(methRes)
+```
+
+The analysis generates a `ResultSet` object containing the results of six different analyses: DiffMean, DiffVar, bumphunter, blockFinder, DMRcate and RDA. The six methods are based in the same linear model that we specified with the parameters `variable_names` and `covariable_names`. Consequently, the first step after running the pipeline will be evaluate how this model fits the data. 
+
+We will rely on the results of limma (DiffMean), as this method run the same linear model to all CpGs. A common way to evaluate the goodness of fit of these models is by making a QQplot on the p-values of the linear regression. This plot compares the distribution of p-values obtained in the analysis with a theoretical distribution. Our plot also shows the lambda, a measure of inflation. If lambda is higher than 1, the p-values are smaller than expected. If it is lower than 1, p-values are bigger than expected. In both causes, the most common cause is that we should include more variables in the model.
+
+We can get a QQplot with the function `plot`. When applied to a `ResultSet`, we can make different plots depending on the method. We can select the name of the result with the parameter `rid` and the kind of plot with the parameter `type`. We will set `rid` to "DiffMean" to use limma results and `type` to "qq" to get a QQplot:
+
+```{r Plot QQ 1}
+plot(methRes, rid = "DiffMean", type = "qq")
+```
+
+The QQplot shows that there is a great inflation in our data, as most of the points are above the theoretical line. The lambda is also greater than 1 (1.218). 
+
+There are different ways to address these issues. An option is to include other covariates in our model. When we do not have more covariates, as it is our case, we can apply Surrogate Variable Analysis (SVA) to the data. SVA is a statistical technique that tries to determine hidden covariates based on your measurements. This method is very useful to correct inflation when we do not have the variables that is missing in the model. 
+
+Our function `runPipeline` includes the parameter `sva` that runs SVA and includes these variables as covariates in the linear model. Therefore, we will run again our analyses adjusting by SVA:
+
+```{r Meth_Analysis SVA}
+methRes <- runPipeline(set = brge_methy, variable_names = "sex", covariable_names = cellCounts, range = targetRange, sva = TRUE)
+methRes
+```
+
+We will plot again a QQplot to evaluate the fit of the model including SVA:
+
+```{r Plot QQ SVA}
+plot(methRes, rid = "DiffMean", type = "qq")
+```
+
+The p-values are now much closer to the expected distribution and the lambda has dropped from 1.218 to 1.155. Therefore, the model with SVA fits better the data than our model with only cell counts. We will work with this model in the following steps. 
+
+We have included two methods to analyze individual CpGs: DiffMean (limma) and DiffVar. DiffMean tests, for each CpG, if there is a difference between the means of the different groups. In our case, we tested, for each CpG, if the mean methylation in boys was different to the mean methylation in girls. On the other hand, DiffVar tests, for each CpG, if there is a difference in variance between the groups. In our case, we tested for each CpG if the variance was different in boys than in girls. 
+
+As both methods return results for each CpG, we can get an overview of the results using a Manhattan plot. A Manhattan plot represents the p-value of each CpG versus their location in the genome. This representation is useful to find genomic regions exhibiting differentiated behaviours. 
+
+We can get a Manhattan plot from a `ResultSet` using the function `plot` and setting `type` to "manhattan". We will make two plots, one for DiffMean results and the other for DiffVar. We will highlight the CpGs of our target region by passing a `GenomicRanges` to highlight argument. `GenomicRanges` passed to `plot` should have chromosomes coded as number:
+
+```{r Manhattans}
+targetRangeNum <- GRanges("11:102600000-103300000")
+plot(methRes, rid = "DiffMean", type = "manhattan", main = "Differences in Means", highlight = targetRangeNum)
+plot(methRes, rid = "DiffVar", type = "manhattan", main = "Differences in Variances", highlight = targetRangeNum)
+```
+
+There are no genomic regions with a lot of CpGs with differences in means. Our target region does not seem to be very different from the rest. On the other hand, chromosome X has a lot of CpGs with big differences in variance. Our target region does not look different. 
+
+## Exploring a target region
+
+There are two options in `r Biocpkg("MEAL")` to exploring a target region. If we run RDA in our pipeline, we can plot the RDA components with the function `plotRDA`. We can color the samples by a given phenotype passing a data.frame to `pheno` argument:
+
+```{r plotRDA}
+plotRDA(object = methRes, pheno = colData(brge_methy)[, "sex", drop = FALSE])
+```
+
+We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2 = 0.01) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
+
+We can get more estimates of the RDA with the function `getRDAresults`:
+
+```{r getRDAresults}
+getRDAresults(methRes)
+```
+ 
+R2 and pval are the same values that are printed in the RDA plot. global.R2 is the genome wide variance explained by the model. global.pval is the probability of finding a region in the genome where our model explains more variability than in our target region.
+
+If we did not have a priori a target region and we did not run RDA in the pipeline, we have another option. We can plot the results of the other methods (DiffMean, DiffVar, bumphunter, blockFinder and DMRcate) using the function `plotRegion`. We should pass a `GenomicRanges` with our target region to the argument `range`:
+
+```{r Regional plot 1}
+plotRegion(rset = methRes, range = targetRange)
+```
+
+# Expression Analysis
+
+## Running the analysis
+
+The expression analysis can be performed in the same way than methylation. The main difference is that an `ExpressionSet` will be used intead of a `GenomicRatioSet`. We will run the same model than for methylation: we will check the effect of sex on gene expression and we will further evaluate our target region:
+
+```{r Exp show}
+targetRange <- GRanges("chr11:102600000-103300000")
+gexpRes <- runPipeline(set = brge_gexp, variable_names = "sex", range = targetRange)
+names(gexpRes)
+```
+
+`runPipeline` only runs DMR methods when the input object is a `GenomicRatioSet`. Therefore, our object has three results: differences of means (DiffMean), differences of variances (DiffVar) and redundancy analysis (RDA).
+
+As we did with methylation data, the first step will be check the goodness of our model. To do so, we will run a QQ-plot using the p-values of the differences of means:
+
+```{r Plot QQ exp 1}
+plot(gexpRes, rid = "DiffMean", type = "qq")
+```
+
+Most of the p-values lie on the theoretical line and the lambda is close to 1 (0.94). Therefore, we will not need to include other covariates in our model. 
+
+We will now get a general overview of the results. In gene expression data, it is very common to use a Volcano plot which shows the change in expression of a probe against their p-value. We will make a Volcano plot for our two methods (DiffMean and DiffVar). We can easily make these plots using the function `plot` and setting the argument `type` to __volcano__:
+
+```{r Manhattans}
+plot(gexpRes, rid = "DiffMean", type = "volcano") + ggtitle("Differences in Means")
+plot(gexpRes, rid = "DiffVar", type = "volcano") + ggtitle("Differences in Variances")
+```
+
+Several transcripts have a big difference in mean gene expression and a very small p-value. Transcripts with a positive fold change have a higher expression in boys than in girls and are placed in chromosome Y (name starts by TC0Y). Transcripts with a negative fold change, have a lower expression in boys than in girls and are placed in chromosome X (name starts by TC0X). On the other hand, only few transcripts have big differences in variance and the p-values are small. 
+
+We can get an overview of the genome distribution of these transcripts by plotting a Manhattan plot. We will also highlight the transcripts of our target region:
+
+```{r Manhattans gexp}
+targetRange <- GRanges("chr11:102600000-103300000")
+plot(gexpRes, rid = "DiffMean", type = "manhattan", main = "Differences in Means", highlight = targetRangeNum)
+plot(gexpRes, rid = "DiffVar", type = "manhattan", main = "Differences in Variances", highlight = targetRangeNum)
+```
+
+There are several transcripts with highly significant differences in means in chromosomes X and Y. However, transcripts in our target region are not significantly changed. There are only few transcripts with differences in variance between boys and girls and all are placed in chromosome Y. 
+
+## Exploring a target region
+
+We will explore our target region using the RDA plot. As with methylation, we will color the samples by a given phenotype passing a data.frame to `pheno` argument:
+
+```{r plotRDA gexp}
+brge_gexp$sex <- as.factor(brge_gexp$sex)
+plotRDA(object = gexpRes, pheno = pData(brge_gexp)[, "sex", drop = FALSE])
+```
+
+We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2 = 0.008) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
+
+We can get more estimates of the RDA with the function `getRDAresults`:
+
+```{r getRDAresults gexp}
+getRDAresults(gexpRes)
+```
+ 
+The R2 of our target region is smaller than the mean R2, so our region is not particularly changed. 
+
+Finally, we will also make the region plot in our target region. In this case, we will visualize DiffMean and DiffVar results:
+
+```{r Regional plot exp}
+plotRegion(rset = gexpRes, range = targetRange)
+```
+
+# Methylation and gene expression integration
+
+We have included in `r Biocpkg("MEAL")` two ways to assess association between gene expression and DNA methylation. The first option is to simultaneously examine the gene expression and DNA methylation results of a target region. We can do this with the function `plotRDA` and passing two ResultSets.
+
+We will examine the methylation and gene expression results in our target region. For the sake of clarity, we will only print DiffMean and bumphunter results.
+
+```{r Regional plot exp}
+plotRegion(rset = methRes, rset2 = gexpRes, range = targetRange, results = c("bumphunter", "DiffMean"))
+```
+
+Differences in methylation are represented in black and differences in gene expression are represented in blue. We can see that CpGs with high differences are near transcripts with differential expression.
+
+We can get a quantitative estimate of the association between methylation and gene expression using the function `correlationMethExprs`. This function applies a method previously described in [@Steenaard2015]. CpGs and expression probes are paired by proximity. Expression probes are paired to a CpG if they are completely inside a range of $\pm$ 250Kb from the CpG. This distance of 250Kb is set by default but it can be changed with the parameter flank (whose units are bases). The correlation between methylation and expression is done by a linear regression. 
+
+To account for technical (e.g. batch) or biological (e.g. sex, age) artifacts, a model including those variables (z) is fitted: $$ x_{ij} = \sum_{k = 1}^K{\beta_{ik} z_{kj}} + r_{ij}, i = 1, ..., P $$ where $x_{ij}$ is the methylation or expression level of probe i (P is the total number of probes) for individual j, $\beta_{ik}$ is the effect of variable k at probe i, $z_{kj}$ is the value of variable k (K is the total number of covariates) for indivudal j and $r_{ij}$ is the residual value of probe i and individual j. The residuals of methylation and expression are used to assess the correlation.
+
+Therefore, let's create a new `MultiDataSet` with expression and methylation data. The function `createMultiDataSet` creates an empty `MultiDataSet`. Then, we can add gene expression and methylation datasets with the function `add_genexp` and `add_methy`:
+
+```{r New Multi Meth Exp}
+multi <- createMultiDataSet()
+multi <- add_genexp(multi, brge_gexp)
+multi <- add_methy(multi, brge_methy)
+```
+
+In this analysis, we will only take into account the probes in our target region. We can subset our MultiDataSet passing a `GenomicRanges` to the third position of `[`: 
+
+```{r}
+multi.filt <- multi[, , targetRange]
+```
+
+Now, we will compute the correlation between the CpGs and the expression probes. 
+
+```{r Corr Meth Exp}
+methExprs <- correlationMethExprs(multi.filt)
+head(methExprs)
+```
+
+The results shows the CpG name, the expression probe, the change of the relationship and se, and the p-value and adjusted p-value (using B&H). Results are ordered by the adjusted p-value, so we can see than in our data there are no correlated CpGs-expression probes.
+
+# Conclusions
+
+This case example shows the main functionalities of `r Biocpkg("MEAL")` package. It has been shown how to evaluate the effect of a phenotype on the methylation and on the expression at genome wide and at region level. Finally, the integration between methylation and expression is tested by checking if there are expression probes correlated to the methylated probes.
+
+```{r SessionInfo}
+sessionInfo()
+```
+
+# References

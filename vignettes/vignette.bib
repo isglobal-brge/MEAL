@@ -1,0 +1,159 @@
+@article{Aryee2014,
+abstract = {MOTIVATION: The recently released Infinium HumanMethylation450 array (the '450k' array) provides a high-throughput assay to quantify DNA methylation (DNAm) at ∼450 000 loci across a range of genomic features. Although less comprehensive than high-throughput sequencing-based techniques, this product is more cost-effective and promises to be the most widely used DNAm high-throughput measurement technology over the next several years.
+
+RESULTS: Here we describe a suite of computational tools that incorporate state-of-the-art statistical techniques for the analysis of DNAm data. The software is structured to easily adapt to future versions of the technology. We include methods for preprocessing, quality assessment and detection of differentially methylated regions from the kilobase to the megabase scale. We show how our software provides a powerful and flexible development platform for future methods. We also illustrate how our methods empower the technology to make discoveries previously thought to be possible only with sequencing-based methods.
+
+AVAILABILITY AND IMPLEMENTATION: http://bioconductor.org/packages/release/bioc/html/minfi.html.
+
+CONTACT: khansen@jhsph.edu; rafa@jimmy.harvard.edu
+
+SUPPLEMENTARY INFORMATION: Supplementary data are available at Bioinformatics online.},
+author = {Aryee, Martin J and Jaffe, Andrew E and Corrada-Bravo, Hector and Ladd-Acosta, Christine and Feinberg, Andrew P and Hansen, Kasper D and Irizarry, Rafael A},
+doi = {10.1093/bioinformatics/btu049},
+issn = {1367-4811},
+journal = {Bioinformatics (Oxford, England)},
+keywords = {Aged,Algorithms,Colonic Neoplasms,Colonic Neoplasms: genetics,DNA Methylation,Genome,High-Throughput Nucleotide Sequencing,High-Throughput Nucleotide Sequencing: methods,Humans,Oligonucleotide Array Sequence Analysis,Oligonucleotide Array Sequence Analysis: methods,Polymorphism, Single Nucleotide,Software},
+month = {may},
+number = {10},
+pages = {1363--9},
+pmid = {24478339},
+title = {{Minfi: a flexible and comprehensive Bioconductor package for the analysis of Infinium DNA methylation microarrays.}},
+url = {http://bioinformatics.oxfordjournals.org/content/30/10/1363},
+volume = {30},
+year = {2014}
+}
+@article{Caceres2015,
+abstract = {Inversion polymorphisms have important phenotypic and evolutionary consequences in humans. Two different methodologies have been used to infer inversions from SNP dense data, enabling the use of large cohorts for their study. One approach relies on the differences in linkage disequilibrium across breakpoints; the other one captures the internal haplotype groups that tag the inversion status of chromosomes. In this article, we assessed the convergence of the two methods in the detection of 20 human inversions that have been reported in the literature. The methods converged in four inversions including inv-8p23, for which we studied its association with low-BMI in American children. Using a novel haplotype tagging method with control on inversion ancestry, we computed the frequency of inv-8p23 in two American cohorts and observed inversion haplotype admixture. Accounting for haplotype ancestry, we found that the European inverted allele in children carries a recessive risk of underweight, validated in an independent Spanish cohort (combined: OR= 2.00, P = 0.001). While the footprints of inversions on SNP data are complex, we show that systematic analyses, such as convergence of different methods and controlling for ancestry, can reveal the contribution of inversions to the ancestral composition of populations and to the heritability of human disease.},
+author = {C{\'{a}}ceres, Alejandro and Gonz{\'{a}}lez, Juan R},
+doi = {10.1093/nar/gkv073},
+issn = {1362-4962},
+journal = {Nucleic acids research},
+month = {feb},
+pages = {1--11},
+pmid = {25672393},
+title = {{Following the footprints of polymorphic inversions on SNP data: from detection to association tests.}},
+url = {http://www.ncbi.nlm.nih.gov/pubmed/25672393},
+year = {2015}
+}
+@article{Du2008,
+abstract = {UNLABELLED: Illumina microarray is becoming a popular microarray platform. The BeadArray technology from Illumina makes its preprocessing and quality control different from other microarray technologies. Unfortunately, most other analyses have not taken advantage of the unique properties of the BeadArray system, and have just incorporated preprocessing methods originally designed for Affymetrix microarrays. lumi is a Bioconductor package especially designed to process the Illumina microarray data. It includes data input, quality control, variance stabilization, normalization and gene annotation portions. In specific, the lumi package includes a variance-stabilizing transformation (VST) algorithm that takes advantage of the technical replicates available on every Illumina microarray. Different normalization method options and multiple quality control plots are provided in the package. To better annotate the Illumina data, a vendor independent nucleotide universal identifier (nuID) was devised to identify the probes of Illumina microarray. The nuID annotation packages and output of lumi processed results can be easily integrated with other Bioconductor packages to construct a statistical data analysis pipeline for Illumina data.
+
+AVAILABILITY: The lumi Bioconductor package, www.bioconductor.org},
+author = {Du, Pan and Kibbe, Warren A and Lin, Simon M},
+doi = {10.1093/bioinformatics/btn224},
+issn = {1367-4811},
+journal = {Bioinformatics (Oxford, England)},
+keywords = {Algorithms,Database Management Systems,Databases, Genetic,Gene Expression Profiling,Gene Expression Profiling: instrumentation,Gene Expression Profiling: methods,Information Storage and Retrieval,Information Storage and Retrieval: methods,Oligonucleotide Array Sequence Analysis,Oligonucleotide Array Sequence Analysis: instrumen,Oligonucleotide Array Sequence Analysis: methods,Software,Systems Integration},
+month = {jul},
+number = {13},
+pages = {1547--8},
+pmid = {18467348},
+title = {{lumi: a pipeline for processing Illumina microarray.}},
+url = {http://www.ncbi.nlm.nih.gov/pubmed/18467348},
+volume = {24},
+year = {2008}
+}
+@article{Du2010,
+abstract = {BACKGROUND: High-throughput profiling of DNA methylation status of CpG islands is crucial to understand the epigenetic regulation of genes. The microarray-based Infinium methylation assay by Illumina is one platform for low-cost high-throughput methylation profiling. Both Beta-value and M-value statistics have been used as metrics to measure methylation levels. However, there are no detailed studies of their relations and their strengths and limitations.
+
+RESULTS: We demonstrate that the relationship between the Beta-value and M-value methods is a Logit transformation, and show that the Beta-value method has severe heteroscedasticity for highly methylated or unmethylated CpG sites. In order to evaluate the performance of the Beta-value and M-value methods for identifying differentially methylated CpG sites, we designed a methylation titration experiment. The evaluation results show that the M-value method provides much better performance in terms of Detection Rate (DR) and True Positive Rate (TPR) for both highly methylated and unmethylated CpG sites. Imposing a minimum threshold of difference can improve the performance of the M-value method but not the Beta-value method. We also provide guidance for how to select the threshold of methylation differences.
+
+CONCLUSIONS: The Beta-value has a more intuitive biological interpretation, but the M-value is more statistically valid for the differential analysis of methylation levels. Therefore, we recommend using the M-value method for conducting differential methylation analysis and including the Beta-value statistics when reporting the results to investigators.},
+author = {Du, Pan and Zhang, Xiao and Huang, Chiang-Ching and Jafari, Nadereh and Kibbe, Warren A and Hou, Lifang and Lin, Simon M},
+doi = {10.1186/1471-2105-11-587},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Du et al. - 2010 - Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis.pdf:pdf},
+issn = {1471-2105},
+journal = {BMC bioinformatics},
+keywords = {CpG Islands,DNA Methylation,Data Interpretation, Statistical,Microarray Analysis,Microarray Analysis: methods},
+month = {jan},
+pages = {587},
+pmid = {21118553},
+title = {{Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis.}},
+url = {http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3012676{\&}tool=pmcentrez{\&}rendertype=abstract},
+volume = {11},
+year = {2010}
+}
+@article{Fortin2014,
+abstract = {We propose an extension to quantile normalization that removes unwanted technical variation using control probes. We adapt our algorithm, functional normalization, to the Illumina 450k methylation array and address the open problem of normalizing methylation data with global epigenetic changes, such as human cancers. Using data sets from The Cancer Genome Atlas and a large case-control study, we show that our algorithm outperforms all existing normalization methods with respect to replication of results between experiments, and yields robust results even in the presence of batch effects. Functional normalization can be applied to any microarray platform, provided suitable control probes are available.},
+author = {Fortin, Jean-Philippe and Labbe, Aur{\'{e}}lie and Lemire, Mathieu and Zanke, Brent W and Hudson, Thomas J and Fertig, Elana J and Greenwood, Celia and Hansen, Kasper D},
+doi = {10.1186/s13059-014-0503-2},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Fortin et al. - 2014 - Functional normalization of 450k methylation array data improves replication in large cancer studies.pdf:pdf},
+issn = {1465-6906},
+journal = {Genome Biology},
+number = {11},
+pages = {503},
+title = {{Functional normalization of 450k methylation array data improves replication in large cancer studies}},
+url = {http://genomebiology.com/2014/15/11/503},
+volume = {15},
+year = {2014}
+}
+@article{Jaffe2012,
+abstract = {BACKGROUND: During the past 5 years, high-throughput technologies have been successfully used by epidemiology studies, but almost all have focused on sequence variation through genome-wide association studies (GWAS). Today, the study of other genomic events is becoming more common in large-scale epidemiological studies. Many of these, unlike the single-nucleotide polymorphism studied in GWAS, are continuous measures. In this context, the exercise of searching for regions of interest for disease is akin to the problems described in the statistical 'bump hunting' literature.
+
+METHODS: New statistical challenges arise when the measurements are continuous rather than categorical, when they are measured with uncertainty, and when both biological signal, and measurement errors are characterized by spatial correlation along the genome. Perhaps the most challenging complication is that continuous genomic data from large studies are measured throughout long periods, making them susceptible to 'batch effects'. An example that combines all three characteristics is genome-wide DNA methylation measurements. Here, we present a data analysis pipeline that effectively models measurement error, removes batch effects, detects regions of interest and attaches statistical uncertainty to identified regions.
+
+RESULTS: We illustrate the usefulness of our approach by detecting genomic regions of DNA methylation associated with a continuous trait in a well-characterized population of newborns. Additionally, we show that addressing unexplained heterogeneity like batch effects reduces the number of false-positive regions.
+
+CONCLUSIONS: Our framework offers a comprehensive yet flexible approach for identifying genomic regions of biological interest in large epidemiological studies using quantitative high-throughput methods.},
+author = {Jaffe, Andrew E and Murakami, Peter and Lee, Hwajin and Leek, Jeffrey T and Fallin, M Daniele and Feinberg, Andrew P and Irizarry, Rafael A},
+doi = {10.1093/ije/dyr238},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Jaffe et al. - 2012 - Bump hunting to identify differentially methylated regions in epigenetic epidemiology studies.pdf:pdf},
+issn = {1464-3685},
+journal = {International journal of epidemiology},
+keywords = {DNA Methylation,DNA Methylation: genetics,Epigenesis, Genetic,Genome-Wide Association Study,Genome-Wide Association Study: methods,Humans,Models, Statistical},
+month = {feb},
+number = {1},
+pages = {200--9},
+pmid = {22422453},
+title = {{Bump hunting to identify differentially methylated regions in epigenetic epidemiology studies.}},
+url = {http://ije.oxfordjournals.org.sare.upf.edu/content/41/1/200.abstract?ijkey=4c57d302c5abddde4a9156a729dd9f514a7223c7{\&}keytype2=tf{\_}ipsecsha},
+volume = {41},
+year = {2012}
+}
+@article{Li2014,
+abstract = {Little is known about how changes in DNA methylation mediate risk for human diseases including dementia. Analysis of genome-wide methylation patterns in patients with two forms of tau-related dementia--progressive supranuclear palsy (PSP) and frontotemporal dementia (FTD)--revealed significant differentially methylated probes (DMPs) in patients versus unaffected controls. Remarkably, DMPs in PSP were clustered within the 17q21.31 region, previously known to harbor the major genetic risk factor for PSP. We identified and replicated a dose-dependent effect of the risk-associated H1 haplotype on methylation levels within the region in blood and brain. These data reveal that the H1 haplotype increases risk for tauopathy via differential methylation at that locus, indicating a mediating role for methylation in dementia pathophysiology.},
+author = {Li, Yun and Chen, Jason A and Sears, Renee L and Gao, Fuying and Klein, Eric D and Karydas, Anna and Geschwind, Michael D and Rosen, Howard J and Boxer, Adam L and Guo, Weilong and Pellegrini, Matteo and Horvath, Steve and Miller, Bruce L and Geschwind, Daniel H and Coppola, Giovanni},
+doi = {10.1371/journal.pgen.1004211},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Li et al. - 2014 - An epigenetic signature in peripheral blood associated with the haplotype on 17q21.31, a risk factor for neurodegener.pdf:pdf},
+issn = {1553-7404},
+journal = {PLoS genetics},
+keywords = {Brain,Brain: metabolism,Brain: pathology,Chromosomes, Human, Pair 17,DNA Methylation,DNA Methylation: genetics,Epigenesis, Genetic,Frontotemporal Dementia,Frontotemporal Dementia: genetics,Frontotemporal Dementia: pathology,Genetic Association Studies,Genetic Predisposition to Disease,Haplotypes,Humans,Neurodegenerative Diseases,Risk Factors,Supranuclear Palsy, Progressive,Supranuclear Palsy, Progressive: genetics,Supranuclear Palsy, Progressive: pathology,Tauopathies,Tauopathies: etiology,Tauopathies: genetics,Tauopathies: pathology,tau Proteins,tau Proteins: genetics},
+month = {mar},
+number = {3},
+pages = {e1004211},
+pmid = {24603599},
+title = {{An epigenetic signature in peripheral blood associated with the haplotype on 17q21.31, a risk factor for neurodegenerative tauopathy.}},
+url = {http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3945475{\&}tool=pmcentrez{\&}rendertype=abstract},
+volume = {10},
+year = {2014}
+}
+@article{Peters2015,
+abstract = {BACKGROUND:The identification and characterisation of differentially methylated regions (DMRs) between phenotypes in the human genome is of prime interest in epigenetics. We present a novel method, DMRcate, that fits replicated methylation measurements from the Illumina HM450K BeadChip (or 450K array) spatially across the genome using a Gaussian kernel. DMRcate identifies and ranks the most differentially methylated regions across the genome based on tunable kernel smoothing of the differential methylation (DM) signal. The method is agnostic to both genomic annotation and local change in the direction of the DM signal, removes the bias incurred from irregularly spaced methylation sites, and assigns significance to each DMR called via comparison to a null model.RESULTS:We show that, for both simulated and real data, the predictive performance of DMRcate is superior to those of Bumphunter and Probe Lasso, and commensurate with that of comb-p. For the real data, we validate all array-derived DMRs from the candidate methods on a suite of DMRs derived from whole-genome bisulfite sequencing called from the same DNA samples, using two separate phenotype comparisons.CONCLUSIONS:The agglomeration of genomically localised individual methylation sites into discrete DMRs is currently best served by a combination of DM-signal smoothing and subsequent threshold specification. The findings also suggest the design of the 450K array shows preference for CpG sites that are more likely to be differentially methylated, but its overall coverage does not adequately reflect the depth and complexity of methylation signatures afforded by sequencing. For the convenience of the research community we have created a user-friendly R software package called DMRcate, downloadable from Bioconductor and compatible with existing preprocessing packages, which allows others to apply the same DMR-finding method on 450K array data.},
+author = {Peters, Timothy and Buckley, Michael and Statham, Aaron and Pidsley, Ruth and Samaras, Katherine and Lord, Reginald and Clark, Susan and Molloy, Peter},
+doi = {10.1186/1756-8935-8-6},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Peters et al. - 2015 - De novo identification of differentially methylated regions in the human genome.pdf:pdf},
+issn = {1756-8935},
+journal = {Epigenetics {\&} Chromatin},
+number = {1},
+pages = {6},
+title = {{De novo identification of differentially methylated regions in the human genome}},
+url = {http://www.epigeneticsandchromatin.com/content/8/1/6},
+volume = {8},
+year = {2015}
+}
+@article{Steenaard2015,
+abstract = {BACKGROUND: Tobacco smoking, a risk factor for coronary artery disease (CAD), is known to modify DNA methylation. We hypothesized that tobacco smoking modifies methylation of the genes identified for CAD by genome-wide association study (GWAS).$\backslash$n$\backslash$nRESULTS: We selected genomic regions based on 150 single-nucleotide polymorphisms (SNPs) identified in the largest GWAS on CAD. We investigated the association between current smoking and the CpG sites within and near these CAD-related genes. Methylation was measured with the Illumina Human Methylation 450K array in whole blood of 724 Caucasian subjects from the Rotterdam Study, a Dutch population based cohort study. A total of 3669 CpG sites within 169 CAD-related genes were studied for association with current compared to never smoking. Fifteen CpG sites were significantly associated after correction for multiple testing (Bonferroni-corrected p value <1.4 × 10(-5)). These sites were located in the genes TERT, SARS, GNGT2, SMG6, SKI, TOM1L2, SIPA1, MRAS, CDKN1A, LRRC2, FES and RPH3A. In 12 sites, current smoking was associated with a 1.2 to 2.4 {\%} lower methylation compared to never smoking; and in three sites, it was associated with a 1.2 to 1.8 {\%} higher methylation. The effect estimates were lower in 10 of the 15 CpG sites when comparing current to former smoking. One CpG site, cg05603985 (SKI), was found to be associated with expression of nearby CAD-related gene PRKCZ.$\backslash$n$\backslash$nCONCLUSIONS: Our study suggests an effect of tobacco smoking on DNA methylation of CAD-related genes and thus provides novel insights in the pathways that link tobacco smoking to risk of CAD.},
+author = {Steenaard, Rebecca V and Ligthart, Symen and Stolk, Lisette and Peters, Marjolein J and van Meurs, Joyce B and Uitterlinden, Andre G and Hofman, Albert and Franco, Oscar H and Dehghan, Abbas},
+doi = {10.1186/s13148-015-0088-y},
+file = {:C$\backslash$:/Users/cruiz/AppData/Local/Mendeley Ltd./Mendeley Desktop/Downloaded/Steenaard et al. - 2015 - Tobacco smoking is associated with methylation of genes related to coronary artery disease.pdf:pdf},
+isbn = {10.1186/s13148-015-0088-y},
+issn = {1868-7075},
+journal = {Clinical epigenetics},
+number = {1},
+pages = {54},
+pmid = {26015811},
+title = {{Tobacco smoking is associated with methylation of genes related to coronary artery disease.}},
+url = {http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=4443552{\&}tool=pmcentrez{\&}rendertype=abstract},
+volume = {7},
+year = {2015}
+}
