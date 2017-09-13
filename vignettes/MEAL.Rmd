@@ -23,7 +23,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 # Introduction
@@ -35,7 +35,7 @@ Given its complex design^[More information can be found at this [minfi tutorial]
 
 # Input data
 
-`r Biocpkg("MEAL")` is meant to analyze methylation data already preprocessed. All our functions accept a `GenomicRatioSet` as input, which is a class from `r Biocpkg("minfi")` package designed to manage preprocessed methylation data. Users willing to preprocess their own data are encouraged to take a look to [`r Biocpkg("minfi")`'s vignette](http://bioconductor.org/packages/release/bioc/vignettes/minfi/inst/doc/minfi.pdf)
+`r Biocpkg("MEAL")` is meant to analyze methylation data already preprocessed. All our functions accept a `GenomicRatioSet` as input, which is a class from `r Biocpkg("minfi")` package designed to manage preprocessed methylation data. Users willing to preprocess their own data are encouraged to take a look to [minfi's vignette](http://bioconductor.org/packages/release/bioc/vignettes/minfi/inst/doc/minfi.pdf)
 
 In this vignette, we will use methylation data from `r Githubpkg("isglobal/BRGEdata")` package. This package contains data from a spanish children cohort. We will load the required libraries and the `GenomicRatioSet` called `brge_methy` by typing: 
 
@@ -62,16 +62,16 @@ meth <- brge_methy[, 1:20]
 # Analyzing Methylation data
 ## Pipeline
 
-The function `runPipeline` can run all methods included in `r Biocpkg("MEAL")` to the same dataset. We only need to pass to this function a `GenomicRatioSet` and the name of our variable of interest. In our case, we will analyze the effect of sex on methylation:
+The function `runPipeline` run all methods included in `r Biocpkg("MEAL")` to the same dataset. We only need to pass to this function a `GenomicRatioSet` and the name of our variable of interest. In our case, we will analyze the effect of sex on methylation:
 
 ```{r Pipeline,  warning=FALSE}
 res <- runPipeline(set = meth, variable_names = "sex")
 res
 ```
 
-`runPipeline` includes a lot parameters to customize the analyses. The most important parameters are `covariable_names`, `betas` and `sva`. `covariable_names` is used to include covariates in our models. `betas` allows the user choosing between running the analyis with beta (TRUE) or M-values (FALSE). If `sva` is TRUE, Surrogate Variable Analysis is run and surrogate variables are included in the models. Finally, some parameters modify the behaviour of the methods included in the wrapper and they will be covered in a posterior section. More information about the parameters can be found in the documentation (by typing ?runPipeline). 
+`runPipeline` includes several parameters to customize the analyses. The most important parameters are `covariable_names`, `betas` and `sva`. `covariable_names` is used to include covariates in our models. `betas` allows the user choosing between running the analyis with beta (TRUE) or M-values (FALSE). If `sva` is TRUE, Surrogate Variable Analysis is run and surrogate variables are included in the models. Finally, some parameters modify the behaviour of the methods included in the wrapper and they will be covered later on. More information about the parameters can be found in the documentation (by typing ?runPipeline). 
 
-We will run the analysis to exemplify how to add covariables in our models. To do so, we will pass the names of the cell counts measurements to `covariable_names`:
+We will run a new analysis including cell counts as covariates. To do so, we will pass the names of the cell counts measurements to `covariable_names`:
 
 ```{r Pipeline Adj,  warning=FALSE}
 cellCounts <- colnames(colData(meth))[3:9]
@@ -92,7 +92,7 @@ names(resAdj)
 
 Both objects contains five analyses. DiffMean is an analysis of difference of means performed with `r Biocpkg("limma")` while the others are named with the method name (DiffVar, bumphunter, blockFinder and dmrcate). 
 
-We can use the function `getAssociation` to get a data.frame with the results, independent of the original method. This method has two main arguments: `object` and `rid`. `object` is the `ResultSet` with our data and `rid` is the name or the index of the analysis we want to extract. 
+We can use the function `getAssociation` to get a data.frame with the results, independent of the original method. This function has two main arguments: `object` and `rid`. `object` is the `ResultSet` with our data and `rid` is the name or the index of the analysis we want to extract. 
 
 ```{r}
 head(getAssociation(res, "DiffMean"))
@@ -102,7 +102,7 @@ head(getAssociation(res, "blockFinder"))
 head(getAssociation(res, "dmrcate"))
 ```
 
-DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Biocpkg("limma")` results. This class allows testing different constrasts or evaluating different variables simultaneously. The function `getProbeResults` helps the user performing these operations. It has the arguments `object` and `rid` that work as for `getAssociation`. `coef` is a numeric with the index of the coefficient from which we want the results. If we did not pass a custom model to `runPipeline`, the first coefficient (coef=1) is the intercept  and the second coefficient (coef = 2) is the first variable that we included in `variable_names`. We can evaluate different coefficients simultaneously by passing a vector to `coef`. `contrast` is a matrix with the contrasts that we want to evaluate. This option is useful when our variable of interest is a factor with several levels and we want to do all the different comparisons. Finally, the argument `fNames` is used to select the variables from features annotation that will be added to the tables. 
+DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Biocpkg("limma")` results. This class allows testing different constrasts or evaluating different variables simultaneously. The function `getProbeResults` helps the user performing these operations. It also has the arguments `object` and `rid` from `getAssociation`. `coef` is a numeric with the index of the coefficient from which we want the results. If we did not pass a custom model to `runPipeline`, the first coefficient (coef = 1) is the intercept  and the second coefficient (coef = 2) is the first variable that we included in `variable_names`. We can evaluate different coefficients simultaneously by passing a vector to `coef`. `contrast` is a matrix with the contrasts that we want to evaluate. This option is useful when our variable of interest is a factor with several levels and we want to do all the different comparisons. Finally, the argument `fNames` is used to select the variables from features annotation that will be added to the tables. 
 
 To exemplify the use of this function, we will evaluate our whole adjusted model, including cell counts coefficients. We will also add some annotation of the CpGs:
 
@@ -111,21 +111,21 @@ head(getProbeResults(resAdj, rid = 1, coef = 2:9,
                      fNames = c("chromosome", "start")))
 ```
 
-When more than one coefficient is evaluated, a estimate for each coefficient is returned and the t-statistic is substituted by a F-statistic. More information about linear models, including a detailed section of how to create a constrast matrix can be found in [`r Biocpkg("limma")` users' guide](https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf).
+When more than one coefficient is evaluated, a estimate for each coefficient is returned and the t-statistic is substituted by a F-statistic. More information about linear models, including a detailed section of how to create a constrast matrix can be found in [limma users' guide](https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf).
 
 Finally, we can obtain the results of CpGs mapped to some genes with the function `getGeneVals`. This function accepts the same arguments than `getProbeResults` but includes the arguments `gene` and `genecol` to pass the names of the genes to be selected and the column name of feature data containing gene names. 
 
-We will retrieve the difference in variance results for all CpGs mapped to BRCA1:
+We will retrieve the difference in variance results for all CpGs mapped to ARMS2:
 
 ```{r getGeneVals}
-getGeneVals(res, "BRCA1", genecol = "genes")
+getGeneVals(res, "ARMS2", genecol = "genes")
 ```
 
 ## Plotting the results
 
 We can easily get Manhattan plots, Volcano plots and QQ-plots for the probes results (DiffMean and DiffVar) using `plot` method. Our extension of `plot` method to `ResultSet` includes the arguments `rid` or `coef` that were already present in `getProbeResult`. In addition, the argument `type` allows choosing between a Manhattan plot ("manhattan"), a Volcano plot ("volcano") or a qq-plot ("qq").
 
-We will get obtain these three plots for the unadjusted analysis of differential means:
+We will get these three plots for the unadjusted analysis of differential means:
 
 ```{r 3 plots}
 plot(res, rid = "DiffMean", type = "manhattan")
@@ -148,12 +148,14 @@ plot(res, rid = "DiffMean", type = "manhattan", subset = targetRange)
 We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value:
 
 ```{r Manhattan 2}
-plot(res, rid = "DiffMean", type = "manhattan", suggestiveline = 9, genomewideline = 15)
+plot(res, rid = "DiffMean", type = "manhattan", suggestiveline = 9, 
+     genomewideline = 15)
 ```
 
 Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
 ```{r Manhattan 3}
-plot(res, rid = "DiffMean", type = "manhattan", main = "My custom Manhattan")
+plot(res, rid = "DiffMean", type = "manhattan", 
+     main = "My custom Manhattan")
 abline(h = 13, col = "yellow")
 ```
 
@@ -162,7 +164,8 @@ abline(h = 13, col = "yellow")
 In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. Finally, `show.labels` can turn on and turn off the labelling of significant features: 
 
 ```{r Volcano 1}
-plot(res, rid = "DiffMean", type = "volcano", tPV = 14, tFC = 0.4, show.labels = FALSE)
+plot(res, rid = "DiffMean", type = "volcano", tPV = 14, tFC = 0.4, 
+     show.labels = FALSE)
 ```
 
 Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
@@ -174,7 +177,7 @@ plot(res, rid = "DiffMean", type = "volcano", tPV = 30, tFC = 0.1,
 
 ### QQplot
 
-Our QQplot include the computation of the lambda, a measure of the inflation of the p-values. We can remove this value with the parameter `
+Our QQplot include the computation of the lambda, a measure of the inflation of the p-values. We can remove this value with the parameter `show.lambda`.
 
 Our qqplot is also based on `r CRANpkg("ggplot2")` so we will add a title to customize it:
 
@@ -190,13 +193,15 @@ plot(res, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
 In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg05111645) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
 
 ```{r Plot_Features, warning = FALSE}
-plotFeature(set = meth, feat = "cg17547524", variables = "sex") + ggtitle("Diff Means")
-plotFeature(set = meth, feat = "cg05111645", variables = "sex") + ggtitle("Diff Vars")
+plotFeature(set = meth, feat = "cg17547524", variables = "sex") + 
+  ggtitle("Diff Means")
+plotFeature(set = meth, feat = "cg05111645", variables = "sex") + 
+  ggtitle("Diff Vars")
 ```
 
 ### Regional plotting
 
-We can simultaneously plot of the different methods in a target region along with gene and CpG annotation with the function `plotRegion`. This function has two main arguments. `rset` is the `ResultSet` and `range` is a `GenomicRegion` with our target region. 
+We can simultaneously plot the different results in a target region along with gene and CpG annotation with the function `plotRegion`. This function has two main arguments. `rset` is the `ResultSet` and `range` is a `GenomicRanges` with our target region. 
 
 We will plot a region of 1 Mb in chromosome X:
 
@@ -205,9 +210,9 @@ targetRange <- GRanges("chrX:13000000-14000000")
 plotRegion(res, targetRange)
 ```
 
-Our plot has three main parts. The top contains the annotation of the regional genes and the CpGs included in the analysis. The middle part contains the results of the DMR detection methods (Bumphunter, blockFinder and DMRcate). The bottom part contains the results of the single probe analyses (differential mean and differential variant). Each analysis has two parts: the coefficients and the p-values adjusted by FDR. A line with a significance 
+Our plot has three main parts. The top contains the annotation of the regional genes and the CpGs included in the analysis. The middle part contains the results of the DMR detection methods (Bumphunter, blockFinder and DMRcate). The bottom part contains the results of the single probe analyses (differential mean and differential variant). Each analysis has two parts: the coefficients and the p-values. The line in the p-values plot marks the significance threshold. 
 
-By default,`plotRegion` includes all analyses run in the plot. However, we can plot only few analyses with the parameter `results`. We can also modify the height of the p-value line with the parameter `tPV`:
+By default,`plotRegion` includes all analyses run in the plot. However, we can plot only few analyses with the parameter `results`. We can also modify the height of the p-value line with the parameter `tPV` (units are -log10 of p-value):
 
 ```{r Regional plot 2}
 plotRegion(res, targetRange, results = c("DiffMean", "bumphunter"), tPV = 10)
@@ -269,7 +274,7 @@ To change the parameters in the `runPipeline` function, we can pass them to the 
 
 ### DMRcate
 
-We can detect DMRs using `DMRcate` with the function `runDMRcate`. This function only has four parameters. `set` is the `GenomicRatioSet`, `model` is the linear model or a formula, `coefficient` is the variable used to detect the DMRs and `resultSet` to change the class of the output. 
+We can detect DMRs using `r Biocpkg("DMRcate")` with the function `runDMRcate`. This function only has four parameters. `set` is the `GenomicRatioSet`, `model` is the linear model or a formula, `coefficient` is the variable used to detect the DMRs and `resultSet` to change the class of the output. 
 
 We exemplify the use of this function by running `DMRcate` as in the pipeline:
 
@@ -293,9 +298,9 @@ resRDA <- runRDA(set = meth, model = ~ sex, range = targetRange)
 
 `runRDA` also has other parameters to customize the analysis. The parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). `num_vars` selects the number of columns in model matrix considered as variables. The remaining columns will be considered as covariates. `num_permutations` indicates the number of permutations run to compute p-values. `resultSet` allows returning a `rda` object from `r CRANpkg("vegan")` package instead of a `ResultSet`. 
 
-We can RDA along with our pipeline when we are previously interested in evaluating a target genomic range. In this case, we will pass our target region to the argument `range` of `runPipeline` and we can pass other parameters of `runRDA` using the argument `rda_params`.
+We can run RDA in our pipeline when we are a priori interested in a target genomic range. In this case, we will pass our target region to the argument `range` of `runPipeline`. We can pass other parameters of `runRDA` using the argument `rda_params`.
 
-### Managing and plotting RDA results
+#### Managing and plotting RDA results
 
 We can retrieve RDA results using the function `getAssociation`:
 
@@ -314,7 +319,7 @@ This function returns four values: R2, pval, global.R2 and global.pval. R2 is th
 The function `topRDAhits` returns a data.frame with features associated to first two RDA components. This functions computes a Pearson correlation test between the methylation values and the RDA components. Only CpGs with a p-value lower than `tPV` parameter (by default 0.05) with any of the components are included in the data.frame:
 
 ```{r topRDAhits}
-topRDAhits(resRDA, tPV = 1e-8)
+topRDAhits(resRDA, tPV = 1e-17)
 ```
 
 Finally, we can plot the first two dimensions of our RDA with the function `plotRDA`. This function makes a biplot of samples and features. We can color the samples using categorical variables by passing in a data.frame to argument `pheno`. 
@@ -325,7 +330,7 @@ We will plot RDA using sex variable of our sets colData:
 plotRDA(object = resRDA, pheno = colData(meth)[, "sex", drop = FALSE])
 ```
 
-The RDA plot prints a label at the center of each group and the summary of RDA results (R^2 and p-value) in the legend. `plotRDA` has two additional arguments. `main` is a character vector with the plot's title. `n_feat` is a numeric with the number of feats that will have a label in the text. Only the `n_feat` features most associated to each of the components will be displayed. 
+The RDA plot prints a label at the center of each group and the summary of RDA results (R^2^ and p-value) in the legend. `plotRDA` has two additional arguments. `main` is a character vector with the plot's title. `n_feat` is a numeric with the number of feats that will have a label in the text. Only the `n_feat` features most associated to each of the components will be displayed. 
 
 `plotRDA` relies on `base` paradigm, so we can add layers using functions from this infrastructure (e.g. `lines`, `points`...):
 
