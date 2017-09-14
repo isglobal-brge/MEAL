@@ -1,6 +1,3 @@
- #### Revisar !!!!!!!!!!!!!!
-
-
 #' Computes the correlation between methylation and expression
 #' 
 #' Estimates the correlation between methylation and expression. When there are known 
@@ -50,6 +47,9 @@ correlationMethExprs <- function(multiset,
                                  vars_meth = NULL, vars_exprs = NULL, 
                                  sel_cpgs, flank = 250000, betas = TRUE,
                                  num_cores = 1, verbose = TRUE){
+  
+  # To DO
+  ## Añadir check a vars_meth y vars_exprs
   
   ######################################################################################
   ## Data Checking

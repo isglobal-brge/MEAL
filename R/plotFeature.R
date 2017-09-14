@@ -12,8 +12,7 @@
 #' @return A plot is generated on the current graphics device.
 #' @examples
 #' if (require(minfiData)){
-#'  set <- prepareMethylationSet(getBeta(MsetEx)[1:1000, ], 
-#'  pheno = data.frame(pData(MsetEx)))
+#' set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
 #'  plotFeature(set, 1, variables = "Sample_Group")
 #'  }
 

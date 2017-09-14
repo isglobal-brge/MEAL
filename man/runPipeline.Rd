@@ -81,9 +81,8 @@ for which the calculation will be done \strong{must} be specified.
 }
 \examples{
 if (require(minfiData)){
- set <- prepareMethylationSet(matrix = getBeta(MsetEx)[1:10, ], 
- pheno = data.frame(pData(MsetEx)))
- res <- DAPipeline(set, variable_names = "Sample_Group", probe_method = "ls") 
+set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+ res <- runPipeline(set, variable_names = "Sample_Group") 
  res
 }
 }

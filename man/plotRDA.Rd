@@ -22,11 +22,10 @@ A plot is generated on the current graphics device.
 Plot RDA results
 }
 \examples{
-if (require(minfiData) & require(GenomicRanges)){
-set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
-range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
-ranges = IRanges(3000000, end=12300000))
-rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
-plotRDA(rangeNoSNPs)
+if (require(minfiData)){
+set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+model <- model.matrix(~set$sex)
+rda <- runRDA(set, model)
+plotRDA(rda, pheno = data.frame(factor(set$sex)))
 }
 }

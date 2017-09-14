@@ -31,8 +31,6 @@ runDMRcate <- function(set, model, coefficient = 2, resultSet = FALSE, ...){
   ## Get matrix
   if (is(set, "GenomicRatioSet")){
     mat <- set
-  } else if (is(set, "MethylationSet")){
-    mat <- MultiDataSet::getMs(set)
   } else if (is(set, "SummarizedExperiment")){
     mat <- Biobase::assays(set)
   } else {

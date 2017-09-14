@@ -28,9 +28,11 @@ Given a \code{ResultSet} and a gene name returns the results of the
 analysis of all the probes of the gene.
 }
 \examples{
+\dontrun{
 if (require(minfiData)){
-set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
-methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+ set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+methyOneVar <- runPipeline(set, variable_names = "sex")
 getGeneVals(methyOneVar, "TSPY4")
+}
 }
 }

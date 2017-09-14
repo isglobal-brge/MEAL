@@ -107,6 +107,7 @@ runBumphunter <- function(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
     if (verbose){
       message(paste("Iteration",i,"Num bumps:", nrow(res), 
                     "cutoff:", bumphunter_cutoff))  
+    }
       ## Increase cut off until getting a reasonable number of bumps
       while(nrow(res) > bumps_max){
         i <- i +1

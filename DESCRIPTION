@@ -2,7 +2,7 @@ Package: MEAL
 Title: Perform methylation analysis
 Version: 1.7.2
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
-  person("Juan R.", "Gonz?lez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
+  person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
     also perform methylation or expression analysis alone. Several plotting
     functionalities are included as well as a new region analysis based on
@@ -42,7 +42,6 @@ Suggests:
     IlluminaHumanMethylation450kanno.ilmn12.hg19,
     knitr,
     minfiData,
-    MEALData,
     BiocStyle,
     rmarkdown
 VignetteBuilder: knitr

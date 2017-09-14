@@ -19,9 +19,9 @@
 #' @seealso \code{\link[vegan]{rda}}
 #' @examples
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = data.frame(pData(MsetEx)))
+#' set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
 #' model <- model.matrix(~set$age)
-#' rda <- RDAset(set, model)
+#' rda <- runRDA(set, model)
 #' rda
 #' }
 runRDA <- function(set, model, num_vars = ncol(model), range, betas = TRUE, 

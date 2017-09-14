@@ -1,7 +1,29 @@
+CHANGES IN VERSION 1.8.0
+-------------------------
+
+MAJOR CHANGES
+
+o Substitute AnalysisResults and AnalysisRegionResults by ResultSet.
+
+o Substitute MethylationSet by GenomicRatioSet.
+
+USER-VISIBLE CHANGES
+
+o Rename analysis functions.
+
+o Create wrappers for each DMR methd 
+
+NEW FEATURES
+
+o Add differences of variances analysis.
+
+o Add new plot to simultaneously show all results of the same region.
+
+
 CHANGES IN VERSION 1.6.0
 -------------------------
     
-    NEW FEATURES
+NEW FEATURES
 
 o Add function to add matrices to MDS.
 

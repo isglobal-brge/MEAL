@@ -1,7 +1,5 @@
 #### Revisar !!!!!!!!!!!!!!
 
-
-
 #' Computes the correlation between methylation and SNPs
 #' 
 #' Estimates the correlation between methylation and expression. When there are known 
@@ -112,7 +110,7 @@ correlationMethSNPs <- function(multiset, meth_set_name = NULL, snps_set_name = 
     regionLM <- list()
   }else{
     regionLM <- lapply(rownames(methSet), function(x)
-      explainedVariance(data = data.frame(as.vector(MultiDataSet::betas(methSet[x, ])),
+      explainedVariance(data = data.frame(as.vector(minfi::getBeta(methSet[x, ])),
                                           pData(methSet)[ , variable_names],
                                           t(snpsgeno[snpspvals[ , x ] < snps_cutoff, , drop = FALSE]),
                                           pData(methSet)[ , covariable_names]),
@@ -123,5 +121,3 @@ correlationMethSNPs <- function(multiset, meth_set_name = NULL, snps_set_name = 
   }
   return(list(LM = regionLM, pvals = snpspvals))
 }
-
-

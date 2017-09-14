@@ -345,6 +345,4 @@ abline(h = -1)
 sessionInfo()
 ```
 
-
- 
 # References

@@ -18,8 +18,8 @@
 #' @return Files are saved into the given folder.
 #' @examples
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
-#' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+#' set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+#' methyOneVar <- runPipeline(set, variable_names = "sex")
 #' exportResults(methyOneVar)
 #' }
 setGeneric("exportResults", function(object, dir = "./", prefix = NULL,  

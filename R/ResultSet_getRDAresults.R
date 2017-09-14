@@ -2,11 +2,12 @@
 #' 
 #' Get statistics from RDA result.
 #'  
-#' @param object \code{ResultSet}
-#' @name getRDAresults
+#'  
 #' @aliases getRDAresults
 #' @export
-
+#' @name getRDAresults
+#' @param object \code{ResultSet}
+#' @return Numeric vector with the RDA statistics
 getRDAresults <- function(object) {
     
   stopifnot(is(object, "ResultSet"), "RDA" %in% names(object))

@@ -10,18 +10,17 @@
 #' @param main Character with the plot title.
 #' @return A plot is generated on the current graphics device.
 #' @examples
-#' if (require(minfiData) & require(GenomicRanges)){
-#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
-#' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
-#' ranges = IRanges(3000000, end=12300000))
-#' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
-#' plotRDA(rangeNoSNPs)
+#' if (require(minfiData)){
+#' set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+#' model <- model.matrix(~set$sex)
+#' rda <- runRDA(set, model)
+#' plotRDA(rda, pheno = data.frame(factor(set$sex)))
 #' }
 plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
 
   ## TO DO
   ## Check passing a pheno with character
-  
+  ## Check pass a vector in pheno
   
   stopifnot("RDA" %in% names(object))
   ans <- getAssociation(object, rid = "RDA")

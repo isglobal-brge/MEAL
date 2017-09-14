@@ -24,6 +24,8 @@
 #' hg19, hg38, mm10. (Default: "hg19")
 #' @param tPV Threshold for P-Value
 #' @param rset2 Additional \code{ResultSet}
+#' @param fNames Names from rset fData
+#' @param fNames2 Names from rset2 fData
 #' @return Regional plot
 #' @export
 plotRegion <- function(rset, range, results = names(rset),

@@ -1,60 +1,55 @@
 context("Probe Analysis")
 
 library(minfiData)
+library(minfi)
 miniset <- MsetEx[1:10, ]
-set <- prepareMethylationSet(miniset, data.frame(pData(MsetEx)))
-# pData(set) <- preparePhenotype(pData(set), variable_names = c("status", "age"),
-#                                    variable_types = c("categorical","continuous"))
-# model <- createModel(pData(set))
+set <- ratioConvert(mapToGenome(miniset))
 
 test_that("DiffMean", {
-  probes <- DiffMeanAnalysis(set = set, model = ~ status)
+  probes <- runDiffMeanAnalysis(set = set, model = ~ status)
   expect_match(class(probes), "ResultSet")
   
-  probes <- DiffMeanAnalysis(set = set, model = ~ status, resultSet = FALSE)
+  probes <- runDiffMeanAnalysis(set = set, model = ~ status, resultSet = FALSE)
   expect_match(class(probes), "MArrayLM")
   expect_equal(as.integer(nrow(set)), nrow(probes))
   
-  beta <- betas(set)
+  beta <- getBeta(set)
   model <- model.matrix(~ status, pData(set))
-  probes <- DiffMeanAnalysis(set = beta, model = model)
+  probes <- runDiffMeanAnalysis(set = beta, model = model)
   expect_match(class(probes), "ResultSet")
 })
 
 test_that("DiffVar", {
-  probes <- DiffVarAnalysis(set = set, model = ~ status)
+  probes <- runDiffVarAnalysis(set = set, model = ~ status)
   expect_match(class(probes), "ResultSet")
   
-  probes <- DiffVarAnalysis(set = set, model = ~ status, resultSet = FALSE)
+  probes <- runDiffVarAnalysis(set = set, model = ~ status, resultSet = FALSE)
   expect_match(class(probes), "MArrayLM")
   expect_equal(as.integer(nrow(set)), nrow(probes))
   
-  beta <- betas(set)
+  beta <- getBeta(set)
   model <- model.matrix(~ status, pData(set))
-  probes <- DiffVarAnalysis(set = beta, model = model)
+  probes <- runDiffVarAnalysis(set = beta, model = model)
   expect_match(class(probes), "ResultSet")
 })
 
 
-eset <- ExpressionSet(matrix(runif(400, max = 15), 4))
-annot <- data.frame(chr = rep("chr1", 4), start = c(10, 1000, 3000, 3100), 
-                    end = c(900, 2000, 3300, 4000))
-fData(eset) <- annot
-pData(eset) <- data.frame(sex = rep(c("H", "M", "H", "M"), 25))
-rownames(eset) <- letters[1:4]
+eset <- ExpressionSet(matrix(rnorm(1000), ncol = 10))
+pData(eset) <- data.frame(sex = rep(c("H", "M"), each = 5))
+
 
 test_that("Probe Analysis works with ExpressionSet", {
-  probes <- DiffMeanAnalysis(set = eset, model = ~sex)
+  probes <- runDiffMeanAnalysis(set = eset, model = ~sex)
   expect_match(class(probes), "ResultSet")
   
-  probes <- DiffMeanAnalysis(set = eset, model = ~ sex, resultSet = FALSE)
+  probes <- runDiffMeanAnalysis(set = eset, model = ~ sex, resultSet = FALSE)
   expect_match(class(probes), "MArrayLM")
   expect_equal(as.integer(nrow(eset)), nrow(probes))
   
-  probes <- DiffVarAnalysis(set = eset, model = ~sex)
+  probes <- runDiffVarAnalysis(set = eset, model = ~sex)
   expect_match(class(probes), "ResultSet")
   
-  probes <- DiffVarAnalysis(set = eset, model = ~ sex, resultSet = FALSE)
+  probes <- runDiffVarAnalysis(set = eset, model = ~ sex, resultSet = FALSE)
   expect_match(class(probes), "MArrayLM")
   expect_equal(as.integer(nrow(eset)), nrow(probes))
 })
@@ -87,4 +82,3 @@ test_that("Probe Analysis works with ExpressionSet", {
 #   expect_warning(DiffMeanAnalysis(set = set, model= model, max_iterations = numeric()), 
 #                  "max_iterations must be a numeric greater than 1. The default value will be used.")
 # })
-

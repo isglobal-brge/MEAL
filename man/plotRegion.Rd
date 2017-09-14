@@ -22,6 +22,10 @@ hg19, hg38, mm10. (Default: "hg19")}
 \item{rset2}{Additional \code{ResultSet}}
 
 \item{tPV}{Threshold for P-Value}
+
+\item{fNames}{Names from rset fData}
+
+\item{fNames2}{Names from rset2 fData}
 }
 \value{
 Regional plot

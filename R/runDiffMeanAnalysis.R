@@ -22,7 +22,7 @@
 #' if (require(minfiData)){
 #'  mvalues <- getM(MsetEx)[1:100, ]
 #'  model <- model.matrix(~ Sample_Group, data = pData(MsetEx)) 
-#'  res <- DAProbe(mvalues, model, method = "ls")
+#'  res <- runDiffMeanAnalysis(mvalues, model, method = "ls")
 #'  res
 #' }
 runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100, 

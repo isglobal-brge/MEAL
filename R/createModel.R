@@ -42,5 +42,5 @@ createModel <- function(set, model, warnings = TRUE){
     stop("The number of samples is different in the set and in the model")
   }
   
-  return(model = model)
+  return(model)
 }

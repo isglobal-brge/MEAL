@@ -6,7 +6,7 @@
 \usage{
 correlationMethExprs(multiset, meth_set_name = NULL, exprs_set_name = NULL,
   vars_meth = NULL, vars_exprs = NULL, sel_cpgs, flank = 250000,
-  num_cores = 1, verbose = TRUE)
+  betas = TRUE, num_cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{multiset}{\code{MultiDataSet} containing a \code{methylation} and an 
@@ -31,6 +31,9 @@ methylation set will be used.}
 
 \item{flank}{Numeric with the number of pair bases used to define the cpg-expression 
 probe pairs.}
+
+\item{betas}{If \code{set} is a \code{GenomicRatioSet}, should beta values be
+used? (Default: TRUE)}
 
 \item{num_cores}{Numeric with the number of cores to be used.}
 

@@ -10,11 +10,10 @@
 #' @return data.frame with the features, the component, the correlation and the p-value
 #' @examples
 #' if (require(minfiData) & require(GenomicRanges)){
-#' set <- prepareMethylationSet(getBeta(MsetEx), pheno = data.frame(pData(MsetEx)))
-#' range <- GenomicRanges::GRanges(seqnames=Rle("chrY"), 
-#' ranges = IRanges(3000000, end=12300000))
-#' rangeNoSNPs <- DARegionAnalysis(set, variable_names = "sex", range = range)
-#' topRDAhits(rangeNoSNPs)
+#' set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+#' model <- model.matrix(~set$sex)
+#' rda <- runRDA(set, model)
+#' topRDAhits(rda)
 #' }
 topRDAhits <- function(object, tPV = 0.05){
     

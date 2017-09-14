@@ -34,7 +34,7 @@ variables. This function relies on \code{varFit} from missMethyl package.
 if (require(minfiData)){
  mvalues <- getM(MsetEx)[1:100, ]
  model <- model.matrix(~ Sample_Group, data = pData(MsetEx)) 
- res <- DAProbe(mvalues, model, method = "ls")
+ res <- runDiffVarAnalysis(mvalues, model)
  res
 }
 }

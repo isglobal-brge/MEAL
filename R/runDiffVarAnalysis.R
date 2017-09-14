@@ -19,7 +19,7 @@
 #' if (require(minfiData)){
 #'  mvalues <- getM(MsetEx)[1:100, ]
 #'  model <- model.matrix(~ Sample_Group, data = pData(MsetEx)) 
-#'  res <- DAProbe(mvalues, model, method = "ls")
+#'  res <- runDiffVarAnalysis(mvalues, model)
 #'  res
 #' }
 runDiffVarAnalysis <- function(set, model, coefficient = NULL,  
@@ -47,7 +47,7 @@ runDiffVarAnalysis <- function(set, model, coefficient = NULL,
 
   fFun <- getFeatureDataFun(set)
   
-  fit <- missMethyl::varFit(mat, model, coef = coefficient, ...)
+  fit <- missMethyl::varFit.default(mat, model, coef = coefficient, ...)
   
   if (resultSet){
     fit <- MultiDataSet::create_resultset(fOrigin = "DiffVarAnalysis", fData = list(main = fFun(set)), 

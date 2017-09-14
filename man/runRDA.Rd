@@ -35,9 +35,9 @@ is done using a model matrix passed in covarsmodel.
 }
 \examples{
 if (require(minfiData)){
-set <- prepareMethylationSet(getBeta(MsetEx)[1:50,], pheno = data.frame(pData(MsetEx)))
+set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
 model <- model.matrix(~set$age)
-rda <- RDAset(set, model)
+rda <- runRDA(set, model)
 rda
 }
 }

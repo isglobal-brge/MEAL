@@ -70,9 +70,9 @@ linear regression and not robust linear regression.
 }
 \examples{
 if (require(minfiData)){
- set <- prepareMethylationSet(minfi::getBeta(MsetEx)[1:10, ], pheno = data.frame(pData(MsetEx)))
+set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
  model <- model.matrix(~Sample_Group, data = pData(MsetEx))
- res <- DARegion(set, model) 
+ res <- runRegionAnalysis(set, model) 
  res
 }
 }

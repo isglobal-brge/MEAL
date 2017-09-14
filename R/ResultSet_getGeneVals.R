@@ -16,10 +16,12 @@
 #' @return data.frame with the results of the analysis of the probes belonging to 
 #' the gene 
 #' @examples
+#' \dontrun{
 #' if (require(minfiData)){
-#' set <- prepareMethylationSet(getBeta(MsetEx)[1:10,], pheno = data.frame(pData(MsetEx)))
-#' methyOneVar <- DAPipeline(set, variable_names = "sex", probe_method = "ls")
+#'  set <- ratioConvert(mapToGenome(MsetEx[1:10,]))
+#' methyOneVar <- runPipeline(set, variable_names = "sex")
 #' getGeneVals(methyOneVar, "TSPY4")
+#' }
 #' }
 getGeneVals <- function(object, gene, rid = 1, genecol = "genes", ...){
   
