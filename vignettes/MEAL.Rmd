@@ -42,42 +42,38 @@ In this vignette, we will use methylation data from `r Githubpkg("isglobal/BRGEd
 ```{r, message = FALSE}
 library(MEAL)
 library(MultiDataSet)
-library(BRGEdata)
+library(minfiData)
 library(minfi)
-library(missMethyl)
 library(ggplot2)
 
-data("brge_methy")
-brge_methy
-colData(brge_methy)
+data("MsetEx")
 ```
 
-`brge_methy` contains measurements for 476946 CpGs and 115 samples, as well as some phenotypic variables such as age, sex or cell counts. To speed up the demonstration, we will work with a subset of 20 samples:
+`MsetEx` is a MethylationRatioSet that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. We will also remove any CpG with NAs:
 
 ```{r subset Methy}
-meth <- brge_methy[, 1:20]
+meth <- mapToGenome(ratioConvert(MsetEx))
+meth <- meth[!apply(getBeta(meth), 1, function(x) any(is.na(x))), ]
 ```
 
 
 # Analyzing Methylation data
 ## Pipeline
 
-The function `runPipeline` run all methods included in `r Biocpkg("MEAL")` to the same dataset. We only need to pass to this function a `GenomicRatioSet` and the name of our variable of interest. In our case, we will analyze the effect of sex on methylation:
+The function `runPipeline` run all methods included in `r Biocpkg("MEAL")` to the same dataset. We only need to pass to this function a `GenomicRatioSet` and the name of our variable of interest. In our case, we will analyze the effect of cancer on methylation:
 
 ```{r Pipeline,  warning=FALSE}
-res <- runPipeline(set = meth, variable_names = "sex")
+res <- runPipeline(set = meth, variable_names = "status")
 res
 ```
 
 `runPipeline` includes several parameters to customize the analyses. The most important parameters are `covariable_names`, `betas` and `sva`. `covariable_names` is used to include covariates in our models. `betas` allows the user choosing between running the analyis with beta (TRUE) or M-values (FALSE). If `sva` is TRUE, Surrogate Variable Analysis is run and surrogate variables are included in the models. Finally, some parameters modify the behaviour of the methods included in the wrapper and they will be covered later on. More information about the parameters can be found in the documentation (by typing ?runPipeline). 
 
-We will run a new analysis including cell counts as covariates. To do so, we will pass the names of the cell counts measurements to `covariable_names`:
+We will run a new analysis including age as covariate:
 
 ```{r Pipeline Adj,  warning=FALSE}
-cellCounts <- colnames(colData(meth))[3:9]
-cellCounts
-resAdj <- runPipeline(set = meth, variable_names = "sex", 
-                      covariable_names = cellCounts)
+resAdj <- runPipeline(set = meth, variable_names = "status", 
+                      covariable_names = "age")
 resAdj
 ```
 
@@ -107,7 +103,7 @@ DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Bioc
 To exemplify the use of this function, we will evaluate our whole adjusted model, including cell counts coefficients. We will also add some annotation of the CpGs:
 
 ```{r get Probe Res several coefs}
-head(getProbeResults(resAdj, rid = 1, coef = 2:9, 
+head(getProbeResults(resAdj, rid = 1, coef = 2:3, 
                      fNames = c("chromosome", "start")))
 ```
 
