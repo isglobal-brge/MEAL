@@ -9,6 +9,9 @@ getRDAresults(object)
 \arguments{
 \item{object}{\code{ResultSet}}
 }
+\value{
+Numeric vector with the RDA statistics
+}
 \description{
 Get statistics from RDA result.
 }

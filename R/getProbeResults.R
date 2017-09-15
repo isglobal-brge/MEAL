@@ -20,7 +20,7 @@
 #' @return data.frame with the probe results. 
 #' @export
 getProbeResults <- function(object, rid = "DiffMean", coef = 2, contrast = NULL, 
-                        fNames = c("chromosome", "start", "genes"), ...) {
+                        fNames = c("chromosome", "start"), ...) {
     
   stopifnot(is(object, "ResultSet"))
   

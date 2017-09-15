@@ -4,7 +4,8 @@
 \alias{getGeneVals}
 \title{Get all probes related to a gene}
 \usage{
-getGeneVals(object, gene, rid = 1, genecol = "genes", ...)
+getGeneVals(object, gene, rid = 1, genecol = "genes",
+  fNames = c("chromosome", "start"), ...)
 }
 \arguments{
 \item{object}{\code{ResultSet}}
@@ -16,6 +17,9 @@ variance differences. (Default: DiffMean)}
 
 \item{genecol}{Character with the column of \code{object} fData with the gene
 information}
+
+\item{fNames}{Names of the columns of \code{object} fData that will be added to 
+the results data.frame.}
 
 \item{...}{Further arguments passed to \code{getProbeResults}}
 }

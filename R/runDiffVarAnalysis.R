@@ -11,6 +11,8 @@
 #' @param coefficient Numeric with the coefficients used to make the groups. If NULL, all
 #' possible groups will be computed. 
 #' @param resultSet Should results be encapsulated in a \code{resultSet}? (Default: TRUE)
+#' @param betas If \code{set} is a \code{GenomicRatioSet}, should beta values be
+#' used? (Default: TRUE)
 #' @param warnings Should warnings be displayed? (Default:TRUE) 
 #' @param ... Further arguments passed to \code{varFit}.
 #' @return \code{MArrayLM} or \code{resultSet} with the result of the differential
@@ -23,7 +25,7 @@
 #'  res
 #' }
 runDiffVarAnalysis <- function(set, model, coefficient = NULL,  
-                            resultSet = TRUE, warnings = TRUE, ...) {
+                            resultSet = TRUE, betas = TRUE, warnings = TRUE, ...) {
   
   ## Create model matrix from formula
   if (is(model, "formula")){
@@ -36,8 +38,12 @@ runDiffVarAnalysis <- function(set, model, coefficient = NULL,
   if (is(set, "ExpressionSet")){
     mat <- Biobase::exprs(set)
   } else if (is(set, "GenomicRatioSet")){
+    if (betas) {
+      mat <- minfi::getBeta(set)
+    } else {
       mat <- minfi::getM(set)
-  } else if (is(set, "SummarizedExperiment")){
+    }
+  }else if (is(set, "SummarizedExperiment")){
     mat <- Biobase::assays(set)
   } else if (is.matrix(set)){
     mat <- set

@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.7.3
+Version: 1.7.4
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
@@ -35,7 +35,10 @@ Imports:
     missMethyl,
     isva,
     SummarizedExperiment,
-    SmartSVA
+    SmartSVA,
+    graphics,
+    stats,
+    utils
 Suggests:
     testthat,
     IlluminaHumanMethylationEPICanno.ilm10b2.hg19,

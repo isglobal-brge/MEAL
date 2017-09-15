@@ -12,6 +12,8 @@
 #' variance differences. (Default: DiffMean)
 #' @param genecol Character with the column of \code{object} fData with the gene
 #' information
+#' @param fNames Names of the columns of \code{object} fData that will be added to 
+#' the results data.frame.
 #' @param ... Further arguments passed to \code{getProbeResults}
 #' @return data.frame with the results of the analysis of the probes belonging to 
 #' the gene 
@@ -23,15 +25,16 @@
 #' getGeneVals(methyOneVar, "TSPY4")
 #' }
 #' }
-getGeneVals <- function(object, gene, rid = 1, genecol = "genes", ...){
+getGeneVals <- function(object, gene, rid = 1, genecol = "genes", 
+                        fNames = c("chromosome", "start"), ...){
   
   stopifnot(is(object, "ResultSet"), is(gene, "character"))
   
-  res <- getProbeResults(object, rid, ...)
+  res <- getProbeResults(object, rid, fNames = c(fNames, genecol), ...)
   
   stopifnot(genecol %in% colnames(res))
   
-  genelist <- strsplit(res$genes, ";")
+  genelist <- strsplit(res[[genecol]], ";")
   mask <- vapply(genelist, function(y) gene %in% y, logical(length(gene)))
   if (length(gene) > 1){
     mask <- as.logical(colSums(mask))

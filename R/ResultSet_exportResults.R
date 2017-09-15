@@ -22,45 +22,33 @@
 #' methyOneVar <- runPipeline(set, variable_names = "sex")
 #' exportResults(methyOneVar)
 #' }
-setGeneric("exportResults", function(object, dir = "./", prefix = NULL,  
-                                     fNames = c("chromosome", "start")){
-  standardGeneric("exportResults")
-})
-
-#' @rdname exportResults
-#' @aliases exportResults 
-#' 
-#' @export
-setMethod(
-  f = "exportResults",
-  signature = "ResultSet",
-  definition = function(object, dir = "./", prefix = NULL, 
-                        fNames = c("chromosome", "start")) {
-    if (substr(dir, nchar(dir), nchar(dir)) != "/"){
-      dir <- paste0(dir, "/")
-    }
-    if (!file.exists(dir)){
-      dir.create(dir)
-    }
-    if ("DiffMean" %in% names(object)) {
-      temp <- getProbeResults(object, rid = "DiffMean", fNames = fNames)
-      write.csv2(temp, file = paste0(dir, prefix, "DiffMeanResults.csv"))
-    }
-    if ("DiffVar" %in% names(object)) {
-      temp <- getProbeResults(object, rid = "DiffVar", fNames = fNames)
-      write.csv2(temp, file = paste0(dir, prefix, "DiffVarResults.csv"))
-    }
-    if ("dmrcate" %in% names(object)) {
-      temp <- getAssociation(object, rid = "dmrcate")
-      write.csv2(temp, file = paste0(dir, prefix, "dmrCateResults.csv"))
-    }
-    if ("bumphunter" %in% names(object)) {
-      temp <- getAssociation(object, rid = "bumphunter")
-      write.csv2(temp, file = paste0(dir, prefix, "bumphunterResults.csv"))
-    }
-    if ("blockFinder" %in% names(object)) {
-      temp <- getAssociation(object, rid = "blockFinder")
-      write.csv2(temp, file = paste0(dir, prefix, "blockFinderResults.csv")) 
-    }
+exportResults <- function(object, dir = "./", prefix = NULL, 
+                          fNames = c("chromosome", "start")) {
+  stopifnot(is(object, "ResultSet"))
+  if (substr(dir, nchar(dir), nchar(dir)) != "/"){
+    dir <- paste0(dir, "/")
   }
-)
+  if (!file.exists(dir)){
+    dir.create(dir)
+  }
+  if ("DiffMean" %in% names(object)) {
+    temp <- getProbeResults(object, rid = "DiffMean", fNames = fNames)
+    write.csv2(temp, file = paste0(dir, prefix, "DiffMeanResults.csv"))
+  }
+  if ("DiffVar" %in% names(object)) {
+    temp <- getProbeResults(object, rid = "DiffVar", fNames = fNames)
+    write.csv2(temp, file = paste0(dir, prefix, "DiffVarResults.csv"))
+  }
+  if ("dmrcate" %in% names(object)) {
+    temp <- getAssociation(object, rid = "dmrcate")
+    write.csv2(temp, file = paste0(dir, prefix, "dmrCateResults.csv"))
+  }
+  if ("bumphunter" %in% names(object)) {
+    temp <- getAssociation(object, rid = "bumphunter")
+    write.csv2(temp, file = paste0(dir, prefix, "bumphunterResults.csv"))
+  }
+  if ("blockFinder" %in% names(object)) {
+    temp <- getAssociation(object, rid = "blockFinder")
+    write.csv2(temp, file = paste0(dir, prefix, "blockFinderResults.csv")) 
+  }
+}

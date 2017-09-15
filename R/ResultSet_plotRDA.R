@@ -25,7 +25,10 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
   stopifnot("RDA" %in% names(object))
   ans <- getAssociation(object, rid = "RDA")
   
-  classes <- sapply(colnames(pheno), function(x) class(pheno[, x]))
+  classes <- vapply(pheno, class, character(1))
+  pheno[, classes == "character"] <- lapply(pheno[, classes == "character", drop = FALSE], function(x) factor(x))
+  
+  classes <- vapply(pheno, class, character(1))
   factormatrix <- pheno[, classes == "factor", drop = FALSE]
   phenocont <- pheno[, classes == "numeric", drop = FALSE]
   factor <- as.vector(sapply(colnames(factormatrix), function(x) levels(factormatrix[, x])))

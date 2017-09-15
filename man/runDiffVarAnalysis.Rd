@@ -5,7 +5,7 @@
 \title{Run differential variance analysis}
 \usage{
 runDiffVarAnalysis(set, model, coefficient = NULL, resultSet = TRUE,
-  warnings = TRUE, ...)
+  betas = TRUE, warnings = TRUE, ...)
 }
 \arguments{
 \item{set}{Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 
@@ -17,6 +17,9 @@ runDiffVarAnalysis(set, model, coefficient = NULL, resultSet = TRUE,
 possible groups will be computed.}
 
 \item{resultSet}{Should results be encapsulated in a \code{resultSet}? (Default: TRUE)}
+
+\item{betas}{If \code{set} is a \code{GenomicRatioSet}, should beta values be
+used? (Default: TRUE)}
 
 \item{warnings}{Should warnings be displayed? (Default:TRUE)}
 
