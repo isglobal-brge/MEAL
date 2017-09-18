@@ -95,10 +95,11 @@ runPipeline <-  function(set, variable_names,
   if (is(set, "ExpressionSet")){
     mat <- Biobase::exprs(set)
   } else if (is(set, "GenomicRatioSet")){
-    if (betas) {
-      mat <- minfi::getBeta(set)
-    } else {
-      mat <- minfi::getM(set)
+    mat <- minfi::getBeta(set)
+    if (!betas) {
+      mat[mat == 0] <- 1e-3
+      mat[mat == 1] <- 1 - 1e-3
+      mat <- minfi::logit2(mat)
     }
   } else if (is(set, "SummarizedExperiment")){
     mat <- Biobase::assays(set)

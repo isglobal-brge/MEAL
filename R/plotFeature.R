@@ -25,11 +25,13 @@ plotFeature <- function(set, feat, variables = colnames(pheno)[1], betas = TRUE)
   if (is(set, "ExpressionSet")){
     vals <- Biobase::exprs(set)[feat, ]
   } else if (is(set, "GenomicRatioSet")){
-    if (betas) {
-      vals <- minfi::getBeta(set)[feat, ]
-      methplot <- TRUE
-    } else {
-      vals <- minfi::getM(set)[feat, ]
+    vals <- minfi::getBeta(set)[feat, ]
+    methplot <- TRUE
+    if (!betas) {
+      vals[vals == 0] <- 1e-3
+      vals[vals == 1] <- 1 - 1e-3
+      vals <- minfi::logit2(vals)
+      methplot <- FALSE
     }
   } else if (is(set, "SummarizedExperiment")){
     vals <- SummarizedExperiment::assay(set)[feat, ]

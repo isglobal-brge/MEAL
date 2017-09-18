@@ -12,7 +12,7 @@ author:
     email: juanr.gonzalez@isglobal.org 
 package: MEAL
 output: 
-  BiocStyle::html_document2:
+  BiocStyle::html_document:
     number_sections: true
     toc_float: yes
 bibliography: ./vignette.bib

@@ -181,10 +181,11 @@ setResidues <- function(set, variable_names, betas = TRUE){
   if (is(set, "ExpressionSet")){
     res <- Biobase::exprs(set)
   } else if (is(set, "GenomicRatioSet")){
-    if (betas) {
-      res <- minfi::getBeta(set)
-    } else {
-      res <- minfi::getM(set)
+    res <- minfi::getBeta(set)
+    if (!betas) {
+      res[res == 0] <- 1e-3
+      res[res == 1] <- 1 - 1e-3
+      res <- minfi::logit2(res)
     }
   } else if (is(set, "SummarizedExperiment")){
     res <- Biobase::assays(set)

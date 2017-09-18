@@ -37,10 +37,11 @@ runRDA <- function(set, model, num_vars = ncol(model), range, betas = TRUE,
   if (is(set, "ExpressionSet")){
     orimat <- Biobase::exprs(set)
   } else if (is(set, "GenomicRatioSet")){
-    if (betas) {
-      orimat <- minfi::getBeta(set)
-    } else {
-      orimat <- minfi::getM(set)
+    orimat <- minfi::getBeta(set)
+    if (!betas) {
+      orimat[orimat == 0] <- 1e-3
+      orimat[orimat == 1] <- 1 - 1e-3
+      orimat <- minfi::logit2(orimat)
     }
   } else if (is(set, "SummarizedExperiment")){
     orimat <- Biobase::assays(set)
@@ -79,10 +80,11 @@ runRDA <- function(set, model, num_vars = ncol(model), range, betas = TRUE,
   if (is(set, "ExpressionSet")){
     mat <- Biobase::exprs(set)
   } else if (is(set, "GenomicRatioSet")){
-    if (betas) {
-      mat <- minfi::getBeta(set)
-    } else {
-      mat <- minfi::getM(set)
+    mat <- minfi::getBeta(set)
+    if (!betas) {
+      mat[mat == 0] <- 1e-3
+      mat[mat == 1] <- 1 - 1e-3
+      mat <- minfi::logit2(mat)
     }
   } else if (is(set, "SummarizedExperiment")){
     mat <- Biobase::assays(set)
