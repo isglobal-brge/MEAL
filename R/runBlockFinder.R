@@ -67,7 +67,7 @@ runBlockFinder <- function(set, model, coefficient = 2, blockfinder_cutoff = 0.1
                                      nullMethod = "bootstrap",
                                      verbose = verbose, ...)$table, 
                   error = function(err) {
-                    if(startsWith(as.character(err), "Error: $ operator")) {
+                    if(startsWith(as.character(err), "Error in res$table$indexStart")) {
                       warning("No blocks were found.")
                     } else {
                       stop(err)
