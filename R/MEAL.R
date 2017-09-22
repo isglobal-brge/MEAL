@@ -20,6 +20,7 @@
 #' @importFrom graphics legend points text
 #' @importFrom IRanges IRanges
 #' @importFrom limma lmFit contrasts.fit eBayes topTable 
+#' @importFrom matrixStats rowVars
 #' @importFrom minfi logit2 ilogit2 bumphunter GenomicRatioSet cpgCollapse blockFinder getBeta
 #' @importFrom parallel mclapply
 #' @importFrom permute how
