@@ -55,10 +55,16 @@ runDMRcate <- function(set, model, coefficient = 2, resultSet = FALSE, ...){
                           c(list(object = mat, design = model, 
                                  what = "M", coef = coefficient), annParams))
 
-  dmrcoutput <- do.call(DMRcate::dmrcate,
-                        c(list(object = myannotation), dmrParams))
-  
-  res <- dmrcoutput$results
+  res <-   tryCatch(do.call(DMRcate::dmrcate,
+                        c(list(object = myannotation), dmrParams))$results,
+                        error = function(err) {
+                          if(grepl("The FDR you specified in ", as.character(err))) {
+                            warning("No significant CpGs were found.")
+                          } else {
+                            stop(err)
+                          }
+                          return(data.frame())
+                        })
   if (resultSet)
   {
     fFun <- getFeatureDataFun(set)
