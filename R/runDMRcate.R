@@ -58,7 +58,9 @@ runDMRcate <- function(set, model, coefficient = 2, resultSet = FALSE, ...){
   res <-   tryCatch(do.call(DMRcate::dmrcate,
                         c(list(object = myannotation), dmrParams))$results,
                         error = function(err) {
-                          if(grepl("The FDR you specified in ", as.character(err))) {
+                          if(grepl("The FDR you specified in ", as.character(err)) | 
+                             grepl("sum(object$sig) >= 2", as.character(err)) |
+                             grepl("K >= 2", as.character(err))) {
                             warning("No significant CpGs were found.")
                           } else {
                             stop(err)
