@@ -24,7 +24,7 @@
 #' rda <- runRDA(set, model)
 #' rda
 #' }
-runRDA <- function(set, model, num_vars = ncol(model), range, betas = TRUE, 
+runRDA <- function(set, model, num_vars = ncol(model), range, betas = FALSE, 
                    resultSet = TRUE, num_permutations = 1e4){
   
   ## Create model matrix from formula
