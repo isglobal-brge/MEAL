@@ -33,7 +33,11 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
   phenocont <- pheno[, classes == "numeric", drop = FALSE]
   factor <- as.vector(sapply(colnames(factormatrix), function(x) levels(factormatrix[, x])))
   
+  
+  
   if (ncol(factormatrix) > 1){
+    factormatrix[] <- lapply(factormatrix, as.character)
+    
     phenofactor <- as.factor(sapply(rownames(factormatrix),
                                function(x) paste0(unlist(factormatrix[x, ]), collapse = "")))
   }else{
