@@ -29,7 +29,6 @@ Imports:
     doParallel,
     parallel,
     ggplot2 (>= 2.0.0),
-    sva, 
     permute,
     Gviz,
     missMethyl,

@@ -4,7 +4,7 @@
 \alias{runRDA}
 \title{Calculate RDA for a set}
 \usage{
-runRDA(set, model, num_vars = ncol(model), range, betas = TRUE,
+runRDA(set, model, num_vars = ncol(model), range, betas = FALSE,
   resultSet = TRUE, num_permutations = 10000)
 }
 \arguments{
