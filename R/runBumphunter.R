@@ -102,7 +102,7 @@ runBumphunter <- function(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
   # Ensure that permutations are applied to a reasonable number of bumps
     i <- 1
     res <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
-                              chr = annot[ , "chromosome"], pos = annot[, "position"],
+                              chr = annot[ , "chromosome"], pos = annot[, "start"],
                               cutoff = bumphunter_cutoff, B = 0, 
                               nullMethod = "bootstrap", verbose = verbose, ...)$table
     if (verbose){
@@ -114,7 +114,7 @@ runBumphunter <- function(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
         i <- i +1
         bumphunter_cutoff <- bumphunter_cutoff + 0.05
         res <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
-                                         chr = annot[ , "chromosome"], pos = annot[, "position"],
+                                         chr = annot[ , "chromosome"], pos = annot[, "start"],
                                          cutoff = bumphunter_cutoff, B = 0, 
                                          nullMethod = "bootstrap", verbose = verbose, ...)$table
         if (verbose){

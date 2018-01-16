@@ -46,7 +46,8 @@ Suggests:
     knitr,
     minfiData,
     BiocStyle,
-    rmarkdown
+    rmarkdown,
+    brgedata
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Encoding: UTF-8
