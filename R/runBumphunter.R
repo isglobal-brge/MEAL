@@ -42,7 +42,7 @@
 #' @seealso \code{\link[minfi]{bumphunter}}
 runBumphunter <- function(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
                           num_permutations = 0, bumps_max = 30000, betas = TRUE, 
-                          check_perms = TRUE, verbose = FALSE, 
+                          check_perms = FALSE, verbose = FALSE, 
                           resultSet = FALSE, ...){
   #Activate parallelization 
   ### Change to BiocParallel !!!!!!!
