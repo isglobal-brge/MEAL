@@ -1,9 +1,4 @@
-#' Filter a \code{MethylationSet}, an \code{ExpressionSet} or a \code{SnpSet}
-#' 
-#' @export 
-#' @return Deprecated
-#' @examples
-#' filterSet()
+#' @export filterSet
 filterSet <- function(){
-  .Deprecated()
+  .Defunct()
 }

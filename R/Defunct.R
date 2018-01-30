@@ -4,5 +4,6 @@
 #' 
 #' @name MEAL-defunct
 #' 
-#' @details Defunct functions are: multiCorrMethExprs
+#' @details Defunct functions are: multiCorrMethExprs, DAPipeline, DAProbe, DARegion, 
+#' RDAset, filterSet, plotBestFeatures, preparePhenotype
 NULL
