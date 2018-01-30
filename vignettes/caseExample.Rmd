@@ -49,7 +49,7 @@ library(ggplot2)
 
 From the six objects of `r Rpackage("brgedata")`, we will focus on those containing methylation and expression data: brge_methy and brge_gexp.
 
-brge_methy is a `GenomicRatioSet` with methylation data corresponding to the Illumina Human Methylation 450K. It contains 476946 probes and 20 samples. The object contains 9 phenotypic variables (age, sex and cell types proportions):
+brge_methy is a `GenomicRatioSet` with methylation data corresponding to the Illumina Human Methylation 450K. It contains 392277 probes and 20 samples. The object contains 9 phenotypic variables (age, sex and cell types proportions):
 
 ```{r Methylation_Data}
 data(brge_methy)
@@ -100,24 +100,24 @@ We can get a QQplot with the function `plot`. When applied to a `ResultSet`, we 
 plot(methRes, rid = "DiffMean", type = "qq")
 ```
 
-The QQplot shows that there is a great inflation in our data, as most of the points are above the theoretical line. The lambda is also greater than 1 (1.218). 
+When there are few CpGs modicated, we expect points in the QQplot lying on the theoretical line. However, as all the CpGs from the sexual chromosomes will be differentially methylated between males and females, we obtained a S-shape. In this case, lambda is lower than 1 (0.851). 
 
-There are different ways to address this issue. An option is to include other covariates in our model. When we do not have more covariates, as it is our case, we can apply Surrogate Variable Analysis (SVA) to the data. SVA is a statistical technique that tries to determine hidden covariates based on the measurements. This method is very useful to correct inflation when we do not have the variables that are missing in the model. 
+There are different ways to address this issue. An option is to include other covariates in our model. When we do not have more covariates, as it is our case, we can apply Surrogate Variable Analysis (SVA) to the data. SVA is a statistical technique that tries to determine hidden covariates or SV (Surrogate Variables) based on the measurements. This method is very useful to correct inflation when we do not have the variables that are missing in the model. 
 
-Our function `runPipeline` includes the parameter `sva` that runs SVA and includes these variables as covariates in the linear model. Therefore, we will run again our analyses adjusting by SVA:
+Our function `runPipeline` includes the parameter `sva` that runs SVA and includes these variables as covariates in the linear model. Therefore, we will run again our analyses adjusting by SVs. We won't include cell counts as covariates as their effect will be included in the SVs :
 
-```{r Meth_Analysis SVA, eval = FALSE}
-methRes <- runPipeline(set = brge_methy, variable_names = "sex", covariable_names = cellCounts, range = targetRange, sva = TRUE)
+```{r Meth_Analysis SVA}
+methRes <- runPipeline(set = brge_methy, variable_names = "sex", range = targetRange, sva = TRUE)
 methRes
 ```
 
 We will plot again a QQplot to evaluate the fit of the model including SVA:
 
-```{r Plot QQ SVA, eval = FALSE}
+```{r Plot QQ SVA}
 plot(methRes, rid = "DiffMean", type = "qq")
 ```
 
-The p-values are now much closer to the expected distribution and the lambda has dropped from 1.218 to 1.155. Therefore, the model with SVA fits better the data than our model with only cell counts. We will work with this model in the following steps. 
+QQplot still shows a S-shape. However, lambda is slightly closer to 1, so we will work with this model in the following steps. 
 
 We have included two methods to analyze individual CpGs: DiffMean (limma) and DiffVar. DiffMean tests, for each CpG, if there is a difference between the means of the different groups. In our case, we tested, for each CpG, if the mean methylation in boys was different to the mean methylation in girls. On the other hand, DiffVar tests, for each CpG, if there is a difference in variance between the groups. In our case, we tested for each CpG if the variance was different in boys than in girls. 
 
