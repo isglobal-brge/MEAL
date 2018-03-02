@@ -55,7 +55,7 @@
 #' }
 runPipeline <-  function(set, variable_names, 
                          covariable_names = NULL, 
-                         model = NULL, num_vars = ncol(model) - 1,  
+                         model = NULL, num_vars,  
                          sva = FALSE, betas = TRUE, range,
                          region_methods = c("bumphunter", "blockFinder", "DMRcate"),
                          verbose = FALSE, warnings = TRUE, 
@@ -79,14 +79,17 @@ runPipeline <-  function(set, variable_names,
     } else {
       model_adj <- model
     }
+    ## Get number of variables of interest
+    model <- createModel(set, model, warnings)
+    num_vars <- ncol(model)
+    
+    ## Get final model
+    model <- createModel(set, model_adj, warnings)
+  } else{
+    model <- createModel(set, model, warnings)
   }
 
-  ## Get number of variables of interest
-  model <- createModel(set, model, warnings)
-  num_vars <- ncol(model)
-  
-  ## Get final model
-  model <- createModel(set, model_adj, warnings)
+
   set <- set[, rownames(model)]
   
   
