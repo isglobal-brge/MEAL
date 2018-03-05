@@ -59,7 +59,7 @@ runPipeline <-  function(set, variable_names,
                          sva = FALSE, betas = TRUE, range,
                          region_methods = c("bumphunter", "blockFinder", "DMRcate"),
                          verbose = FALSE, warnings = TRUE, 
-                         DiffMean_params = NULL, DiffVar_params = NULL,
+                         DiffMean_params = NULL, DiffVar_params = list(coefficient = 1:2),
                          bumphunter_params = NULL, 
                          blockFinder_params = NULL, dmrcate_params = NULL, 
                          rda_params = NULL) {
@@ -127,13 +127,14 @@ runPipeline <-  function(set, variable_names,
   diffmean <- do.call(runDiffMeanAnalysis, 
                       c(list(set = mat, model = model, resultSet = FALSE, 
                              warnings = warnings), DiffMean_params))
+  
   diffvar <- do.call(runDiffVarAnalysis, 
-                     c(list(set = mat, model = model, coefficient = 1:2, resultSet = FALSE, 
+                     c(list(set = mat, model = model, resultSet = FALSE, 
                             warnings = warnings), DiffVar_params))
   resList <- list(DiffMean = list(result = diffmean, error = NA),
                   DiffVar = list(result = diffvar, error = NA))
   
-  if (class(set) %in% c("MethylationSet", "GenomicRatioSet")) {
+  if (class(set) == "GenomicRatioSet") {
     if (verbose){
       message("Region Analysis started")
     }
