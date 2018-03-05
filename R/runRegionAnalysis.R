@@ -61,7 +61,7 @@ runRegionAnalysis <- function (set, model, methods = c("blockFinder", "bumphunte
                             blockFinder_params = NULL, dmrcate_params = NULL,
                             verbose = FALSE, resultSet = TRUE)
 {
-  methods <- match.arg(methods, choices = c("blockFinder", "bumphunter", "DMRcate"),
+  methods <- match.arg(methods, choices = c("blockFinder", "bumphunter", "DMRcate", "none"),
                        several.ok = TRUE)
   
   dmrs <- list(bumphunter = list(result = data.frame(), error = NA), 
