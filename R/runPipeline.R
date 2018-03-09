@@ -105,7 +105,7 @@ runPipeline <-  function(set, variable_names,
       mat <- minfi::logit2(mat)
     }
   } else if (is(set, "SummarizedExperiment")){
-    mat <- Biobase::assays(set)
+    mat <- SummarizedExperiment::assay(set)
   } else {
     stop("set must be an ExpressionSet, MethylationSet, GenomicRatioSet or SummarizedExperiment.")
   }

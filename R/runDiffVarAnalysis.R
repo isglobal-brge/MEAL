@@ -45,7 +45,7 @@ runDiffVarAnalysis <- function(set, model, coefficient = NULL,
       mat <- minfi::logit2(mat)
     }
   }else if (is(set, "SummarizedExperiment")){
-    mat <- Biobase::assays(set)
+    mat <- SummarizedExperiment::assay(set)
   } else if (is.matrix(set)){
     mat <- set
   } else {

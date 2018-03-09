@@ -44,7 +44,7 @@ runRDA <- function(set, model, num_vars = ncol(model), range, betas = FALSE,
       orimat <- minfi::logit2(orimat)
     }
   } else if (is(set, "SummarizedExperiment")){
-    orimat <- Biobase::assays(set)
+    orimat <- SummarizedExperiment::assay(set)
   } else if (is.matrix(set)){
     orimat <- set
   } else {
@@ -87,7 +87,7 @@ runRDA <- function(set, model, num_vars = ncol(model), range, betas = FALSE,
       mat <- minfi::logit2(mat)
     }
   } else if (is(set, "SummarizedExperiment")){
-    mat <- Biobase::assays(set)
+    mat <- SummarizedExperiment::assay(set)
   } else if (is.matrix(set)){
     mat <- set
   } else {

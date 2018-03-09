@@ -188,7 +188,7 @@ setResidues <- function(set, variable_names, betas = TRUE){
       res <- minfi::logit2(res)
     }
   } else if (is(set, "SummarizedExperiment")){
-    res <- Biobase::assays(set)
+    res <- SummarizedExperiment::assay(set)
   } 
   
   if (!is.null(variable_names)){

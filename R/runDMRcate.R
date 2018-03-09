@@ -32,7 +32,7 @@ runDMRcate <- function(set, model, coefficient = 2, resultSet = FALSE, ...){
   if (is(set, "GenomicRatioSet")){
     mat <- set
   } else if (is(set, "SummarizedExperiment")){
-    mat <- Biobase::assays(set)
+    mat <- SummarizedExperiment::assay(set)
   } else {
     stop("set must be a MethylationSet, GenomicRatioSet or SummarizedExperiment.")
   }

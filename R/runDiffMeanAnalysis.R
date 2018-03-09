@@ -47,7 +47,7 @@ runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100,
       mat <- minfi::logit2(mat)
     }
   } else if (is(set, "SummarizedExperiment")){
-    mat <- Biobase::assays(set)
+    mat <- SummarizedExperiment::assay(set)
   } else if (is.matrix(set)){
     mat <- set
   } else {

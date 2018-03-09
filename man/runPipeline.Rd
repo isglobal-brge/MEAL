@@ -5,10 +5,10 @@
 \title{Perform differential methylation analysis}
 \usage{
 runPipeline(set, variable_names, covariable_names = NULL, model = NULL,
-  num_vars = ncol(model) - 1, sva = FALSE, betas = TRUE, range,
+  num_vars, sva = FALSE, betas = TRUE, range,
   region_methods = c("bumphunter", "blockFinder", "DMRcate"),
   verbose = FALSE, warnings = TRUE, DiffMean_params = NULL,
-  DiffVar_params = NULL, bumphunter_params = NULL,
+  DiffVar_params = list(coefficient = 1:2), bumphunter_params = NULL,
   blockFinder_params = NULL, dmrcate_params = NULL, rda_params = NULL)
 }
 \arguments{

@@ -27,6 +27,7 @@
 #' @importFrom SNPassoc dominant recessive additive
 #' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom stats contrasts cor.test formula lm model.matrix p.adjust prcomp qbeta qt
+#' @importFrom SummarizedExperiment assay
 #' @importFrom utils write.csv2
 #' @importFrom vegan anova.cca RsquareAdj rda
 #' @importClassesFrom snpStats SnpMatrix
