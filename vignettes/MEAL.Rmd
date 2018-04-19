@@ -202,7 +202,7 @@ We will plot a region of 1 Mb in chromosome X:
 
 ```{r Regional plot 1}
 targetRange <- GRanges("chrX:13000000-14000000")
-plotRegion(res, targetRange)
+plotRegion(resAdj, targetRange)
 ```
 
 Our plot has three main parts. The top contains the annotation of the regional genes and the CpGs included in the analysis. The middle part contains the results of the DMR detection methods (Bumphunter, blockFinder and DMRcate). The bottom part contains the results of the single probe analyses (differential mean and differential variance). Each analysis has two parts: the coefficients and the p-values. The line in the p-values plot marks the significance threshold. 
