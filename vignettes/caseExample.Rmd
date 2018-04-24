@@ -104,20 +104,12 @@ When there are few CpGs modicated, we expect points in the QQplot lying on the t
 
 There are different ways to address this issue. An option is to include other covariates in our model. When we do not have more covariates, as it is our case, we can apply Surrogate Variable Analysis (SVA) to the data. SVA is a statistical technique that tries to determine hidden covariates or SV (Surrogate Variables) based on the measurements. This method is very useful to correct inflation when we do not have the variables that are missing in the model. 
 
-Our function `runPipeline` includes the parameter `sva` that runs SVA and includes these variables as covariates in the linear model. Therefore, we will run again our analyses adjusting by SVs. We won't include cell counts as covariates as their effect will be included in the SVs :
+Our function `runPipeline` includes the parameter `sva` that runs SVA and includes these variables as covariates in the linear model. We do not need to include cell counts as covariates as their effect is be included in the SVs :
 
-```{r Meth_Analysis SVA}
+```{r Meth_Analysis SVA, eval = FALSE}
 methRes <- runPipeline(set = brge_methy, variable_names = "sex", range = targetRange, sva = TRUE)
 methRes
 ```
-
-We will plot again a QQplot to evaluate the fit of the model including SVA:
-
-```{r Plot QQ SVA}
-plot(methRes, rid = "DiffMean", type = "qq")
-```
-
-QQplot still shows a S-shape. However, lambda is slightly closer to 1, so we will work with this model in the following steps. 
 
 We have included two methods to analyze individual CpGs: DiffMean (limma) and DiffVar. DiffMean tests, for each CpG, if there is a difference between the means of the different groups. In our case, we tested, for each CpG, if the mean methylation in boys was different to the mean methylation in girls. On the other hand, DiffVar tests, for each CpG, if there is a difference in variance between the groups. In our case, we tested for each CpG if the variance was different in boys than in girls. 
 
@@ -142,7 +134,7 @@ plotRDA(object = methRes,
         pheno = colData(brge_methy)[, "sex", drop = FALSE])
 ```
 
-We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2^ = 0.01) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
+We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2^ = 0.064) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
 
 We can get more estimates of the RDA with the function `getRDAresults`:
 
@@ -210,7 +202,7 @@ brge_gexp$sex <- as.factor(brge_gexp$sex)
 plotRDA(object = gexpRes, pheno = pData(brge_gexp)[, "sex", drop = FALSE])
 ```
 
-We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2^ = 0.008) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
+We do not see a different distribution of female and male samples in the first RDA component. Our model explained very few variability (R^2^ = 0.009) and the p-value is big, suggesting that the variance explained by our model is not bigger than what we can expect by chance. 
 
 We can get more estimates of the RDA with the function `getRDAresults`:
 
