@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.11.0
+Version: 1.11.1
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
@@ -18,7 +18,6 @@ Imports:
     GenomicRanges,
     limma,
     DMRcate,
-    snpStats,
     vegan,
     BiocGenerics,
     minfi,

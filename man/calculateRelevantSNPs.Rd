@@ -4,29 +4,12 @@
 \alias{calculateRelevantSNPs}
 \title{Calculate the SNPs correlated to cpgs}
 \usage{
-calculateRelevantSNPs(set, snps, num_cores = 1)
-}
-\arguments{
-\item{set}{\code{MethylationSet}}
-
-\item{snps}{\code{SnpSet}}
-
-\item{num_cores}{Numeric with the number of cores to be used.}
-}
-\value{
-Data.frame with the pvalues for pairs SNPs-cpgs. SNPs are in the rows 
-and cpgs in the columns.
+calculateRelevantSNPs()
 }
 \description{
-This function estimates the correlation between the snps and the cpgs. For each
-pair cpg-SNP the p-value is returned.
+This function is provided for compatibility with older versions
+only, and will be defunct at the next release.
 }
 \examples{
-\dontrun{
-## betamatrix: matrix of beta values
-## phenodf: data.frame with the phenotypes
-## snpsobject: SnpSet
-set <- prepareMethylationSet(matrix = betamatrix, phenotypes = phenodf)
-relevantSNPs <- calculateRelevantSNPs(set, snpsobject)
-}
+calculateRelevantSNPs()
 }

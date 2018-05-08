@@ -6,18 +6,10 @@
 \usage{
 normalSNP(snps)
 }
-\arguments{
-\item{snps}{Numerical vector or matrix representing the SNPs in the form: 0 homozygote
-recessive, 1 heterozygote, 2 homozygote dominant.}
-}
-\value{
-Numerical vector or matrix with the snps normalized.
-}
 \description{
-SNPs values, introduced as numerical, are normalized to be used in lineal models.
+This function is provided for compatibility with older versions
+only, and will be defunct at the next release.
 }
 \examples{
-snps <- c(1, 0, 0, 1, 0, 0, 2, 1, 2)
-normSNPs <- normalSNP(snps)
-normSNPs
+normalSNP()
 }

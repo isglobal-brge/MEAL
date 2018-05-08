@@ -24,10 +24,8 @@
 #' @importFrom parallel mclapply
 #' @importFrom permute how
 #' @importFrom S4Vectors Rle runValue subjectHits queryHits
-#' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom stats contrasts cor.test formula lm model.matrix p.adjust prcomp qbeta qt
 #' @importFrom SummarizedExperiment assay
 #' @importFrom utils write.csv2
 #' @importFrom vegan anova.cca RsquareAdj rda
-#' @importClassesFrom snpStats SnpMatrix
 NULL
