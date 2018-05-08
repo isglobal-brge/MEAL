@@ -24,7 +24,6 @@
 #' @importFrom parallel mclapply
 #' @importFrom permute how
 #' @importFrom S4Vectors Rle runValue subjectHits queryHits
-#' @importFrom SNPassoc dominant recessive additive
 #' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom stats contrasts cor.test formula lm model.matrix p.adjust prcomp qbeta qt
 #' @importFrom SummarizedExperiment assay

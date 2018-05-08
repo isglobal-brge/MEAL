@@ -16,7 +16,6 @@ biocViews: DNAMethylation, Microarray, Software, WholeGenome
 LazyData: true
 Imports:
     GenomicRanges,
-    SNPassoc,
     limma,
     DMRcate,
     snpStats,
