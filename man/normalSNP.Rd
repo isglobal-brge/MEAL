@@ -4,7 +4,7 @@
 \alias{normalSNP}
 \title{Normalize SNPs values}
 \usage{
-normalSNP(snps)
+normalSNP()
 }
 \description{
 This function is provided for compatibility with older versions
