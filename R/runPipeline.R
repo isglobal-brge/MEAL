@@ -81,7 +81,7 @@ runPipeline <-  function(set, variable_names,
     }
     ## Get number of variables of interest
     model <- createModel(set, model, warnings)
-    num_vars <- ncol(model)
+    num_vars <- ncol(model) - 1
     
     ## Get final model
     model <- createModel(set, model_adj, warnings)
