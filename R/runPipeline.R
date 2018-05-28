@@ -124,16 +124,21 @@ runPipeline <-  function(set, variable_names,
   if (verbose){
     message("Probe Analysis started")
   }
-  diffmean <- do.call(runDiffMeanAnalysis, 
+  diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
                       c(list(set = mat, model = model, resultSet = FALSE, 
-                             warnings = warnings), DiffMean_params))
+                             warnings = warnings), DiffMean_params)), 
+                      error = function(e) e)
   
-  diffvar <- do.call(runDiffVarAnalysis, 
+  diffvar <- tryCatch(do.call(runDiffVarAnalysis, 
                      c(list(set = mat, model = model, resultSet = FALSE, 
-                            warnings = warnings), DiffVar_params))
-  resList <- list(DiffMean = list(result = diffmean, error = NA),
-                  DiffVar = list(result = diffvar, error = NA))
+                            warnings = warnings), DiffVar_params)), 
+                     error = function(e) e)
   
+  resList <- list(DiffMean = list(result = diffmean, 
+                                  error = ifelse(is(diffmean, "try-error"), diffmean, NA)),
+                  DiffVar = list(result = diffvar, 
+                                 error = ifelse(is(diffvar, "try-error"), diffvar, NA)))
+
   if (class(set) == "GenomicRatioSet") {
     if (verbose){
       message("Region Analysis started")
