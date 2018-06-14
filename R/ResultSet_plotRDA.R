@@ -16,21 +16,21 @@
 #' rda <- runRDA(set, model)
 #' plotRDA(rda, pheno = data.frame(factor(set$sex)))
 #' }
-plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
+plotRDA <- function(object, pheno = data.frame(), n_feat = 5, main = "RDA plot"){
 
-  ## TO DO
-  ## Check passing a pheno with character
-  ## Check pass a vector in pheno
-  
   stopifnot("RDA" %in% names(object))
   ans <- getAssociation(object, rid = "RDA")
+  
+  if (is(pheno, "vector")){
+    pheno <- data.frame(pheno)
+  }
   
   classes <- vapply(pheno, class, character(1))
   pheno[, classes == "character"] <- lapply(pheno[, classes == "character", drop = FALSE], function(x) factor(x))
   
   classes <- vapply(pheno, class, character(1))
   factormatrix <- pheno[, classes == "factor", drop = FALSE]
-  phenocont <- pheno[, classes == "numeric", drop = FALSE]
+  phenocont <- pheno[, classes %in% c("numeric", "integer"), drop = FALSE]
   factor <- as.vector(sapply(colnames(factormatrix), function(x) levels(factormatrix[, x])))
   
   
@@ -40,8 +40,10 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
     
     phenofactor <- as.factor(sapply(rownames(factormatrix),
                                function(x) paste0(unlist(factormatrix[x, ]), collapse = "")))
-  }else{
+  } else if (ncol(factormatrix) == 1) {
     phenofactor <- factormatrix[, 1]
+  } else {
+    phenofactor <- 1
   }
   
   r2 <- ans$rdaR2
@@ -52,7 +54,8 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
     pval <- round(pval, 3)
   }
   
-  if (!is.null(factor)){
+  ans$CCA$centroids <- NULL
+  if (length(factor)){
     ans$CCA$centroids <- t(data.matrix(data.frame(
       lapply(colnames(factormatrix), function(x) 
         getCentroids(ans, factormatrix[ , x])),
@@ -60,9 +63,13 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
   }
   
   ## Remove from biplot variables already present in centroids
-  pattern <- paste(colnames(factormatrix), collapse = "|")
-  ans$CCA$biplot[grep(pattern, rownames(ans$CCA$biplot)), ] <- 0
+  ans$CCA$biplot[] <- 0
   
+  if (ncol(phenocont)) {
+    xx <- data.matrix(phenocont)
+    ans$CCA$biplot <- (1/sqrt(colSums(xx^2))) * crossprod(xx, ans$CCA$u)
+  }
+
   temp <- ans$CCA$v
   
   if (ncol(temp) == 1){
@@ -80,8 +87,12 @@ plotRDA <- function(object, pheno, n_feat = 5, main = "RDA plot"){
   points(ans, display = "wa", col = ggplot2::alpha(as.numeric(phenofactor), 0.5), 
          pch=19, scaling = 3)
   
-  if (!is.null(factor)){
+  if (length(factor)){
     text(ans, display = "cn", col = "blue", label = factor, scaling = 3)
+  }
+  
+  if (ncol(phenocont)){
+    text(ans, display = "bp", col = "blue", scaling = 3)
   }
   
   legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(round(r2, 3)))), paste("p-value:", pval), levels(phenofactor)), 

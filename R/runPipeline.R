@@ -81,7 +81,11 @@ runPipeline <-  function(set, variable_names,
     }
     ## Get number of variables of interest
     model <- createModel(set, model, warnings)
-    num_vars <- ncol(model) - 1
+    num_vars <- ncol(model)
+    
+    if ("(Intercept)" %in% colnames(num_vars)){
+      num_vars <- num_vars - 1
+    }
     
     ## Get final model
     model <- createModel(set, model_adj, warnings)
