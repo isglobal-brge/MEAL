@@ -72,28 +72,21 @@ runPipeline <-  function(set, variable_names,
   
   ## Create linear model
   if (is.null(model)){
-    model <- formula(paste("~", paste(variable_names, collapse = " + ")))
-    if (!is.null(covariable_names)){
-      model_adj <- formula(paste("~", paste(c(variable_names, covariable_names), 
-                                            collapse = " + ")))
-    } else {
-      model_adj <- model
-    }
     ## Get number of variables of interest
-    model <- createModel(set, model, warnings)
-    num_vars <- ncol(model)
-    
-    if ("(Intercept)" %in% colnames(num_vars)){
+    model <- formula(paste("~", paste(variable_names, collapse = " + ")))
+    num_vars <- ncol(createModel(set, model, warnings))
+
+        if ("(Intercept)" %in% colnames(num_vars)){
       num_vars <- num_vars - 1
     }
     
-    ## Get final model
-    model <- createModel(set, model_adj, warnings)
-  } else{
-    model <- createModel(set, model, warnings)
-  }
-
-
+    if (!is.null(covariable_names)){
+      model <- formula(paste("~", paste(c(variable_names, covariable_names), 
+                                            collapse = " + ")))
+    } 
+  } 
+  model <- createModel(set, model, warnings)
+  
   set <- set[, rownames(model)]
   
   
