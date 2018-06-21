@@ -21,7 +21,7 @@ plotRDA <- function(object, pheno = data.frame(), n_feat = 5, main = "RDA plot")
   stopifnot("RDA" %in% names(object))
   ans <- getAssociation(object, rid = "RDA")
   
-  if (is(pheno, "vector")){
+  if (is.null(dim(pheno))){
     pheno <- data.frame(pheno)
   }
   
