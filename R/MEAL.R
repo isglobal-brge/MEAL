@@ -27,5 +27,5 @@
 #' @importFrom stats contrasts cor.test formula lm model.matrix p.adjust prcomp qbeta qt
 #' @importFrom SummarizedExperiment assay
 #' @importFrom utils write.csv2
-#' @importFrom vegan anova.cca RsquareAdj rda
+#' @importFrom vegan anova.cca ordilabel RsquareAdj rda
 NULL

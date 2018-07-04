@@ -4,16 +4,20 @@
 \alias{plotRDA}
 \title{Plot RDA results}
 \usage{
-plotRDA(object, pheno, n_feat = 5, main = "RDA plot")
+plotRDA(object, pheno = data.frame(), n_feat = 5, main = "RDA plot",
+  alpha = 1)
 }
 \arguments{
 \item{object}{\code{ResultSet}}
 
 \item{pheno}{data.frame with the variables used to color the samples.}
 
-\item{n_feat}{Numeric with the number of cpgs to be highlighted.}
+\item{n_feat}{Numeric with the number of cpgs to be highlighted. Default: 5.}
 
 \item{main}{Character with the plot title.}
+
+\item{alpha}{Numeric with the alpha level for colour transparance. Default: 1; no
+transparency.}
 }
 \value{
 A plot is generated on the current graphics device.
