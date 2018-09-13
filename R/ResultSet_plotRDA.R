@@ -107,7 +107,7 @@ plotRDA <- function(object, pheno = data.frame(), n_feat = 5, main = "RDA plot",
 
 
 getCentroids <- function(rda, factor){
-  posRDA <- data.frame(rda$CCA$u)
+  posRDA <- data.frame(rda$CCA$wa)
   splitpos <- split(posRDA, factor)
   if (is.null(dim(splitpos[[1]]))){
     splitpos <- lapply(splitpos, function(RDA1) data.frame(RDA1))
