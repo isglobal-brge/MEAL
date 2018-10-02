@@ -49,11 +49,19 @@ library(ggplot2)
 data("MsetEx")
 ```
 
-`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove any CpG with NAs:
+`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove probes not measuring methylation, with SNPs or with NAs:
 
 ```{r subset Methy}
 meth <- mapToGenome(ratioConvert(MsetEx))
 rowData(meth) <- getAnnotation(meth)[, -c(1:3)]
+
+## Remove probes measuring SNPs
+meth <- dropMethylationLoci(meth)
+
+## Remove probes with SNPs
+meth <- dropLociWithSnps(meth)
+
+## Remove probes with NAs
 meth <- meth[!apply(getBeta(meth), 1, function(x) any(is.na(x))), ]
 ```
 
@@ -120,14 +128,6 @@ getGeneVals(resAdj, "ARMS2", genecol = "UCSC_RefGene_Name", fNames = c("chromoso
 
 We can easily get Manhattan plots, Volcano plots and QQ-plots for the probes results (DiffMean and DiffVar) using `plot` method. Our extension of `plot` method to `ResultSet` includes the arguments `rid` or `coef` that were already present in `getProbeResult`. In addition, the argument `type` allows choosing between a Manhattan plot ("manhattan"), a Volcano plot ("volcano") or a qq-plot ("qq").
 
-We will get these three plots for the unadjusted analysis of differential means:
-
-```{r 3 plots}
-plot(resAdj, rid = "DiffMean", type = "manhattan")
-plot(resAdj, rid = "DiffMean", type = "volcano")
-plot(resAdj, rid = "DiffMean", type = "qq")
-```
-
 ### Manhattan plot
 
 We can customize different aspects of a Manhattan plot. We can highlight the CpGs of a target region by passing a `GenomicRanges` to the argument `highlight`. Similarly, we can get a Manhattan plot with only the CpGs of our target region passing a `GenomicRanges` to the argument `subset`. It should be noticed that the `GenomicRange` should have the chromosome as a number (1-24).
@@ -140,33 +140,22 @@ plot(resAdj, rid = "DiffMean", type = "manhattan", highlight = targetRange)
 plot(resAdj, rid = "DiffMean", type = "manhattan", subset = targetRange)
 ```
 
-We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value:
+We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value. Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
 
 ```{r Manhattan 2}
 plot(resAdj, rid = "DiffMean", type = "manhattan", suggestiveline = 3, 
-     genomewideline = 6)
-```
-
-Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
-```{r Manhattan 3}
-plot(resAdj, rid = "DiffMean", type = "manhattan", 
-     main = "My custom Manhattan")
+     genomewideline = 6, main = "My custom Manhattan")
 abline(h = 13, col = "yellow")
 ```
 
+
 ### Volcano plot
 
-In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. Finally, `show.labels` can turn on and turn off the labelling of significant features: 
+In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. `show.labels` can turn on and turn off the labelling of significant features. Finally, Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
+
 
 ```{r Volcano 1}
 plot(resAdj, rid = "DiffMean", type = "volcano", tPV = 14, tFC = 0.4, 
-     show.labels = FALSE)
-```
-
-Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
-
-```{r Volcano 2}
-plot(resAdj, rid = "DiffMean", type = "volcano", tPV = 30, tFC = 0.1, 
      show.labels = FALSE) + ggtitle("My custom Volcano")
 ```
 
@@ -185,12 +174,12 @@ plot(resAdj, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
 
 `r Biocpkg("MEAL")` incorporates the function `plotFeature` to plot the beta values distribution of a CpG. `plotFeature` has three main arguments. `set` is the `GenomicRatioSet` with the methylation data. `feat` is the index or name of our target CpG. `variables` is a character vector with the names of the variables used in the plot. We can include two variables in our plot.
 
-In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg05111645) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
+In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg02939019) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
 
 ```{r Plot_Features, warning = FALSE}
 plotFeature(set = meth, feat = "cg17547524", variables = "sex") + 
   ggtitle("Diff Means")
-plotFeature(set = meth, feat = "cg05111645", variables = "sex") + 
+plotFeature(set = meth, feat = "cg02939019", variables = "sex") + 
   ggtitle("Diff Vars")
 ```
 
@@ -315,7 +304,7 @@ This function returns four values: R2, pval, global.R2 and global.pval. R2 is th
 The function `topRDAhits` returns a data.frame with features associated to first two RDA components. This functions computes a Pearson correlation test between the methylation values and the RDA components. Only CpGs with a p-value lower than `tPV` parameter (by default 0.05) with any of the components are included in the data.frame:
 
 ```{r topRDAhits}
-topRDAhits(resRDA, tPV = 1e-17)
+topRDAhits(resRDA)
 ```
 
 Finally, we can plot the first two dimensions of our RDA with the function `plotRDA`. This function makes a biplot of samples and features. We can color the samples using categorical variables by passing in a data.frame to argument `pheno`. 
