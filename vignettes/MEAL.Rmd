@@ -49,7 +49,7 @@ library(ggplot2)
 data("MsetEx")
 ```
 
-`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove probes not measuring methylation, with SNPs or with NAs:
+`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove probes not measuring methylation, with SNPs or with NAs. For the sake of speed, we will select a subset of CpGs:
 
 ```{r subset Methy}
 meth <- mapToGenome(ratioConvert(MsetEx))
@@ -63,6 +63,10 @@ meth <- dropLociWithSnps(meth)
 
 ## Remove probes with NAs
 meth <- meth[!apply(getBeta(meth), 1, function(x) any(is.na(x))), ]
+
+## Select a subset of samples
+set.seed(0)
+meth <- meth[sample(nrow(meth), 100000), ]
 ```
 
 
@@ -174,12 +178,12 @@ plot(resAdj, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
 
 `r Biocpkg("MEAL")` incorporates the function `plotFeature` to plot the beta values distribution of a CpG. `plotFeature` has three main arguments. `set` is the `GenomicRatioSet` with the methylation data. `feat` is the index or name of our target CpG. `variables` is a character vector with the names of the variables used in the plot. We can include two variables in our plot.
 
-In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg02939019) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
+In the next line, we will plot a CpG with high difference in means between cases and controls (cg25104555) and a CpG with high difference in variance (cg11847929) vs cancer status. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
 
 ```{r Plot_Features, warning = FALSE}
-plotFeature(set = meth, feat = "cg17547524", variables = "sex") + 
+plotFeature(set = meth, feat = "cg25104555", variables = "status") + 
   ggtitle("Diff Means")
-plotFeature(set = meth, feat = "cg02939019", variables = "sex") + 
+plotFeature(set = meth, feat = "cg11847929", variables = "status") + 
   ggtitle("Diff Vars")
 ```
 

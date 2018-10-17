@@ -93,7 +93,7 @@ plotRDA <- function(object, pheno = data.frame(), n_feat = 5, main = "RDA plot",
          pch = pch, scaling = 3)
   
   if (length(factor)){
-    vegan::ordilabel(ans, display = "cn", col = "blue", label = factor, scaling = 3)
+    vegan::ordilabel(ans, display = "cn", col = "blue", label = factor)
   }
   
   if (ncol(phenocont)){
