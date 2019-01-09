@@ -102,7 +102,7 @@ plotRDA <- function(object, pheno = data.frame(), n_feat = 5, main = "RDA plot",
   
   legend("topleft", c(as.expression(bquote(R^2 ~ "=" ~ .(round(r2, 3)))), paste("p-value:", pval), levels(phenofactor)), 
          col = c("white", "white", ggplot2::alpha(1:nlevels(phenofactor), alpha)), 
-         cex = 0.8, bty = "n", pch = pch) 
+         cex = 0.8, bty = "n", pch = (15:18)[seq_len(nlevels(phenofactor))]) 
 }
 
 
