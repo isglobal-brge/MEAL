@@ -55,8 +55,8 @@ runDMRcate <- function(set, model, coefficient = 2, resultSet = FALSE, ...){
                           c(list(object = mat, design = model, 
                                  what = "M", coef = coefficient), annParams))
 
-  res <-   tryCatch(do.call(DMRcate::dmrcate,
-                        c(list(object = myannotation), dmrParams))$results,
+  res <-   tryCatch(as(DMRcate::extractRanges(do.call(DMRcate::dmrcate,
+                        c(list(object = myannotation), dmrParams))), "data.frame"),
                         error = function(err) {
                           if(grepl("The FDR you specified in ", as.character(err)) | 
                              grepl("sum(object$sig) >= 2", as.character(err)) |
