@@ -181,7 +181,7 @@ plot(resAdj, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
 In the next line, we will plot a CpG with high difference in means between cases and controls (cg25104555) and a CpG with high difference in variance (cg11847929) vs cancer status. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
 
 ```{r Plot_Features, warning = FALSE}
-plotFeature(set = meth, feat = "cg25104555", variables = "status") + 
+plotFeature(set = meth, feat = "cg09383816", variables = "status") + 
   ggtitle("Diff Means")
 plotFeature(set = meth, feat = "cg11847929", variables = "status") + 
   ggtitle("Diff Vars")
