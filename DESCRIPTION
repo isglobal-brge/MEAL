@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.17.0
+Version: 1.17.1
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
@@ -48,3 +48,4 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Encoding: UTF-8
+PackageStatus: Deprecated
