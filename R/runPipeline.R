@@ -29,17 +29,10 @@
 #' @param betas If \code{set} is a \code{GenomicRatioSet}, should beta values be
 #' used? (Default: TRUE)
 #' @param range \code{GenomicRanges} with the region used for RDA
-#' @param region_methods Character vector with the methods used in \code{runRegionAnalysis}. If
-#' "none", region analysis is not performed.
+#' @param analyses Vector with the names of the analysis to be run (DiffMean and/or DiffVar).
 #' @param DiffMean_params List with other parameter passed to \code{runBumphunter} 
 #' function.
 #' @param DiffVar_params List with other parameter passed to \code{runBumphunter} 
-#' function.
-#' @param bumphunter_params List with other parameter passed to \code{runBumphunter} 
-#' function.
-#' @param blockFinder_params List with other parameter passed to \code{runBlockFinder} 
-#' function.
-#' @param dmrcate_params List with other parameter passed to \code{runDMRcate} 
 #' function.
 #' @param rda_params List with other parameter passed to \code{runRDA} 
 #' function.
@@ -57,11 +50,9 @@ runPipeline <-  function(set, variable_names,
                          covariable_names = NULL, 
                          model = NULL, num_vars,  
                          sva = FALSE, betas = TRUE, range,
-                         region_methods = c("bumphunter", "blockFinder", "DMRcate"),
+                         analyses = c("DiffMean"),
                          verbose = FALSE, warnings = TRUE, 
                          DiffMean_params = NULL, DiffVar_params = list(coefficient = 1:2),
-                         bumphunter_params = NULL, 
-                         blockFinder_params = NULL, dmrcate_params = NULL, 
                          rda_params = NULL) {
   ### Añadir filtro sondas con NAs
   
@@ -121,33 +112,25 @@ runPipeline <-  function(set, variable_names,
   if (verbose){
     message("Probe Analysis started")
   }
-  diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
-                      c(list(set = mat, model = model, resultSet = FALSE, 
-                             warnings = warnings), DiffMean_params)), 
-                      error = function(e) e)
   
+  resList <- list()
+  
+  if ("DiffMean" %in% analyses){
+    diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
+                                 c(list(set = mat, model = model, resultSet = FALSE, 
+                                        warnings = warnings), DiffMean_params)), 
+                         error = function(e) e)
+    resList$DiffMean <- list(result = diffmean, error = ifelse(is(diffmean, "try-error"), diffmean, NA))
+  }
+  if ("DiffVar" %in% analyses){
+    
   diffvar <- tryCatch(do.call(runDiffVarAnalysis, 
                      c(list(set = mat, model = model, resultSet = FALSE, 
                             warnings = warnings), DiffVar_params)), 
                      error = function(e) e)
-  
-  resList <- list(DiffMean = list(result = diffmean, 
-                                  error = ifelse(is(diffmean, "try-error"), diffmean, NA)),
-                  DiffVar = list(result = diffvar, 
-                                 error = ifelse(is(diffvar, "try-error"), diffvar, NA)))
-
-  if (class(set) == "GenomicRatioSet") {
-    if (verbose){
-      message("Region Analysis started")
-    }
-    region <- runRegionAnalysis(set = set, model = model, methods = region_methods,  
-                             coefficient = 2, verbose = verbose, resultSet = FALSE, 
-                             bumphunter_params = bumphunter_params, 
-                             blockFinder_params = blockFinder_params, 
-                             dmrcate_params = dmrcate_params)
-    
-    resList <- c(resList, region)
+  resList$DiffVar <- list(result = diffvar, error = ifelse(is(diffvar, "try-error"), diffvar, NA))
   }
+ 
   if (!missing(range)){
     rda <- do.call(runRDA, c(list(set = set, model = model, num_vars = num_vars, 
                                   resultSet = FALSE, range = range), rda_params))

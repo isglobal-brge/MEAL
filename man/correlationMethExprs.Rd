@@ -4,9 +4,18 @@
 \alias{correlationMethExprs}
 \title{Computes the correlation between methylation and expression}
 \usage{
-correlationMethExprs(multiset, meth_set_name = NULL, exprs_set_name = NULL,
-  vars_meth = NULL, vars_exprs = NULL, sel_cpgs, flank = 250000,
-  betas = TRUE, num_cores = 1, verbose = TRUE)
+correlationMethExprs(
+  multiset,
+  meth_set_name = NULL,
+  exprs_set_name = NULL,
+  vars_meth = NULL,
+  vars_exprs = NULL,
+  sel_cpgs,
+  flank = 250000,
+  betas = TRUE,
+  num_cores = 1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{multiset}{\code{MultiDataSet} containing a \code{methylation} and an 

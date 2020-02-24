@@ -3,7 +3,6 @@
 \docType{package}
 \name{MEAL}
 \alias{MEAL}
-\alias{MEAL-package}
 \title{MEAL (Methylation and Expression AnaLizer): Package for analysing methylation 
 and expression data}
 \description{

@@ -4,8 +4,7 @@
 \alias{plotRDA}
 \title{Plot RDA results}
 \usage{
-plotRDA(object, pheno = data.frame(), n_feat = 5, main = "RDA plot",
-  alpha = 1)
+plotRDA(object, pheno = data.frame(), n_feat = 5, main = "RDA plot", alpha = 1)
 }
 \arguments{
 \item{object}{\code{ResultSet}}

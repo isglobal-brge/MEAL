@@ -4,10 +4,17 @@
 \alias{runRegionAnalysis}
 \title{Run different DMR detection methods}
 \usage{
-runRegionAnalysis(set, model, methods = c("blockFinder", "bumphunter",
-  "DMRcate"), coefficient = 2, bumphunter_params = NULL,
-  blockFinder_params = NULL, dmrcate_params = NULL, verbose = FALSE,
-  resultSet = TRUE)
+runRegionAnalysis(
+  set,
+  model,
+  methods = c("blockFinder", "bumphunter", "DMRcate"),
+  coefficient = 2,
+  bumphunter_params = NULL,
+  blockFinder_params = NULL,
+  dmrcate_params = NULL,
+  verbose = FALSE,
+  resultSet = TRUE
+)
 }
 \arguments{
 \item{set}{\code{GenomicRatioSet}, \code{eSet} derived object or 
@@ -38,35 +45,10 @@ function.}
 List or \code{resultSet} with the result of the DMR detection methods.
 }
 \description{
-This function is a wrapper of two known region differentially methylated detection 
-methods: \emph{Bumphunter}, \code{blockFinder} and \emph{DMRcate}.
+Run different DMR detection methods
 }
 \details{
-\code{runRegionAnalysis} performs a methylation region analysis using 
-\emph{bumphunter}, \code{blockFinder} and \emph{DMRcate}. Bumphunter allows the modification of several 
-parameters that should be properly used. 
- 
-Cutoff will determine the number of bumps that will be detected. The smaller the cutoff, the higher the
-number of positions above the limits, so there will be more regions and they
-will be greater. \code{Bumphunter} can pick a cutoff using the null distribution,
-i.e. permutating the samples. There is no standard cutoff and it will depend
-on the features of the experiment. Permutations are used to estimate p-values and, 
-if needed, can be used to pick a cutoff. The advised number of permutation is 1000. 
-The number of permutations will define the maximum number of bumps that will be considered
-for analysing. The more bumps, the longer permutation time. As before,
-there is not an accepted limit but \code{minfi} tutorial recommends not to exceed
-30000 bumps. Finally, if supported, it is very advisable to use parallelization
-to perform the permutations.
- 
-Due to \code{minfi} design, \emph{BlockFinder} can only be run using own minfi
-annotation. This annotation is based on hg19 and Illumina 450k chipset. Cpg sites 
-not named like in this annotation package will not be included. As a result,
-the use of \emph{BlockFinder} is not recommended.
-
-\emph{DMRcate} uses a first step where linear regression is performed in order
-to estimate coefficients of the variable of interest. This first step is equal
-to the calculation performed in \code{DAProbe}, but using in this situation
-linear regression and not robust linear regression.
+This function has been deprecated and will be defunct in the new version.
 }
 \examples{
 if (require(minfiData)){

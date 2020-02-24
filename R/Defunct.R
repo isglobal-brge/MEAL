@@ -6,6 +6,7 @@
 #' 
 #' @details Defunct functions are: multiCorrMethExprs, DAPipeline, DAProbe, DARegion, 
 #' RDAset, filterSet, plotBestFeatures, preparePhenotype, createRanges, prepareMethylationSet,
+#' calculateRelevantSNPs, correlationMethSNPs, explainedVariance, normalSNP, plotLM
 #' 
 #' Defunct classes are: analysisRegionResults, analysisResults
 NULL

@@ -1,6 +1,6 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.17.1
+Version: 1.17.2
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
@@ -17,7 +17,6 @@ LazyData: true
 Imports:
     GenomicRanges,
     limma,
-    DMRcate,
     vegan,
     BiocGenerics,
     minfi,
@@ -46,6 +45,6 @@ Suggests:
     rmarkdown,
     brgedata
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 7.0.2
 Encoding: UTF-8
 PackageStatus: Deprecated

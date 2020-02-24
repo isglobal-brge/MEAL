@@ -4,8 +4,16 @@
 \alias{runRDA}
 \title{Calculate RDA for a set}
 \usage{
-runRDA(set, model, num_vars = ncol(model), range, betas = FALSE,
-  resultSet = TRUE, num_permutations = 10000)
+runRDA(
+  set,
+  model,
+  num_vars = ncol(model),
+  range,
+  betas = FALSE,
+  resultSet = TRUE,
+  num_permutations = 10000,
+  ...
+)
 }
 \arguments{
 \item{set}{\code{MethylationSet}, \code{ExpressionSet} or \code{matrix}}
@@ -24,6 +32,8 @@ used? (Default: TRUE)}
 
 \item{num_permutations}{Numeric with the number of permutations run to compute 
 the p-value. (Default: 1e4)}
+
+\item{...}{Further arguments passed to \code{rda}.}
 }
 \value{
 Object of class \code{rda} or \code{resultSet}
