@@ -44,6 +44,8 @@ used? (Default: TRUE)}
 
 \item{range}{\code{GenomicRanges} with the region used for RDA}
 
+\item{analyses}{Vector with the names of the analysis to be run (DiffMean and/or DiffVar).}
+
 \item{verbose}{Logical value. If TRUE, it writes out some messages indicating progress. 
 If FALSE nothing should be printed.}
 

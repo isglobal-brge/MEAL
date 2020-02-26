@@ -57,7 +57,7 @@ runDiffVarAnalysis <- function(set, model, coefficient = NULL,
   
   fFun <- getFeatureDataFun(set)
   
-  fit <- missMethyl::varFit.default(mat, model, coef = coefficient, ...)
+  fit <- missMethyl::varFit(mat, model, coef = coefficient, ...)
   
   if (resultSet){
     fit <- MultiDataSet::create_resultset(fOrigin = "DiffVarAnalysis", fData = list(main = fFun(set)), 
