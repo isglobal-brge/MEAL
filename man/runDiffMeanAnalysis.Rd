@@ -4,8 +4,15 @@
 \alias{runDiffMeanAnalysis}
 \title{Run differential mean analysis}
 \usage{
-runDiffMeanAnalysis(set, model, method = "ls", max_iterations = 100,
-  betas = TRUE, resultSet = TRUE, warnings = TRUE)
+runDiffMeanAnalysis(
+  set,
+  model,
+  method = "ls",
+  max_iterations = 100,
+  betas = TRUE,
+  resultSet = TRUE,
+  warnings = TRUE
+)
 }
 \arguments{
 \item{set}{Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 

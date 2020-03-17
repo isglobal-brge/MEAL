@@ -85,7 +85,7 @@ We will run a new analysis including age as covariate:
 
 ```{r Pipeline Adj,  warning=FALSE}
 resAdj <- runPipeline(set = meth, variable_names = "status", 
-                      covariable_names = "age")
+                      covariable_names = "age", analyses = c("DiffMean", "DiffVar"))
 resAdj
 ```
 
@@ -104,9 +104,6 @@ We can use the function `getAssociation` to get a data.frame with the results, i
 ```{r}
 head(getAssociation(resAdj, "DiffMean"))
 head(getAssociation(resAdj, "DiffVar"))
-head(getAssociation(resAdj, "bumphunter"))
-head(getAssociation(resAdj, "blockFinder"))
-head(getAssociation(resAdj, "dmrcate"))
 ```
 
 DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Biocpkg("limma")` results. This class allows testing different constrasts or evaluating different variables simultaneously. The function `getProbeResults` helps the user performing these operations. It also has the arguments `object` and `rid` from `getAssociation`. `coef` is a numeric with the index of the coefficient from which we want the results. If we did not pass a custom model to `runPipeline`, the first coefficient (coef = 1) is the intercept  and the second coefficient (coef = 2) is the first variable that we included in `variable_names`. We can evaluate different coefficients simultaneously by passing a vector to `coef`. `contrast` is a matrix with the contrasts that we want to evaluate. This option is useful when our variable of interest is a factor with several levels and we want to do all the different comparisons. Finally, the argument `fNames` is used to select the variables from features annotation that will be added to the tables. 
@@ -203,8 +200,7 @@ Our plot has three main parts. The top contains the annotation of the regional g
 By default,`plotRegion` includes all analyses run in the plot. However, we can plot only few analyses with the parameter `results`. We can also modify the height of the p-value line with the parameter `tPV` (units are -log10 of p-value):
 
 ```{r Regional plot 2}
-plotRegion(resAdj, targetRange, results = c("DiffMean", "bumphunter"), 
-           tPV = 10)
+plotRegion(resAdj, targetRange, results = c("DiffMean"), tPV = 10)
 ```
 
 ## Methods wrappers
@@ -237,42 +233,6 @@ resDV <- runDiffVarAnalysis(set = meth, model = ~ status, coefficient = 2)
 
 `runDiffVarAnalysis` also has the parameter `resultSet` that allows returning a `MArrayLM` object instead of a `ResultSet`. Finally, we can change other parameters of `varFit` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `DiffVar_params`.
 
-### Bumphunter
-
-We can detect DMRs using `Bumphunter` from `r Biocpkg("minfi")` with the function `runBumphunter`. This function requires three arguments: `set`, `model` and `coefficient`. `set` contains the methylation data in a `GenomicRatioSet`. `model` can be a matrix with the linear model or a formula indicating the model. In the former case, the variables included in the model must be present in the colData of our set. `coefficient` indicates the variable used to detect the DMRs.  
-
-We exemplify the use of this function by running `bumphunter` as in the pipeline:
-
-```{r Bumphunter, eval = FALSE}
-resBH <- runBumphunter(set = meth, model = ~ status, coefficient = 2)
-```
-
-`runBumphunter` also has other parameters to customize the analysis. The parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). `bumphunter_cutoff` specifies the minimum beta change to include a probe in a bump. `num_permutations` indicates the number of permutations run to compute bumps p-values (by default is 0 so no permutations are run and no p-values are returned). `resultSet` allows returning a data.frame object instead of a `ResultSet`. Finally, we can change other parameters of `bumphunter` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `bumphunter_params`.
-
-### Blockfinder
-
-`blockFinder` is an adaptation of `Bumphunter` to detect DMRs from open sea probes. The function `runBlockFinder` has essentially the same arguments than `runBumphunter`.  
-
-We exemplify the use of this function by running `blockFinder` as in the pipeline:
-
-```{r blockFinder, eval = FALSE}
-resBF <- runBlockFinder(set = meth, model = ~ status, coefficient = 2)
-```
-
-To change the parameters in the `runPipeline` function, we can pass them to the argument `blockFinder_params`.
-
-### DMRcate
-
-We can detect DMRs using `r Biocpkg("DMRcate")` with the function `runDMRcate`. This function only has four parameters. `set` is the `GenomicRatioSet`, `model` is the linear model or a formula, `coefficient` is the variable used to detect the DMRs and `resultSet` to change the class of the output. 
-
-We exemplify the use of this function by running `DMRcate` as in the pipeline:
-
-
-```{r DMRcate, eval = FALSE}
-resDC <- runDMRcate(set = meth, model = ~ status, coefficient = 2)
-```
-
-We can change other parameters of DMRcate functions (`cpg.annotate` and `dmrcate`) passing them to the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `dmrcate_params`.
 
 ### RDA
 

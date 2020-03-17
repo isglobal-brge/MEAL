@@ -4,8 +4,15 @@
 \alias{runDiffVarAnalysis}
 \title{Run differential variance analysis}
 \usage{
-runDiffVarAnalysis(set, model, coefficient = NULL, resultSet = TRUE,
-  betas = TRUE, warnings = TRUE, ...)
+runDiffVarAnalysis(
+  set,
+  model,
+  coefficient = NULL,
+  resultSet = TRUE,
+  betas = TRUE,
+  warnings = TRUE,
+  ...
+)
 }
 \arguments{
 \item{set}{Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 

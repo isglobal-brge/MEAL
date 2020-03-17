@@ -4,8 +4,14 @@
 \alias{getGeneVals}
 \title{Get all probes related to a gene}
 \usage{
-getGeneVals(object, gene, rid = 1, genecol = "genes",
-  fNames = c("chromosome", "start"), ...)
+getGeneVals(
+  object,
+  gene,
+  rid = 1,
+  genecol = "genes",
+  fNames = c("chromosome", "start"),
+  ...
+)
 }
 \arguments{
 \item{object}{\code{ResultSet}}

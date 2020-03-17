@@ -4,9 +4,16 @@
 \alias{plotRegion}
 \title{Plot results in a genomic region}
 \usage{
-plotRegion(rset, range, results = names(rset), genome = "hg19", rset2,
-  tPV = 5, fNames = c("chromosome", "start", "end"),
-  fNames2 = c("chromosome", "start", "end"))
+plotRegion(
+  rset,
+  range,
+  results = names(rset),
+  genome = "hg19",
+  rset2,
+  tPV = 5,
+  fNames = c("chromosome", "start", "end"),
+  fNames2 = c("chromosome", "start", "end")
+)
 }
 \arguments{
 \item{rset}{\code{ResultSet}}

@@ -4,8 +4,14 @@
 \alias{getProbeResults}
 \title{Obtain probe results from a \code{ResultSet}}
 \usage{
-getProbeResults(object, rid = "DiffMean", coef = 2, contrast = NULL,
-  fNames = c("chromosome", "start"), ...)
+getProbeResults(
+  object,
+  rid = "DiffMean",
+  coef = 2,
+  contrast = NULL,
+  fNames = c("chromosome", "start"),
+  ...
+)
 }
 \arguments{
 \item{object}{ResultSet}

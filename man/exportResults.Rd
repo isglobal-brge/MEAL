@@ -4,8 +4,12 @@
 \alias{exportResults}
 \title{Exports results data.frames to csv files.}
 \usage{
-exportResults(object, dir = "./", prefix = NULL, fNames = c("chromosome",
-  "start"))
+exportResults(
+  object,
+  dir = "./",
+  prefix = NULL,
+  fNames = c("chromosome", "start")
+)
 }
 \arguments{
 \item{object}{\code{ResultSet}}

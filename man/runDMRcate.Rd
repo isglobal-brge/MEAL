@@ -23,15 +23,10 @@ runDMRcate(set, model, coefficient = 2, resultSet = FALSE, ...)
 data.frame or \code{resultSet} with the result of \code{bumphunter}
 }
 \description{
-Run DMRcate to a methylation dataset. This function contains all steps of
-DMRcate analysis, from model.matrix creation to running the analysis.
+Run DMRcate
 }
 \details{
-runDMRcate is a wrapper for \code{dmrcate} function. runDMRcate  
-runs all the steps required prior running blockFinder from the methylation set
-and the formula of the model. This implementation allows running blockFinder to 
-other objects than \code{GenomicRatioSet}. The result can be encapsulated in a 
-\code{ResultSet} to take adavantege of its plotting capabilities.
+This function has been deprecated and will be defunct in the new version.
 }
 \seealso{
 \code{\link[DMRcate]{dmrcate}}, \code{\link[DMRcate]{cpg.annotate}}
