@@ -13,7 +13,6 @@
 #' @import Biobase
 #' @import methods
 #' @import MultiDataSet
-#' @importFrom DMRcate cpg.annotate dmrcate
 #' @importFrom GenomicRanges seqnames start end makeGRangesFromDataFrame findOverlaps GRanges
 #' @importFrom ggplot2 aes aes_string alpha facet_grid geom_bar geom_errorbar geom_hline geom_line geom_point geom_polygon geom_smooth geom_text geom_vline ggplot ggtitle position_jitter scale_colour_manual scale_fill_manual scale_x_continuous scale_y_continuous theme
 #' @importFrom graphics legend points text
@@ -24,10 +23,8 @@
 #' @importFrom parallel mclapply
 #' @importFrom permute how
 #' @importFrom S4Vectors Rle runValue subjectHits queryHits
-#' @importFrom snpStats p.value snp.rhs.tests
 #' @importFrom stats contrasts cor.test formula lm model.matrix p.adjust prcomp qbeta qt
 #' @importFrom SummarizedExperiment assay
 #' @importFrom utils write.csv2
-#' @importFrom vegan anova.cca RsquareAdj rda
-#' @importClassesFrom snpStats SnpMatrix
+#' @importFrom vegan anova.cca ordilabel RsquareAdj rda
 NULL

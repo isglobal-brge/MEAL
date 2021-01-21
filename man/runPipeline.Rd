@@ -14,14 +14,11 @@ runPipeline(
   sva = FALSE,
   betas = TRUE,
   range,
-  region_methods = c("bumphunter", "blockFinder", "DMRcate"),
+  analyses = c("DiffMean"),
   verbose = FALSE,
   warnings = TRUE,
   DiffMean_params = NULL,
   DiffVar_params = list(coefficient = 1:2),
-  bumphunter_params = NULL,
-  blockFinder_params = NULL,
-  dmrcate_params = NULL,
   rda_params = NULL
 )
 }
@@ -50,8 +47,7 @@ used? (Default: TRUE)}
 
 \item{range}{\code{GenomicRanges} with the region used for RDA}
 
-\item{region_methods}{Character vector with the methods used in \code{runRegionAnalysis}. If
-"none", region analysis is not performed.}
+\item{analyses}{Vector with the names of the analysis to be run (DiffMean and/or DiffVar).}
 
 \item{verbose}{Logical value. If TRUE, it writes out some messages indicating progress. 
 If FALSE nothing should be printed.}
@@ -62,15 +58,6 @@ If FALSE nothing should be printed.}
 function.}
 
 \item{DiffVar_params}{List with other parameter passed to \code{runBumphunter} 
-function.}
-
-\item{bumphunter_params}{List with other parameter passed to \code{runBumphunter} 
-function.}
-
-\item{blockFinder_params}{List with other parameter passed to \code{runBlockFinder} 
-function.}
-
-\item{dmrcate_params}{List with other parameter passed to \code{runDMRcate} 
 function.}
 
 \item{rda_params}{List with other parameter passed to \code{runRDA} 

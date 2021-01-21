@@ -51,7 +51,10 @@ runDiffVarAnalysis <- function(set, model, coefficient = NULL,
   } else {
     stop("set must be a matrix, ExpressionSet, MethylationSet, GenomicRatioSet or SummarizedExperiment.")
   }
-
+  if (any(is.na(mat))){
+    stop("runDiffVarAnalysis does not support NAs in the omic data.")
+  }
+  
   fFun <- getFeatureDataFun(set)
   
   fit <- missMethyl::varFit(mat, model, coef = coefficient, ...)

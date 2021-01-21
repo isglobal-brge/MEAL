@@ -17,8 +17,6 @@ LazyData: true
 Imports:
     GenomicRanges,
     limma,
-    DMRcate,
-    snpStats,
     vegan,
     BiocGenerics,
     minfi,
@@ -49,3 +47,4 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Encoding: UTF-8
+PackageStatus: Deprecated

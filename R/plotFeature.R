@@ -73,13 +73,14 @@ plotFeature <- function(set, feat, variables = colnames(pheno)[1], betas = TRUE)
   }else{  
     groups <- split(datamatrix, datamatrix$factor)
     means <- data.frame(means = sapply(groups, function(x) mean(x[ , 1])), 
-                        factor = names(groups))
+                        factor = names(groups),
+                        Values = 0)
     p <- ggplot2::ggplot(datamatrix, 
                          ggplot2::aes_string(x = "factor", y = "Values", fill = "factor")) + 
       ggplot2::geom_violin(alpha = 1/2) +
       ggplot2::geom_point(alpha = 1/2, position = ggplot2::position_jitter(width = 0.1)) + 
       ggplot2::geom_errorbar(data = means, 
-                             ggplot2::aes_string(x = "factor", y = "means", ymax = "means", 
+                             ggplot2::aes_string(x = "factor", ymax = "means", 
                                                  ymin = "means"),
                              width = 0.4, size = 1) +
       ggplot2::scale_x_discrete(name = "") + ggplot2::ggtitle(feat) + 

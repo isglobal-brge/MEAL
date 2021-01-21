@@ -11,7 +11,8 @@ runRDA(
   range,
   betas = FALSE,
   resultSet = TRUE,
-  num_permutations = 10000
+  num_permutations = 10000,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ used? (Default: TRUE)}
 
 \item{num_permutations}{Numeric with the number of permutations run to compute 
 the p-value. (Default: 1e4)}
+
+\item{...}{Further arguments passed to \code{rda}.}
 }
 \value{
 Object of class \code{rda} or \code{resultSet}

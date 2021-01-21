@@ -1,20 +1,6 @@
 #' Run bumphunter
 #' 
-#' Run bumphunter to a methylation dataset. This function contains all steps of
-#' bumphunter analysis, from model.matrix creation to running the analysis. 
-#' 
-#' @details runBumphunter is a wrapper for minfi \code{bumphunter}. This function 
-#' runs all the steps required prior running bumphunter from the methylation set
-#' and the formula of the model. This implementation allows running bumphunter to other 
-#' objects than \code{GenomicRatioSet}. The result can be encapsulated in a 
-#' \code{ResultSet} to take adavantege of its plotting capabilities.
-#' 
-#' If the user wants to run permutations to calculate p-values, this implementation
-#' can filter the bumps to avoid doing a very high number of permutations and to
-#' reduce computation time. To do so, we can set the maximum number of bumps that 
-#' we want to permute with the \code{bumps_max} parameter. runBumphunter increases
-#' \code{bumphunter_cutoff} value until the number of bumps is lower than 
-#' \code{bumps_max}.
+#' @details This function has been deprecated and will be defunct in the new version.
 #' 
 #' @export
 #' 
@@ -45,89 +31,5 @@ runBumphunter <- function(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
                           check_perms = FALSE, verbose = FALSE, 
                           resultSet = FALSE, ...){
 
-  ## Create model matrix from formula
-  if (is(model, "formula")){
-    model <- createModel(set, model)
-    set <- set[, rownames(model)]
-  }
-  
-
-  ## Get matrix
-  if (is(set, "GenomicRatioSet")){
-    mat <- minfi::getBeta(set)
-    if (!betas) {
-      mat[mat == 0] <- 1e-3
-      mat[mat == 1] <- 1 - 1e-3
-      mat <- minfi::logit2(mat)
-    }
-  } else if (is(set, "SummarizedExperiment")){
-    mat <- SummarizedExperiment::assay(set)
-  } else {
-    stop("set must be a MethylationSet, GenomicRatioSet or SummarizedExperiment.")
-  }
-  
-  if (is(set, "eSet")){
-    fFun <- function(set) {
-      df <- Biobase::fData(set)
-      ## Change position by start to harmonize fDatas
-      if ("position" %in% colnames(df)){
-        colnames(df)[colnames(df) == "position"] <- "start"
-      } 
-      df
-    }
-  } else if (is(set, "RangedSummarizedExperiment")){
-    fFun <- function(set) { 
-      df <- as.data.frame(SummarizedExperiment::rowRanges(set))
-      colnames(df)[1] <- "chromosome"
-      df
-    }
-  } else if (is(set, "SummarizedExperiment")){
-    fFun <- SummarizedExperiment::rowData
-  } else if (is.matrix(set)){
-    fFun <- function(set) data.frame(matrix(vector(), nrow(set), 0))
-  }
-  annot <- fFun(set)
-  
-  if (check_perms == FALSE | num_permutations == 0){
-    res <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
-                                     chr = annot[, "chromosome"], pos = annot[, "start"],
-                                     cutoff = bumphunter_cutoff, B = num_permutations,
-                                     nullMethod = "bootstrap", verbose = verbose, ...)$table
-  } else {
-  # Ensure that permutations are applied to a reasonable number of bumps
-    i <- 1
-    res <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
-                              chr = annot[ , "chromosome"], pos = annot[, "start"],
-                              cutoff = bumphunter_cutoff, B = 0, 
-                              nullMethod = "bootstrap", verbose = verbose, ...)$table
-    if (verbose){
-      message(paste("Iteration",i,"Num bumps:", nrow(res), 
-                    "cutoff:", bumphunter_cutoff))  
-    }
-      ## Increase cut off until getting a reasonable number of bumps
-      while(nrow(res) > bumps_max){
-        i <- i +1
-        bumphunter_cutoff <- bumphunter_cutoff + 0.05
-        res <-  minfi::bumphunter(object = mat, design = model, coef = coefficient,
-                                         chr = annot[ , "chromosome"], pos = annot[, "start"],
-                                         cutoff = bumphunter_cutoff, B = num_permutations, 
-                                         nullMethod = "bootstrap", verbose = verbose, ...)$table
-        if (verbose){
-          message(paste("Iteration",i,"Num bumps:", nrow(res), 
-                        "cutoff:", bumphunter_cutoff))
-        }
-      }
-   } 
-    if (length(res) == 1){
-      res <- data.frame()
-    }
-  if (resultSet)
-  {
-    fFun <- getFeatureDataFun(set)
-    
-    res <- create_resultset("runBumphunter", lResults = 
-                              list(bumphunter = list(result = res, error = NA)),  
-                            fData = list(main = fFun(set)), lOptions = list())
-  }
-  res
+  .Deprecated()
 }

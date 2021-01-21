@@ -57,24 +57,8 @@ plotRegion <- function(rset, range, results = names(rset),
                                                      start.field = c("position", "start"), 
                                                      end.field = endf)
     if (width(annot[1]) == 1){
-      data(dmrcatedata, envir = environment(), package = "DMRcatedata")
-      switch(genome, hg19 = {
-        tx = tx.hg19
-      }, hg38 = {
-        tx = tx.hg38
-      }, mm10 = {
-        tx = tx.mm10
-      })
-      annotTrack <- c(
-        Gviz::GeneRegionTrack(subsetByOverlaps(tx, range), name = "Transcripts", 
-                              symbol = subsetByOverlaps(tx, range)$gene_name, 
-                              fill = "lightblue", 
-                              gene = subsetByOverlaps(tx, range)$gene_name,
-                              showId = TRUE, geneSymbol = TRUE, cex.title = 0.6,
-                              shape = "arrow", transcriptAnnotation = "symbol",
-                              collapseTranscripts = TRUE, rotation.title = 0), 
-        Gviz::GeneRegionTrack(subsetByOverlaps(annot, range), name = "CpGs", 
-                              fill = "black", stacking = "dense",rotation.title = 0)) 
+      annotTrack <- Gviz::GeneRegionTrack(subsetByOverlaps(annot, range), name = "CpGs", 
+                              fill = "black", stacking = "dense",rotation.title = 0)
     } else {
       annotTrack <- Gviz::GeneRegionTrack(subsetByOverlaps(annot, range), name = "Transcripts", 
                                           symbol = names(subsetByOverlaps(annot, range)), 

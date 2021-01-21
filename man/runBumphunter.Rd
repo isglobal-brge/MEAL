@@ -54,22 +54,10 @@ greater than 0. (Default: TRUE)}
 data.frame or \code{resultSet} with the result of \code{bumphunter}
 }
 \description{
-Run bumphunter to a methylation dataset. This function contains all steps of
-bumphunter analysis, from model.matrix creation to running the analysis.
+Run bumphunter
 }
 \details{
-runBumphunter is a wrapper for minfi \code{bumphunter}. This function 
-runs all the steps required prior running bumphunter from the methylation set
-and the formula of the model. This implementation allows running bumphunter to other 
-objects than \code{GenomicRatioSet}. The result can be encapsulated in a 
-\code{ResultSet} to take adavantege of its plotting capabilities.
-
-If the user wants to run permutations to calculate p-values, this implementation
-can filter the bumps to avoid doing a very high number of permutations and to
-reduce computation time. To do so, we can set the maximum number of bumps that 
-we want to permute with the \code{bumps_max} parameter. runBumphunter increases
-\code{bumphunter_cutoff} value until the number of bumps is lower than 
-\code{bumps_max}.
+This function has been deprecated and will be defunct in the new version.
 }
 \seealso{
 \code{\link[minfi]{bumphunter}}

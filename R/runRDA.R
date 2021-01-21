@@ -15,6 +15,7 @@
 #' @param resultSet Should results be encapsulated in a \code{resultSet}? (Default: TRUE)
 #' @param num_permutations Numeric with the number of permutations run to compute 
 #' the p-value. (Default: 1e4)
+#' @param ... Further arguments passed to \code{rda}.
 #' @return Object of class \code{rda} or \code{resultSet} 
 #' @seealso \code{\link[vegan]{rda}}
 #' @examples
@@ -25,7 +26,7 @@
 #' rda
 #' }
 runRDA <- function(set, model, num_vars = ncol(model), range, betas = FALSE, 
-                   resultSet = TRUE, num_permutations = 1e4){
+                   resultSet = TRUE, num_permutations = 1e4, ...){
   
   ## Create model matrix from formula
   if (is(model, "formula")){
@@ -100,7 +101,7 @@ runRDA <- function(set, model, num_vars = ncol(model), range, betas = FALSE,
   }else {
     covarsmodel <- model[, (num_vars+1):ncol(model), drop = FALSE]
   }
-  res <- vegan::rda(t(mat), varsmodel, covarsmodel)
+  res <- vegan::rda(t(mat), varsmodel, covarsmodel, ...)
   res$pval <- vegan::anova.cca(res, permutations = permute::how(nperm = num_permutations))[["Pr(>F)"]][1]
   res$rdaR2 <- vegan::RsquareAdj(res)$r.squared
   

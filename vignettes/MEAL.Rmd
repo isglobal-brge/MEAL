@@ -49,12 +49,24 @@ library(ggplot2)
 data("MsetEx")
 ```
 
-`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove any CpG with NAs:
+`MsetEx` is a `MethylationRatioSet` that contains measurements for 485512 CpGs and 6 samples, as well as some phenotypic variables such as age or sex. The first step will be to convert it to a `GenomicRatioSet`. Then, we will add some extra features annotation. Finally, we will remove probes not measuring methylation, with SNPs or with NAs. For the sake of speed, we will select a subset of CpGs:
 
 ```{r subset Methy}
 meth <- mapToGenome(ratioConvert(MsetEx))
 rowData(meth) <- getAnnotation(meth)[, -c(1:3)]
+
+## Remove probes measuring SNPs
+meth <- dropMethylationLoci(meth)
+
+## Remove probes with SNPs
+meth <- dropLociWithSnps(meth)
+
+## Remove probes with NAs
 meth <- meth[!apply(getBeta(meth), 1, function(x) any(is.na(x))), ]
+
+## Select a subset of samples
+set.seed(0)
+meth <- meth[sample(nrow(meth), 100000), ]
 ```
 
 
@@ -73,7 +85,7 @@ We will run a new analysis including age as covariate:
 
 ```{r Pipeline Adj,  warning=FALSE}
 resAdj <- runPipeline(set = meth, variable_names = "status", 
-                      covariable_names = "age")
+                      covariable_names = "age", analyses = c("DiffMean", "DiffVar"))
 resAdj
 ```
 
@@ -92,9 +104,6 @@ We can use the function `getAssociation` to get a data.frame with the results, i
 ```{r}
 head(getAssociation(resAdj, "DiffMean"))
 head(getAssociation(resAdj, "DiffVar"))
-head(getAssociation(resAdj, "bumphunter"))
-head(getAssociation(resAdj, "blockFinder"))
-head(getAssociation(resAdj, "dmrcate"))
 ```
 
 DiffMean and DiffVar are internally stored as a MArrayLM, the class from `r Biocpkg("limma")` results. This class allows testing different constrasts or evaluating different variables simultaneously. The function `getProbeResults` helps the user performing these operations. It also has the arguments `object` and `rid` from `getAssociation`. `coef` is a numeric with the index of the coefficient from which we want the results. If we did not pass a custom model to `runPipeline`, the first coefficient (coef = 1) is the intercept  and the second coefficient (coef = 2) is the first variable that we included in `variable_names`. We can evaluate different coefficients simultaneously by passing a vector to `coef`. `contrast` is a matrix with the contrasts that we want to evaluate. This option is useful when our variable of interest is a factor with several levels and we want to do all the different comparisons. Finally, the argument `fNames` is used to select the variables from features annotation that will be added to the tables. 
@@ -120,14 +129,6 @@ getGeneVals(resAdj, "ARMS2", genecol = "UCSC_RefGene_Name", fNames = c("chromoso
 
 We can easily get Manhattan plots, Volcano plots and QQ-plots for the probes results (DiffMean and DiffVar) using `plot` method. Our extension of `plot` method to `ResultSet` includes the arguments `rid` or `coef` that were already present in `getProbeResult`. In addition, the argument `type` allows choosing between a Manhattan plot ("manhattan"), a Volcano plot ("volcano") or a qq-plot ("qq").
 
-We will get these three plots for the unadjusted analysis of differential means:
-
-```{r 3 plots}
-plot(resAdj, rid = "DiffMean", type = "manhattan")
-plot(resAdj, rid = "DiffMean", type = "volcano")
-plot(resAdj, rid = "DiffMean", type = "qq")
-```
-
 ### Manhattan plot
 
 We can customize different aspects of a Manhattan plot. We can highlight the CpGs of a target region by passing a `GenomicRanges` to the argument `highlight`. Similarly, we can get a Manhattan plot with only the CpGs of our target region passing a `GenomicRanges` to the argument `subset`. It should be noticed that the `GenomicRange` should have the chromosome as a number (1-24).
@@ -140,33 +141,22 @@ plot(resAdj, rid = "DiffMean", type = "manhattan", highlight = targetRange)
 plot(resAdj, rid = "DiffMean", type = "manhattan", subset = targetRange)
 ```
 
-We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value:
+We can also change the height of lines marking different levels of significance. Height of blue line can be set with `suggestiveline` parameter and red line with `genomewideline` parameter. It should be noticed that these values are expressed as -log10 of p-value. Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
 
 ```{r Manhattan 2}
 plot(resAdj, rid = "DiffMean", type = "manhattan", suggestiveline = 3, 
-     genomewideline = 6)
-```
-
-Finally, as our Manhattan plot is done with `base` framework, we can customize the plot using `base` plotting functions such as `points`, `lines` or `text` or arguments of `plot` function like `main`:  
-```{r Manhattan 3}
-plot(resAdj, rid = "DiffMean", type = "manhattan", 
-     main = "My custom Manhattan")
+     genomewideline = 6, main = "My custom Manhattan")
 abline(h = 13, col = "yellow")
 ```
 
+
 ### Volcano plot
 
-In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. Finally, `show.labels` can turn on and turn off the labelling of significant features: 
+In our Volcano plot, we can also customize the thresholds for statistical significance and magnitude of the effect using the arguments `tPV` and `tFC`. As in the previous case, `tPV` is expressed as -log10 of p-value. On the other hand, `tFC` units will change depending if we used beta or M-values. `show.labels` can turn on and turn off the labelling of significant features. Finally, Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
+
 
 ```{r Volcano 1}
 plot(resAdj, rid = "DiffMean", type = "volcano", tPV = 14, tFC = 0.4, 
-     show.labels = FALSE)
-```
-
-Volcano plot is based on `r CRANpkg("ggplot2")` so we can further customize the plot adding new layers:
-
-```{r Volcano 2}
-plot(resAdj, rid = "DiffMean", type = "volcano", tPV = 30, tFC = 0.1, 
      show.labels = FALSE) + ggtitle("My custom Volcano")
 ```
 
@@ -185,12 +175,12 @@ plot(resAdj, rid = "DiffMean", type = "qq") + ggtitle("My custom QQplot")
 
 `r Biocpkg("MEAL")` incorporates the function `plotFeature` to plot the beta values distribution of a CpG. `plotFeature` has three main arguments. `set` is the `GenomicRatioSet` with the methylation data. `feat` is the index or name of our target CpG. `variables` is a character vector with the names of the variables used in the plot. We can include two variables in our plot.
 
-In the next line, we will plot a CpG with high difference in means between male and female (cg17547524) and a CpG with high difference in variance (cg05111645) vs sex. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
+In the next line, we will plot a CpG with high difference in means between cases and controls (cg25104555) and a CpG with high difference in variance (cg11847929) vs cancer status. As plotFeature is based on `r CRANpkg("ggplot2")`, we can customize it:
 
 ```{r Plot_Features, warning = FALSE}
-plotFeature(set = meth, feat = "cg17547524", variables = "sex") + 
+plotFeature(set = meth, feat = "cg09383816", variables = "status") + 
   ggtitle("Diff Means")
-plotFeature(set = meth, feat = "cg05111645", variables = "sex") + 
+plotFeature(set = meth, feat = "cg11847929", variables = "status") + 
   ggtitle("Diff Vars")
 ```
 
@@ -210,8 +200,7 @@ Our plot has three main parts. The top contains the annotation of the regional g
 By default,`plotRegion` includes all analyses run in the plot. However, we can plot only few analyses with the parameter `results`. We can also modify the height of the p-value line with the parameter `tPV` (units are -log10 of p-value):
 
 ```{r Regional plot 2}
-plotRegion(resAdj, targetRange, results = c("DiffMean", "bumphunter"), 
-           tPV = 10)
+plotRegion(resAdj, targetRange, results = c("DiffMean"), tPV = 10)
 ```
 
 ## Methods wrappers
@@ -244,42 +233,6 @@ resDV <- runDiffVarAnalysis(set = meth, model = ~ status, coefficient = 2)
 
 `runDiffVarAnalysis` also has the parameter `resultSet` that allows returning a `MArrayLM` object instead of a `ResultSet`. Finally, we can change other parameters of `varFit` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `DiffVar_params`.
 
-### Bumphunter
-
-We can detect DMRs using `Bumphunter` from `r Biocpkg("minfi")` with the function `runBumphunter`. This function requires three arguments: `set`, `model` and `coefficient`. `set` contains the methylation data in a `GenomicRatioSet`. `model` can be a matrix with the linear model or a formula indicating the model. In the former case, the variables included in the model must be present in the colData of our set. `coefficient` indicates the variable used to detect the DMRs.  
-
-We exemplify the use of this function by running `bumphunter` as in the pipeline:
-
-```{r Bumphunter, eval = FALSE}
-resBH <- runBumphunter(set = meth, model = ~ status, coefficient = 2)
-```
-
-`runBumphunter` also has other parameters to customize the analysis. The parameter `betas` allows us choosing between betas (TRUE) and M-values (FALSE). `bumphunter_cutoff` specifies the minimum beta change to include a probe in a bump. `num_permutations` indicates the number of permutations run to compute bumps p-values (by default is 0 so no permutations are run and no p-values are returned). `resultSet` allows returning a data.frame object instead of a `ResultSet`. Finally, we can change other parameters of `bumphunter` function using the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `bumphunter_params`.
-
-### Blockfinder
-
-`blockFinder` is an adaptation of `Bumphunter` to detect DMRs from open sea probes. The function `runBlockFinder` has essentially the same arguments than `runBumphunter`.  
-
-We exemplify the use of this function by running `blockFinder` as in the pipeline:
-
-```{r blockFinder, eval = FALSE}
-resBF <- runBlockFinder(set = meth, model = ~ status, coefficient = 2)
-```
-
-To change the parameters in the `runPipeline` function, we can pass them to the argument `blockFinder_params`.
-
-### DMRcate
-
-We can detect DMRs using `r Biocpkg("DMRcate")` with the function `runDMRcate`. This function only has four parameters. `set` is the `GenomicRatioSet`, `model` is the linear model or a formula, `coefficient` is the variable used to detect the DMRs and `resultSet` to change the class of the output. 
-
-We exemplify the use of this function by running `DMRcate` as in the pipeline:
-
-
-```{r DMRcate, eval = FALSE}
-resDC <- runDMRcate(set = meth, model = ~ status, coefficient = 2)
-```
-
-We can change other parameters of DMRcate functions (`cpg.annotate` and `dmrcate`) passing them to the `...` argument. These parameters can also be set in the `runPipeline` function passing them to the argument `dmrcate_params`.
 
 ### RDA
 
@@ -315,7 +268,7 @@ This function returns four values: R2, pval, global.R2 and global.pval. R2 is th
 The function `topRDAhits` returns a data.frame with features associated to first two RDA components. This functions computes a Pearson correlation test between the methylation values and the RDA components. Only CpGs with a p-value lower than `tPV` parameter (by default 0.05) with any of the components are included in the data.frame:
 
 ```{r topRDAhits}
-topRDAhits(resRDA, tPV = 1e-17)
+topRDAhits(resRDA)
 ```
 
 Finally, we can plot the first two dimensions of our RDA with the function `plotRDA`. This function makes a biplot of samples and features. We can color the samples using categorical variables by passing in a data.frame to argument `pheno`. 
