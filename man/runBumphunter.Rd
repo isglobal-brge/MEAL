@@ -4,9 +4,19 @@
 \alias{runBumphunter}
 \title{Run bumphunter}
 \usage{
-runBumphunter(set, model, coefficient = 2, bumphunter_cutoff = 0.1,
-  num_permutations = 0, bumps_max = 30000, betas = TRUE,
-  check_perms = FALSE, verbose = FALSE, resultSet = FALSE, ...)
+runBumphunter(
+  set,
+  model,
+  coefficient = 2,
+  bumphunter_cutoff = 0.1,
+  num_permutations = 0,
+  bumps_max = 30000,
+  betas = TRUE,
+  check_perms = FALSE,
+  verbose = FALSE,
+  resultSet = FALSE,
+  ...
+)
 }
 \arguments{
 \item{set}{\code{GenomicRatioSet}, \code{eSet} derived object or 

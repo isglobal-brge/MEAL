@@ -1,14 +1,14 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.9.9
-Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
-  person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
+Version: 2.0.0
+Authors@R: c(person("Juan R.", "Gonzalez", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
+  person("Carlos", "Ruiz-Arenas", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Description: Package to integrate methylation and expression data. It can
     also perform methylation or expression analysis alone. Several plotting
     functionalities are included as well as a new region analysis based on
     redundancy analysis. Effect of SNPs on a region can also be estimated.
 Depends:
-    R (>= 3.2.0),
+    R (>= 3.6.0),
     Biobase,
     MultiDataSet
 License: Artistic-2.0
@@ -47,5 +47,5 @@ Suggests:
     rmarkdown,
     brgedata
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Encoding: UTF-8

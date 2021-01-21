@@ -22,6 +22,7 @@
 #' @param covariable_names Character vector with the names of the variables that
 #' will be used to adjust the model. 
 #' @param model Model matrix or formula to get model matrix from \code{set}. 
+#' @param weights weights used in the lmFit model (default NULL)
 #' @param num_vars Numeric with the number of variables in the matrix for which the
 #' analysis will be performed. Compulsory if equation is not null. 
 #' @param sva Logical. Should Surrogate Variable Analysis be applied? 
@@ -55,7 +56,7 @@
 #' }
 runPipeline <-  function(set, variable_names, 
                          covariable_names = NULL, 
-                         model = NULL, num_vars,  
+                         model = NULL, weights = NULL, num_vars,  
                          sva = FALSE, betas = TRUE, range,
                          region_methods = c("bumphunter", "blockFinder", "DMRcate"),
                          verbose = FALSE, warnings = TRUE, 
@@ -125,7 +126,8 @@ runPipeline <-  function(set, variable_names,
     message("Probe Analysis started")
   }
   diffmean <- do.call(runDiffMeanAnalysis, 
-                      c(list(set = mat, model = model, resultSet = FALSE, 
+                      c(list(set = mat, model = model, weights = weights,
+                             resultSet = FALSE, 
                              warnings = warnings), DiffMean_params))
   
   diffvar <- do.call(runDiffVarAnalysis, 

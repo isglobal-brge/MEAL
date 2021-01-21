@@ -4,8 +4,12 @@
 \alias{explainedVariance}
 \title{Calculate R2 for different variables}
 \usage{
-explainedVariance(data, num_mainvar = 1, num_covariates = 0,
-  variable_label = NULL)
+explainedVariance(
+  data,
+  num_mainvar = 1,
+  num_covariates = 0,
+  variable_label = NULL
+)
 }
 \arguments{
 \item{data}{Data.frame containing the dependent variable in the first column.}

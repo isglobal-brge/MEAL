@@ -4,8 +4,14 @@
 \alias{computeRDAR2}
 \title{Compute signification of RDA test}
 \usage{
-computeRDAR2(fullMat, varsmodel, covarsmodel = NULL, featNum, R2,
-  num_permutations = 1e+05 - 1)
+computeRDAR2(
+  fullMat,
+  varsmodel,
+  covarsmodel = NULL,
+  featNum,
+  R2,
+  num_permutations = 1e+05 - 1
+)
 }
 \arguments{
 \item{fullMat}{Matrix with the whole genome expression or methylation values}

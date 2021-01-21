@@ -4,12 +4,26 @@
 \alias{runPipeline}
 \title{Perform differential methylation analysis}
 \usage{
-runPipeline(set, variable_names, covariable_names = NULL, model = NULL,
-  num_vars, sva = FALSE, betas = TRUE, range,
+runPipeline(
+  set,
+  variable_names,
+  covariable_names = NULL,
+  model = NULL,
+  weights = NULL,
+  num_vars,
+  sva = FALSE,
+  betas = TRUE,
+  range,
   region_methods = c("bumphunter", "blockFinder", "DMRcate"),
-  verbose = FALSE, warnings = TRUE, DiffMean_params = NULL,
-  DiffVar_params = list(coefficient = 1:2), bumphunter_params = NULL,
-  blockFinder_params = NULL, dmrcate_params = NULL, rda_params = NULL)
+  verbose = FALSE,
+  warnings = TRUE,
+  DiffMean_params = NULL,
+  DiffVar_params = list(coefficient = 1:2),
+  bumphunter_params = NULL,
+  blockFinder_params = NULL,
+  dmrcate_params = NULL,
+  rda_params = NULL
+)
 }
 \arguments{
 \item{set}{\code{GenomicRatioSet}, \code{eSet} derived object or 
@@ -22,6 +36,8 @@ will be returned as result.}
 will be used to adjust the model.}
 
 \item{model}{Model matrix or formula to get model matrix from \code{set}.}
+
+\item{weights}{weights used in the lmFit model (default NULL)}
 
 \item{num_vars}{Numeric with the number of variables in the matrix for which the
 analysis will be performed. Compulsory if equation is not null.}

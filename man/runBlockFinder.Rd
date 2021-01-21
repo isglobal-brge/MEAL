@@ -4,8 +4,16 @@
 \alias{runBlockFinder}
 \title{Run blockFinder}
 \usage{
-runBlockFinder(set, model, coefficient = 2, blockfinder_cutoff = 0.1,
-  num_permutations = 0, resultSet = FALSE, verbose = FALSE, ...)
+runBlockFinder(
+  set,
+  model,
+  coefficient = 2,
+  blockfinder_cutoff = 0.1,
+  num_permutations = 0,
+  resultSet = FALSE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{set}{\code{GenomicRatioSet}, \code{eSet} derived object or 

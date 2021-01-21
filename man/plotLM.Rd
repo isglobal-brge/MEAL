@@ -4,8 +4,13 @@
 \alias{plotLM}
 \title{Plot a vector of R2}
 \usage{
-plotLM(Rsquares, title = paste("Variance Explained in", feat_name),
-  feat_name = NULL, variable_name = names(Rsquares)[1], max_columns = 6)
+plotLM(
+  Rsquares,
+  title = paste("Variance Explained in", feat_name),
+  feat_name = NULL,
+  variable_name = names(Rsquares)[1],
+  max_columns = 6
+)
 }
 \arguments{
 \item{Rsquares}{Numerical vector of R2}

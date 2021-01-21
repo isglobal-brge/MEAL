@@ -16,6 +16,7 @@
 #' used? (Default: TRUE)
 #' @param resultSet Should results be encapsulated in a \code{resultSet}? (Default: TRUE)
 #' @param warnings Should warnings be displayed? (Default:TRUE) 
+#' @param ... other arguments to be passed through lmFit
 #' @return \code{MArrayLM} or \code{resultSet} with the result of the differential
 #' mean analysis.
 #' @examples
@@ -25,8 +26,8 @@
 #'  res <- runDiffMeanAnalysis(mvalues, model, method = "ls")
 #'  res
 #' }
-runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100, 
-                    betas = TRUE, resultSet = TRUE, warnings = TRUE) {
+runDiffMeanAnalysis <- function(set, model, weights = weights,  method = "ls", max_iterations = 100, 
+                    betas = TRUE, resultSet = TRUE, warnings = TRUE, ...) {
   
   ## Create model matrix from formula
   if (is(model, "formula")){
@@ -61,7 +62,8 @@ runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100,
     max_iterations <- 100
   }
 
-  fit <- limma::lmFit(mat, model, method = method, maxit = max_iterations)
+  fit <- limma::lmFit(mat, model, method = method, maxit = max_iterations, weights = weights)
+  fit <- limma::eBayes(fit)
   
   if (resultSet){
     fit <- MultiDataSet::create_resultset(fOrigin = "DAProbe", fData = list(main = fFun(set)), 

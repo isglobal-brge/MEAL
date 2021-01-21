@@ -4,9 +4,16 @@
 \alias{correlationMethSNPs}
 \title{Computes the correlation between methylation and SNPs}
 \usage{
-correlationMethSNPs(multiset, meth_set_name = NULL, snps_set_name = NULL,
-  range, variable_names, covariable_names = NULL, snps_cutoff = 0.01,
-  verbose = TRUE)
+correlationMethSNPs(
+  multiset,
+  meth_set_name = NULL,
+  snps_set_name = NULL,
+  range,
+  variable_names,
+  covariable_names = NULL,
+  snps_cutoff = 0.01,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{multiset}{\code{MultiDataSet} containing a \code{methylation} and an 

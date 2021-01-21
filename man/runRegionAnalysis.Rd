@@ -4,10 +4,17 @@
 \alias{runRegionAnalysis}
 \title{Run different DMR detection methods}
 \usage{
-runRegionAnalysis(set, model, methods = c("blockFinder", "bumphunter",
-  "DMRcate"), coefficient = 2, bumphunter_params = NULL,
-  blockFinder_params = NULL, dmrcate_params = NULL, verbose = FALSE,
-  resultSet = TRUE)
+runRegionAnalysis(
+  set,
+  model,
+  methods = c("blockFinder", "bumphunter", "DMRcate"),
+  coefficient = 2,
+  bumphunter_params = NULL,
+  blockFinder_params = NULL,
+  dmrcate_params = NULL,
+  verbose = FALSE,
+  resultSet = TRUE
+)
 }
 \arguments{
 \item{set}{\code{GenomicRatioSet}, \code{eSet} derived object or 

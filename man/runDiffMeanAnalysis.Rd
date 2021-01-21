@@ -4,8 +4,17 @@
 \alias{runDiffMeanAnalysis}
 \title{Run differential mean analysis}
 \usage{
-runDiffMeanAnalysis(set, model, method = "ls", max_iterations = 100,
-  betas = TRUE, resultSet = TRUE, warnings = TRUE)
+runDiffMeanAnalysis(
+  set,
+  model,
+  weights = weights,
+  method = "ls",
+  max_iterations = 100,
+  betas = TRUE,
+  resultSet = TRUE,
+  warnings = TRUE,
+  ...
+)
 }
 \arguments{
 \item{set}{Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 
@@ -25,6 +34,8 @@ used? (Default: TRUE)}
 \item{resultSet}{Should results be encapsulated in a \code{resultSet}? (Default: TRUE)}
 
 \item{warnings}{Should warnings be displayed? (Default:TRUE)}
+
+\item{...}{other arguments to be passed through lmFit}
 }
 \value{
 \code{MArrayLM} or \code{resultSet} with the result of the differential
