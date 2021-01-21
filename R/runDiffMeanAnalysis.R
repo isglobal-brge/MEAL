@@ -16,7 +16,6 @@
 #' used? (Default: TRUE)
 #' @param resultSet Should results be encapsulated in a \code{resultSet}? (Default: TRUE)
 #' @param warnings Should warnings be displayed? (Default:TRUE) 
-#' @param ... other arguments to be passed through lmFit
 #' @return \code{MArrayLM} or \code{resultSet} with the result of the differential
 #' mean analysis.
 #' @examples
