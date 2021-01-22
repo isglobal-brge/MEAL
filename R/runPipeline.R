@@ -117,8 +117,9 @@ runPipeline <-  function(set, variable_names,
   resList <- list()
   
   if ("DiffMean" %in% analyses){
-    diffmean <- tryCatch(do.call(runDiffMeanAnalysis, weights = weights,
-                                 c(list(set = mat, model = model, resultSet = FALSE, 
+    diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
+                                 c(list(set = mat, model = model, weights = weights,
+                                        resultSet = FALSE, 
                                         warnings = warnings), DiffMean_params)), 
                          error = function(e) e)
     resList$DiffMean <- list(result = diffmean, error = ifelse(is(diffmean, "try-error"), diffmean, NA))

@@ -8,6 +8,7 @@
 #' @param set Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 
 #' \code{ExpressionSet}. 
 #' @param model Model matrix or formula to get model matrix from \code{set}. 
+#' @weights weights used in the lmFit model.
 #' @param method String indicating the method used in the regression: "ls" or 
 #' "robust". (Default: "ls")
 #' @param max_iterations Numeric indicating the maximum number of iterations
@@ -62,8 +63,7 @@ runDiffMeanAnalysis <- function(set, model, weights = weights,  method = "ls", m
   }
 
   fit <- limma::lmFit(mat, model, method = method, maxit = max_iterations, weights = weights)
-  fit <- limma::eBayes(fit)
-  
+
   if (resultSet){
     fit <- MultiDataSet::create_resultset(fOrigin = "DAProbe", fData = list(main = fFun(set)), 
                                    lResults = list(DiffMean = list(result = fit)))
