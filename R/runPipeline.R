@@ -54,7 +54,7 @@ runPipeline <-  function(set, variable_names,
                          analyses = c("DiffMean"),
                          verbose = FALSE, warnings = TRUE, 
                          DiffMean_params = NULL, DiffVar_params = list(coefficient = 1:2),
-                         rda_params = NULL) {
+                         rda_params = NULL, method = "ls") {
   ### Añadir filtro sondas con NAs
   
   
@@ -120,7 +120,7 @@ runPipeline <-  function(set, variable_names,
     diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
                                  c(list(set = mat, model = model, weights = weights,
                                         resultSet = FALSE, 
-                                        warnings = warnings), DiffMean_params)), 
+                                        warnings = warnings, method = method), DiffMean_params)), 
                          error = function(e) e)
     resList$DiffMean <- list(result = diffmean, error = ifelse(is(diffmean, "try-error"), diffmean, NA))
   }
