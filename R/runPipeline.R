@@ -37,6 +37,8 @@
 #' function.
 #' @param rda_params List with other parameter passed to \code{runRDA} 
 #' function.
+#' @param method String indicating the method used in the regression: "ls" or 
+#' "robust". (Default: "ls")
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
 #' If FALSE nothing should be printed.
 #' @param warnings Should warnings be displayed? (Default:TRUE) 

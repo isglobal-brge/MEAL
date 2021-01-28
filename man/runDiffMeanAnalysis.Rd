@@ -12,7 +12,8 @@ runDiffMeanAnalysis(
   max_iterations = 100,
   betas = TRUE,
   resultSet = TRUE,
-  warnings = TRUE
+  warnings = TRUE,
+  ...
 )
 }
 \arguments{
@@ -33,8 +34,6 @@ used? (Default: TRUE)}
 \item{resultSet}{Should results be encapsulated in a \code{resultSet}? (Default: TRUE)}
 
 \item{warnings}{Should warnings be displayed? (Default:TRUE)}
-
-\item{...}{other arguments to be passed through lmFit}
 }
 \value{
 \code{MArrayLM} or \code{resultSet} with the result of the differential

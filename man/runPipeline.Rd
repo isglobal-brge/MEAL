@@ -19,7 +19,8 @@ runPipeline(
   warnings = TRUE,
   DiffMean_params = NULL,
   DiffVar_params = list(coefficient = 1:2),
-  rda_params = NULL
+  rda_params = NULL,
+  method = "ls"
 )
 }
 \arguments{
@@ -62,6 +63,9 @@ function.}
 
 \item{rda_params}{List with other parameter passed to \code{runRDA} 
 function.}
+
+\item{method}{String indicating the method used in the regression: "ls" or 
+"robust". (Default: "ls")}
 }
 \value{
 \code{ResultSet} object
