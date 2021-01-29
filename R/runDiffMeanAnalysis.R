@@ -8,7 +8,7 @@
 #' @param set Matrix, \code{GenomicRatioSet}, \code{SummarizedExperiment} or 
 #' \code{ExpressionSet}. 
 #' @param model Model matrix or formula to get model matrix from \code{set}. 
-#' @weights weights used in the lmFit model.
+#' @param weights weights used in the lmFit model.
 #' @param method String indicating the method used in the regression: "ls" or 
 #' "robust". (Default: "ls")
 #' @param max_iterations Numeric indicating the maximum number of iterations
