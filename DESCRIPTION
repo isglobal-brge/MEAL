@@ -1,8 +1,9 @@
 Package: MEAL
 Title: Perform methylation analysis
-Version: 1.20.0
+Version: 1.20.1
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
+Maintainer: Xavier Escribà Montagut <xavier.escriba@isglobal.org>
 Description: Package to integrate methylation and expression data. It can
     also perform methylation or expression analysis alone. Several plotting
     functionalities are included as well as a new region analysis based on
