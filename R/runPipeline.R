@@ -22,6 +22,7 @@
 #' @param covariable_names Character vector with the names of the variables that
 #' will be used to adjust the model. 
 #' @param model Model matrix or formula to get model matrix from \code{set}. 
+#' @param weights weights used in the lmFit model (default NULL)
 #' @param num_vars Numeric with the number of variables in the matrix for which the
 #' analysis will be performed. Compulsory if equation is not null. 
 #' @param sva Logical. Should Surrogate Variable Analysis be applied? 
@@ -36,6 +37,8 @@
 #' function.
 #' @param rda_params List with other parameter passed to \code{runRDA} 
 #' function.
+#' @param method String indicating the method used in the regression: "ls" or 
+#' "robust". (Default: "ls")
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
 #' If FALSE nothing should be printed.
 #' @param warnings Should warnings be displayed? (Default:TRUE) 
@@ -48,12 +51,12 @@
 #' }
 runPipeline <-  function(set, variable_names, 
                          covariable_names = NULL, 
-                         model = NULL, num_vars,  
+                         model = NULL, weights = NULL, num_vars,  
                          sva = FALSE, betas = TRUE, range,
                          analyses = c("DiffMean"),
                          verbose = FALSE, warnings = TRUE, 
                          DiffMean_params = NULL, DiffVar_params = list(coefficient = 1:2),
-                         rda_params = NULL) {
+                         rda_params = NULL, method = "ls") {
   ### Añadir filtro sondas con NAs
   
   
@@ -112,13 +115,14 @@ runPipeline <-  function(set, variable_names,
   if (verbose){
     message("Probe Analysis started")
   }
-  
+
   resList <- list()
   
   if ("DiffMean" %in% analyses){
     diffmean <- tryCatch(do.call(runDiffMeanAnalysis, 
-                                 c(list(set = mat, model = model, resultSet = FALSE, 
-                                        warnings = warnings), DiffMean_params)), 
+                                 c(list(set = mat, model = model, weights = weights,
+                                        resultSet = FALSE, 
+                                        warnings = warnings, method = method), DiffMean_params)), 
                          error = function(e) e)
     resList$DiffMean <- list(result = diffmean, error = ifelse(is(diffmean, "try-error"), diffmean, NA))
   }

@@ -7,11 +7,13 @@
 runDiffMeanAnalysis(
   set,
   model,
+  weights = weights,
   method = "ls",
   max_iterations = 100,
   betas = TRUE,
   resultSet = TRUE,
-  warnings = TRUE
+  warnings = TRUE,
+  ...
 )
 }
 \arguments{

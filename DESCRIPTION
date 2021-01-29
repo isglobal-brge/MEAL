@@ -9,7 +9,7 @@ Description: Package to integrate methylation and expression data. It can
     functionalities are included as well as a new region analysis based on
     redundancy analysis. Effect of SNPs on a region can also be estimated.
 Depends:
-    R (>= 3.2.0),
+    R (>= 3.6.0),
     Biobase,
     MultiDataSet
 License: Artistic-2.0
@@ -46,5 +46,5 @@ Suggests:
     rmarkdown,
     brgedata
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Encoding: UTF-8

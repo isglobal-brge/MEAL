@@ -9,6 +9,7 @@ runPipeline(
   variable_names,
   covariable_names = NULL,
   model = NULL,
+  weights = NULL,
   num_vars,
   sva = FALSE,
   betas = TRUE,
@@ -18,7 +19,8 @@ runPipeline(
   warnings = TRUE,
   DiffMean_params = NULL,
   DiffVar_params = list(coefficient = 1:2),
-  rda_params = NULL
+  rda_params = NULL,
+  method = "ls"
 )
 }
 \arguments{
@@ -32,6 +34,8 @@ will be returned as result.}
 will be used to adjust the model.}
 
 \item{model}{Model matrix or formula to get model matrix from \code{set}.}
+
+\item{weights}{weights used in the lmFit model (default NULL)}
 
 \item{num_vars}{Numeric with the number of variables in the matrix for which the
 analysis will be performed. Compulsory if equation is not null.}
@@ -59,6 +63,9 @@ function.}
 
 \item{rda_params}{List with other parameter passed to \code{runRDA} 
 function.}
+
+\item{method}{String indicating the method used in the regression: "ls" or 
+"robust". (Default: "ls")}
 }
 \value{
 \code{ResultSet} object

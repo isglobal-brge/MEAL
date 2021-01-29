@@ -26,8 +26,8 @@
 #'  res <- runDiffMeanAnalysis(mvalues, model, method = "ls")
 #'  res
 #' }
-runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100, 
-                    betas = TRUE, resultSet = TRUE, warnings = TRUE) {
+runDiffMeanAnalysis <- function(set, model, weights = weights,  method = "ls", max_iterations = 100, 
+                    betas = TRUE, resultSet = TRUE, warnings = TRUE, ...) {
   
   ## Create model matrix from formula
   if (is(model, "formula")){
@@ -62,8 +62,8 @@ runDiffMeanAnalysis <- function(set, model, method = "ls", max_iterations = 100,
     max_iterations <- 100
   }
 
-  fit <- limma::lmFit(mat, model, method = method, maxit = max_iterations)
-  
+  fit <- limma::lmFit(mat, model, method = method, maxit = max_iterations, weights = weights)
+
   if (resultSet){
     fit <- MultiDataSet::create_resultset(fOrigin = "DAProbe", fData = list(main = fFun(set)), 
                                    lResults = list(DiffMean = list(result = fit)))
