@@ -3,6 +3,7 @@ Title: Perform methylation analysis
 Version: 2.0.0
 Authors@R: c(person("Juan R.", "Gonzalez", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
   person("Carlos", "Ruiz-Arenas", ,"juanr.gonzalez@isglobal.org", role = "aut"))
+Maintainer: Xavier Escribà Montagut <xavier.escriba@isglobal.org>
 Description: Package to integrate methylation and expression data. It can
     also perform methylation or expression analysis alone. Several plotting
     functionalities are included as well as a new region analysis based on
