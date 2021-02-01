@@ -7,7 +7,7 @@
 runDiffMeanAnalysis(
   set,
   model,
-  weights = weights,
+  weights = NULL,
   method = "ls",
   max_iterations = 100,
   betas = TRUE,
@@ -21,6 +21,8 @@ runDiffMeanAnalysis(
 \code{ExpressionSet}.}
 
 \item{model}{Model matrix or formula to get model matrix from \code{set}.}
+
+\item{weights}{weights used in the lmFit model.}
 
 \item{method}{String indicating the method used in the regression: "ls" or 
 "robust". (Default: "ls")}
