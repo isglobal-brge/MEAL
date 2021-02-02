@@ -27,7 +27,7 @@
 #'  res
 #' }
 runDiffMeanAnalysis <- function(set, model, weights = NULL,  method = "ls", max_iterations = 100, 
-                    betas = TRUE, resultSet = TRUE, warnings = TRUE, ...) {
+                    betas = TRUE, resultSet = TRUE, warnings = TRUE) {
   
   ## Create model matrix from formula
   if (is(model, "formula")){
