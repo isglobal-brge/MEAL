@@ -20,7 +20,7 @@
 #' @return data.frame with the probe results. 
 #' @export
 getProbeResults <- function(object, rid = "DiffMean", coef = 2, contrast = NULL, 
-                        fNames = c("chromosome", "start"), ...) {
+                        fNames = c("chromosome", "start"), robust = FALSE, ...) {
     
   stopifnot(is(object, "ResultSet"))
   
@@ -30,7 +30,7 @@ getProbeResults <- function(object, rid = "DiffMean", coef = 2, contrast = NULL,
     
     if (rid == "DiffMean") {
       res <- getAssociation(object, rid = rid, coef = coef, contrast = contrast, 
-                            fNames = fNames, ...)
+                            fNames = fNames, robust = robust, ...)
     } else if (rid == "DiffVar"){
       res <- object@results[[rid]]$result
       
