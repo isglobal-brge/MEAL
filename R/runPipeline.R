@@ -155,7 +155,8 @@ runPipeline <-  function(set, variable_names,
 }
 
 runSVA <- function (mat, model, num_vars, big){
-  df <- data.frame(model)
+  
+  model <- data.frame(model)
   model0 <- model[, -c(2:(1+num_vars)), drop = FALSE]
   
   if (big){
