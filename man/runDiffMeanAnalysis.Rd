@@ -12,8 +12,7 @@ runDiffMeanAnalysis(
   max_iterations = 100,
   betas = TRUE,
   resultSet = TRUE,
-  warnings = TRUE,
-  ...
+  warnings = TRUE
 )
 }
 \arguments{

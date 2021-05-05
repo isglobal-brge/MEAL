@@ -39,6 +39,9 @@
 #' function.
 #' @param method String indicating the method used in the regression: "ls" or 
 #' "robust". (Default: "ls")
+#' @param big Logical value indicating whether SmartSVA should be instead of SVA 
+#' (TRUE recommended for methylation or when having large number of samples). 
+#' Default is FALSE. 
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
 #' If FALSE nothing should be printed.
 #' @param warnings Should warnings be displayed? (Default:TRUE) 
@@ -56,7 +59,8 @@ runPipeline <-  function(set, variable_names,
                          analyses = c("DiffMean"),
                          verbose = FALSE, warnings = TRUE, 
                          DiffMean_params = NULL, DiffVar_params = list(coefficient = 1:2),
-                         rda_params = NULL, method = "ls") {
+                         rda_params = NULL, method = "ls",
+                         big = FALSE) {
   ### Añadir filtro sondas con NAs
   
   
@@ -108,7 +112,8 @@ runPipeline <-  function(set, variable_names,
     if (verbose){
       message("Computing SVA")
     }
-    model <- runSVA(mat, model, num_vars = num_vars)
+    model <- runSVA(mat, model, num_vars = num_vars,
+                    big = big)
   }
   
   # Run Differential Mean analysis
@@ -149,16 +154,26 @@ runPipeline <-  function(set, variable_names,
   return(res)
 }
 
-runSVA <- function (mat, model, num_vars){
-  
+runSVA <- function (mat, model, num_vars, big=TRUE){
+  print("entro")
   df <- data.frame(model)
   model0 <- model[, -c(2:(1+num_vars)), drop = FALSE]
   
-  Y.r <- t(resid(lm(t(mat) ~ ., df)))
-  n.sv <- isva::EstDimRMT(Y.r, FALSE)$dim + 1
-  if (n.sv > 0){
-    svobj <- SmartSVA::smartsva.cpp(mat, model, model0, n.sv = n.sv)
-    model <- cbind(model, svobj$sv)
+  if (big){
+   Y.r <- t(resid(lm(t(mat) ~ ., df)))
+   n.sv <- isva::EstDimRMT(Y.r, FALSE)$dim + 1
+   if (n.sv > 0){
+     svobj <- SmartSVA::smartsva.cpp(mat, model, model0, n.sv = n.sv)
+     model <- cbind(model, svobj$sv)
+   }
+   else{
+     IQRs <- apply(mat, 1, IQR)
+     sv <- sva::sva(mat[IQRs > quantile(IQRs, prob=0.9), ],
+                    mod=model, mod0=model0)
+     cnames <- c(colnames(model), paste0("SV", 1:sv$n))
+     model <- cbind(model, sv$sv)
+     colnames(model) <- cnames
+   }
   }
-  model
+  return(model)
 }

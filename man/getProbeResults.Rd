@@ -10,6 +10,7 @@ getProbeResults(
   coef = 2,
   contrast = NULL,
   fNames = c("chromosome", "start"),
+  robust = FALSE,
   ...
 )
 }
