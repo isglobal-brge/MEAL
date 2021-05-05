@@ -39,7 +39,7 @@
 #' function.
 #' @param method String indicating the method used in the regression: "ls" or 
 #' "robust". (Default: "ls")
-#' @param big Logical value indicating whether SmartSVA should be instead of SVA 
+#' @param big Logical value indicating whether SmartSVA should be used instead of SVA 
 #' (TRUE recommended for methylation or when having large number of samples). 
 #' Default is FALSE. 
 #' @param verbose Logical value. If TRUE, it writes out some messages indicating progress. 
@@ -154,7 +154,7 @@ runPipeline <-  function(set, variable_names,
   return(res)
 }
 
-runSVA <- function (mat, model, num_vars, big=TRUE){
+runSVA <- function (mat, model, num_vars, big){
   df <- data.frame(model)
   model0 <- model[, -c(2:(1+num_vars)), drop = FALSE]
   
