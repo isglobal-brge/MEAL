@@ -155,7 +155,6 @@ runPipeline <-  function(set, variable_names,
 }
 
 runSVA <- function (mat, model, num_vars, big=TRUE){
-  print("entro")
   df <- data.frame(model)
   model0 <- model[, -c(2:(1+num_vars)), drop = FALSE]
   
