@@ -20,7 +20,8 @@ runPipeline(
   DiffMean_params = NULL,
   DiffVar_params = list(coefficient = 1:2),
   rda_params = NULL,
-  method = "ls"
+  method = "ls",
+  big = FALSE
 )
 }
 \arguments{
@@ -66,6 +67,10 @@ function.}
 
 \item{method}{String indicating the method used in the regression: "ls" or 
 "robust". (Default: "ls")}
+
+\item{big}{Logical value indicating whether SmartSVA should be instead of SVA 
+(TRUE recommended for methylation or when having large number of samples). 
+Default is FALSE.}
 }
 \value{
 \code{ResultSet} object
