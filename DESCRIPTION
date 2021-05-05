@@ -1,15 +1,17 @@
 Package: MEAL
-Title: Perform methylation analysis
-Version: 1.21.2
+Title: Perform methylation analysis and facilitates differential expression analyses
+Version: 1.22.0
+Date: 2021-05-05
 Authors@R: c(person("Carlos", "Ruiz-Arenas", , "carlos.ruiz@isglobal.org", role = c("aut", "cre")),
+  person("Xavier", "Esriba-Montagut", , "xavier.escriba@isglobal.org", role = "aut"),
   person("Juan R.", "Gonzalez", ,"juanr.gonzalez@isglobal.org", role = "aut"))
 Maintainer: Xavier Escribà Montagut <xavier.escriba@isglobal.org>
 Description: Package to integrate methylation and expression data. It can
-    also perform methylation or expression analysis alone. Several plotting
+    also perform single methylation or expression analysis. Several plotting
     functionalities are included as well as a new region analysis based on
     redundancy analysis. Effect of SNPs on a region can also be estimated.
 Depends:
-    R (>= 3.6.0),
+    R (>= 4.0.0),
     Biobase,
     MultiDataSet
 License: Artistic-2.0
@@ -31,6 +33,7 @@ Imports:
     missMethyl,
     isva,
     SummarizedExperiment,
+    sva,
     SmartSVA,
     graphics,
     stats,
