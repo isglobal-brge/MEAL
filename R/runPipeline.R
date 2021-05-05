@@ -156,7 +156,7 @@ runPipeline <-  function(set, variable_names,
 
 runSVA <- function (mat, model, num_vars, big){
   
-  model <- data.frame(model)
+  df <- data.frame(model)
   model0 <- model[, -c(2:(1+num_vars)), drop = FALSE]
   
   if (big){
@@ -165,15 +165,19 @@ runSVA <- function (mat, model, num_vars, big){
    if (n.sv > 0){
      svobj <- SmartSVA::smartsva.cpp(mat, model, model0, n.sv = n.sv)
      model <- cbind(model, svobj$sv)
+     }
    }
    else{
      IQRs <- apply(mat, 1, IQR)
      sv <- sva::sva(mat[IQRs > quantile(IQRs, prob=0.9), ],
                     mod=model, mod0=model0)
-     cnames <- c(colnames(model), paste0("SV", 1:sv$n))
-     model <- cbind(model, sv$sv)
-     colnames(model) <- cnames
+     cat("\n")
+     if (sv$n > 0){
+       cnames <- c(colnames(model), paste0("SV", 1:sv$n))
+       model <- cbind(model, sv$sv)
+       colnames(model) <- cnames
+     }
    }
-  }
+
   return(model)
 }
